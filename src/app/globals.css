@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@keyframes july-scan-line {
+  0%,
+  100% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(15.75rem);
+  }
+}
+
 :root {
   color-scheme: light;
 

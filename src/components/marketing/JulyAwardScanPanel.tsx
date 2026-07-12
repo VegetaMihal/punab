@@ -77,9 +77,19 @@ export function JulyAwardScanPanel() {
       <div>
         {scanning ? (
           <div className="space-y-2">
-            <div className="overflow-hidden rounded-[var(--radius-md)] border border-[color:var(--color-border)]">
+            <div className="relative overflow-hidden rounded-[var(--radius-md)] border border-[color:var(--color-border)]">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} className="w-full" muted playsInline />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="relative aspect-square w-2/3 max-w-64">
+                  <div className="absolute inset-0 rounded-lg border-2 border-white/70 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+                  <div className="absolute left-0 top-0 h-6 w-6 rounded-tl-lg border-l-4 border-t-4 border-[color:var(--color-accent)]" />
+                  <div className="absolute right-0 top-0 h-6 w-6 rounded-tr-lg border-r-4 border-t-4 border-[color:var(--color-accent)]" />
+                  <div className="absolute bottom-0 left-0 h-6 w-6 rounded-bl-lg border-b-4 border-l-4 border-[color:var(--color-accent)]" />
+                  <div className="absolute bottom-0 right-0 h-6 w-6 rounded-br-lg border-b-4 border-r-4 border-[color:var(--color-accent)]" />
+                  <div className="absolute inset-x-0 top-0 h-0.5 animate-[july-scan-line_2s_ease-in-out_infinite] bg-[color:var(--color-accent)]" />
+                </div>
+              </div>
             </div>
             <canvas ref={canvasRef} className="hidden" />
             {cameraError && (
