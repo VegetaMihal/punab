@@ -1,0 +1,348 @@
+/* ====================================================================
+   Eid-ul-Adha 2026 Card Generator — scoped styles
+   All CSS variables are scoped to .wrap so they don't pollute globals.
+==================================================================== */
+
+.wrap {
+  --eid-bg:        #0a0e1a;
+  --eid-panel:     #121a2c;
+  --eid-panel-2:   #1a253e;
+  --eid-border:    rgba(214, 185, 119, 0.18);
+  --eid-gold-1:    #d6b977;
+  --eid-gold-2:    #b48a3e;
+  --eid-gold-3:    #f3dfa6;
+  --eid-ivory:     #f4ecd8;
+  --eid-ivory-dim: #d9cfb8;
+  --eid-text:      #e7e2d4;
+  --eid-text-dim:  #9a9486;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  background: var(--eid-bg);
+  color: var(--eid-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.wrap *,
+.wrap *::before,
+.wrap *::after {
+  box-sizing: border-box;
+}
+
+/* ============ TOP BAR ============ */
+.topbar {
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--eid-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(214, 185, 119, 0.04), transparent);
+}
+
+.topbarTitle {
+  margin: 0;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.18em;
+  color: var(--eid-gold-3);
+  text-transform: uppercase;
+}
+
+.topbarSub {
+  color: var(--eid-text-dim);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ============ MAIN GRID ============ */
+.app {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  min-height: calc(100vh - 60px);
+}
+
+@media (max-width: 880px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============ FORM PANEL ============ */
+.form {
+  padding: 24px 24px 32px;
+  border-right: 1px solid var(--eid-border);
+  background: var(--eid-panel);
+  overflow-y: auto;
+}
+
+@media (max-width: 880px) {
+  .form {
+    border-right: none;
+    border-bottom: 1px solid var(--eid-border);
+  }
+}
+
+.sectionTitle {
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--eid-gold-1);
+  margin: 0 0 10px;
+  padding-top: 12px;
+}
+
+.sectionTitle:first-of-type {
+  padding-top: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--eid-text-dim);
+}
+
+.field input[type='text'],
+.field input[type='file'] {
+  background: var(--eid-panel-2);
+  border: 1px solid var(--eid-border);
+  color: var(--eid-text);
+  padding: 11px 13px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field input[type='text']:focus {
+  border-color: var(--eid-gold-1);
+}
+
+.field input[type='file'] {
+  padding: 9px 11px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.field input[type='file']::file-selector-button {
+  background: transparent;
+  color: var(--eid-gold-3);
+  border: 1px solid var(--eid-gold-2);
+  padding: 6px 11px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.hint {
+  color: var(--eid-text-dim);
+  font-size: 11.5px;
+  line-height: 1.5;
+  margin-top: -2px;
+}
+
+/* ============ SLIDER ============ */
+.themeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--eid-text-dim);
+  margin-top: 3px;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sliderRow input[type='range'] {
+  flex: 1;
+  accent-color: var(--eid-gold-1);
+}
+
+.val {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--eid-gold-3);
+  min-width: 38px;
+  text-align: right;
+}
+
+/* ============ NUDGE GRID ============ */
+.nudge {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.nudge button {
+  background: var(--eid-panel-2);
+  border: 1px solid var(--eid-border);
+  color: var(--eid-text);
+  padding: 9px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+
+.nudge button:hover {
+  border-color: var(--eid-gold-1);
+  color: var(--eid-gold-3);
+}
+
+.spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ============ BUTTONS ============ */
+.btnRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--eid-panel-2);
+  border: 1px solid var(--eid-border);
+  color: var(--eid-text);
+  padding: 13px 14px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--eid-gold-1);
+  color: var(--eid-gold-3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: linear-gradient(135deg, var(--eid-gold-2), var(--eid-gold-1), var(--eid-gold-3));
+  color: #061427;
+  border-color: var(--eid-gold-2);
+  font-weight: 600;
+}
+
+.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--eid-gold-3), var(--eid-gold-1), var(--eid-gold-2));
+  color: #061427;
+}
+
+/* ============ STATUS ============ */
+.status {
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: var(--eid-text-dim);
+  line-height: 1.5;
+  min-height: 16px;
+}
+
+.statusOk {
+  color: var(--eid-gold-3);
+}
+
+.statusError {
+  color: #f87171;
+}
+
+/* ============ PREVIEW AREA ============ */
+.previewWrap {
+  position: relative;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 30%, rgba(214, 185, 119, 0.05), transparent 60%),
+    var(--eid-bg);
+  overflow: hidden;
+}
+
+.previewStage {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  aspect-ratio: 1080 / 1350;
+  cursor: grab;
+  touch-action: none;
+}
+
+.previewStage.dragging {
+  cursor: grabbing;
+}
+
+.previewStage canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.previewHint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--eid-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* ============ SPINNER ============ */
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: eidSpin 0.8s linear infinite;
+}
+
+@keyframes eidSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

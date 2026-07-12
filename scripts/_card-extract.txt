@@ -1,0 +1,182 @@
+0"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "tricolor",
+  "clubName": "PUNAB Business Club",
+  "universityName": "Example University",
+  "partnerNo": "AP-2026-0012"
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [photo, setPhoto] = useState(null);
+  const [editing, setEditing] = useState(true); // controls slot upload UI
+  const theme = THEMES[t.theme] || THEMES.tricolor;
+
+  // Scale card to fit viewport
+  useEffect(() => {
+    const fit = () => {
+      const wrap = document.getElementById("card-wrap");
+      if (!wrap) return;
+      const pad = 48;
+      const sx = (window.innerWidth  - pad) / 1080;
+      const sy = (window.innerHeight - pad) / 1350;
+      const s = Math.min(sx, sy, 1);
+      wrap.style.transform = `scale(${s})`;
+      // expose inverse for tweaks panel sizing
+      document.documentElement.style.setProperty("--dc-inv-zoom", 1/s);
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
+
+  // Track selected export pixel-ratio. Default = 3 (4K).
+  const [pxRatio, setPxRatio] = useState(3);
+  const [fmt, setFmt] = useState("png");
+
+  useEffect(() => {
+    const row = document.getElementById("res-row");
+    if (!row) return;
+    const onClick = (e) => {
+      const btn = e.target.closest("button[data-pr]");
+      if (!btn) return;
+      row.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const pr = parseFloat(btn.dataset.pr);
+      setPxRatio(pr);
+      const w = Math.round(1080 * pr), h = Math.round(1350 * pr);
+      const lbl = btn.textContent.trim();
+      document.getElementById("size-hint").textContent = `${lbl} · ${w} × ${h}`;
+    };
+    row.addEventListener("click", onClick);
+    return () => row.removeEventListener("click", onClick);
+  }, []);
+
+  // Download — capture the card at full 1080×1350 (independent of viewport scale)
+  const handleDownload = useCallback(async (format = "png") => {
+    const node = document.getElementById("card-root");
+    if (!node) return;
+
+    const veil = document.getElementById("export-veil");
+    veil.classList.add("on");
+    setEditing(false);
+    await new Promise(r => setTimeout(r, 200));
+
+    const tryAt = async (pixelRatio) => {
+      const opts = {
+        width: 1080, height: 1350,
+        pixelRatio,
+        cacheBust: true,
+        style: { transform: "none" },
+      };
+      if (format === "jpg") {
+        opts.backgroundColor = "#FFFCF5";
+        opts.quality = 0.92;
+        return await htmlToImage.toBlob(node, { ...opts, type: "image/jpeg" });
+      }
+      return await htmlToImage.toBlob(node, opts);
+    };
+
+    // Start at the user-selected ratio, fall back if browser canvas-size cap rejects it.
+    const order = [pxRatio, ...[6, 5, 4, 3, 2.5, 2, 1.5, 1].filter(x => x !== pxRatio)];
+    let blob = null, lastErr = null;
+    for (const pr of order) {
+      try {
+        blob = await tryAt(pr);
+        if (blob && blob.size > 0) break;
+      } catch (e) { lastErr = e; }
+    }
+
+    veil.classList.remove("on");
+
+    if (!blob) {
+      console.error("download failed", lastErr);
+      alert("Couldn't generate image. Try a smaller resolution or a smaller logo file.");
+      setEditing(true);
+      return;
+    }
+
+    try {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const name = (t.clubName || "club").replace(/[^\w\s-]/g,"").replace(/\s+/g,"-");
+      const ext = format === "jpg" ? "jpg" : "png";
+      link.download = `PUNAB-2026-AppreciationPartner-${name}.${ext}`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } finally {
+      setEditing(true);
+    }
+  }, [t.clubName, pxRatio]);
+
+  const handleReset = () => setPhoto(null);
+
+  useEffect(() => {
+    document.getElementById("download-btn").onclick = () => handleDownload("png");
+    document.getElementById("jpg-btn").onclick     = () => handleDownload("jpg");
+    document.getElementById("reset-btn").onclick   = handleReset;
+  }, [handleDownload]);
+
+  return (
+    <>
+      <Card
+        theme={theme}
+        photo={photo}
+        editing={editing}
+        onFile={setPhoto}
+        clubName={t.clubName}
+        universityName={t.universityName}
+        partnerNo={t.partnerNo}
+        onClubNameChange={(v) => setTweak('clubName', v)}
+        onUniversityNameChange={(v) => setTweak('universityName', v)}
+        onPartnerNoChange={(v) => setTweak('partnerNo', v)}
+      />
+
+      <TweaksPanel title="Card Tweaks">
+        <TweakSection label="Color Theme"/>
+        <TweakSelect
+          label="Palette"
+          value={t.theme}
+          options={[
+            { value: "tricolor", label: "Tricolor (RWG)" },
+            { value: "emerald",  label: "Emerald"        },
+            { value: "ruby",     label: "Ruby Plate"     },
+          ]}
+          onChange={(v) => setTweak('theme', v)}
+        />
+
+        <TweakSection label="Club"/>
+        <TweakText
+          label="Club Name"
+          value={t.clubName}
+          onChange={(v) => setTweak('clubName', v)}
+        />
+        <TweakText
+          label="University"
+          value={t.universityName}
+          onChange={(v) => setTweak('universityName', v)}
+        />
+        <TweakText
+          label="Partner N°"
+          value={t.partnerNo}
+          onChange={(v) => setTweak('partnerNo', v)}
+        />
+      </TweaksPanel>
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("card-wrap"));
+root.render(<App/>);
+</script>
+
+
+
+</body></html>

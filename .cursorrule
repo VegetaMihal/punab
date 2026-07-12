@@ -1,0 +1,61 @@
+# PUNAB-Web Cursor Rules
+# Applies to every AI interaction in this project
+
+## Output Rules
+- Output diffs only — never reprint full files
+- Use `// ... existing code` to skip unchanged blocks
+- Max 3 files changed per message — ask which to prioritize if more needed
+- Never repeat the task back
+- Never add explanations unless asked
+- Never say "Certainly!", "Sure!", "Great question!" or any filler
+- State assumptions inline as `// assumed: ...`
+
+## Code Rules
+- TypeScript only — no `any` without `// reason:` comment
+- No new dependencies without flagging `⚠️ new dep:`
+- No `console.log` unless asked
+- No hardcoded colors or spacing — use CSS variables
+- Mobile-first responsive always
+- Named exports only, no default exports except pages
+- Functional components only, no classes
+
+## Architecture Rules (PUNAB-Web specific)
+- Server Actions → src/actions/ — always "use server" + Zod validation
+- Main DB → src/lib/repositories/ via src/lib/db/prisma.ts only
+- BloodHero DB → src/lib/supabase/ (NOT Prisma)
+- Storage → src/lib/storage.ts only, never construct URLs manually
+- Auth guard → src/lib/auth/require-admin.ts for all /admin routes
+- Toasts → Sonner only
+- Email → Resend, only from Server Actions or API routes
+- Types → src/types/database.ts
+- Never touch: prisma/, supabase/migrations/, src/lib/ unless asked
+
+## File Reading Rules
+- Always read AGENTS.md before any task
+- Read only files needed for the current task
+- Use codebase indexing — never ask me to paste file contents
+- Check src/types/database.ts before creating new types
+
+## Task Rules
+- One task per message
+- Do not touch unrelated files
+- Do not refactor working code unless asked
+- Do not add features not explicitly requested
+- If unclear → make the simplest reasonable assumption and state it
+
+## Security Rules
+- Never expose env vars in client components
+- Never skip Zod validation on Server Action inputs
+- Never bypass require-admin.ts on admin routes
+- Never put RLS policies inside Prisma migration files
+
+## Git Rules
+- Never suggest committing .env files
+- Never suggest force pushing to main
+- Always suggest feature branch → staging → main flow
+
+## Response Format
+- Lead with the file path as a comment
+- Show only what changed
+- End with a one-line summary of what was done
+- If multiple approaches exist → show the simplest one only
