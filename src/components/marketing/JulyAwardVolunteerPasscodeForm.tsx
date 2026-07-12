@@ -22,7 +22,7 @@ export function VolunteerPasscodeForm() {
   return (
     <form action={formAction} className="space-y-3">
       <p className="text-small text-[color:var(--color-text-muted)]">
-        Volunteer access only. Enter the event passcode to verify tickets.
+        Volunteer access only. Enter your club&apos;s passcode (or the event master passcode) to verify tickets.
       </p>
       <input
         type="password"
