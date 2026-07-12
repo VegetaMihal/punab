@@ -7,6 +7,8 @@ import {
   isJulyParticipantSheetsConfigured,
   JULY_PARTICIPANT_DEFAULT_TAB,
 } from "@/lib/july-participant-google-sheet";
+import { getSiteSettingsMap } from "@/lib/repositories/site-settings-repository";
+import { getSetting } from "@/lib/site-defaults";
 
 export const metadata = {
   title: "Participant registration · July Award 2026",
@@ -17,10 +19,7 @@ export const metadata = {
 // default 10s serverless timeout on slow mobile connections. Match the other heavy July routes.
 export const maxDuration = 60;
 
-// Temporary: paused while fixing a sheet-append bug that misaligned some rows. Flip to false once fixed & verified.
-const MAINTENANCE_MODE = false;
-
-function MaintenanceNotice() {
+function ClosedNotice() {
   return (
     <div className="mx-auto max-w-xl rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) px-6 py-12 text-center shadow-sm">
       <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-primary)_12%,var(--color-surface))]">
@@ -40,10 +39,9 @@ function MaintenanceNotice() {
           />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold text-(--color-text)">Registration paused for maintenance</h2>
+      <h2 className="text-lg font-semibold text-(--color-text)">Registration is closed</h2>
       <p className="mt-3 text-small leading-relaxed text-(--color-text-muted)">
-        We&apos;re upgrading our backend to serve you better. Participant registration will reopen shortly — please
-        check back soon.
+        Participant registration for the July Award 2026 is currently closed. Please check back later.
       </p>
       <p className="mt-6">
         <Button href="/july-award-2026" variant="secondary" size="md">
@@ -62,6 +60,8 @@ export default async function JulyParticipantRegisterPage({
   const params = await searchParams;
   const alreadyRegistered = params.alreadyRegistered === "1";
   const sheetsReady = isJulyParticipantSheetsConfigured();
+  const settingsMap = await getSiteSettingsMap();
+  const registrationOpen = getSetting(settingsMap, "july_award.registration_open") !== "false";
 
   return (
     <>
@@ -91,8 +91,8 @@ export default async function JulyParticipantRegisterPage({
             </div>
           )}
 
-          {MAINTENANCE_MODE ? (
-            <MaintenanceNotice />
+          {!registrationOpen ? (
+            <ClosedNotice />
           ) : alreadyRegistered ? (
             <div
               className="rounded-(--radius-md) border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-4 py-6 text-(--color-text)"

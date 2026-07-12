@@ -2,7 +2,10 @@ import { assertAdminScope } from "@/lib/auth/require-admin";
 import { listJulyParticipantRegistrationRows } from "@/lib/july-participant-google-sheet";
 import { ClubFilterSelect } from "@/components/admin/ClubFilterSelect";
 import { JulyAwardParticipantsTable } from "@/components/admin/JulyAwardParticipantsTable";
+import { JulyAwardRegistrationToggle } from "@/components/admin/JulyAwardRegistrationToggle";
 import { buildNameClusterMap } from "@/lib/fuzzy-group";
+import { getSiteSettingsMap } from "@/lib/repositories/site-settings-repository";
+import { getSetting } from "@/lib/site-defaults";
 
 export const metadata = {
   title: "July Award — Participants",
@@ -18,6 +21,8 @@ export default async function AdminJulyAwardParticipantsPage({
 }) {
   await assertAdminScope("july_award_participants");
   const result = await listJulyParticipantRegistrationRows();
+  const settingsMap = await getSiteSettingsMap();
+  const registrationOpen = getSetting(settingsMap, "july_award.registration_open") !== "false";
   const params = await searchParams;
 
   const sortKey: SortKey = params.sort === "checkedin" ? "checkedin" : params.sort === "registered" ? "registered" : "date";
@@ -100,6 +105,8 @@ export default async function AdminJulyAwardParticipantsPage({
       <p className="mt-1 max-w-2xl text-sm text-muted">
         Everyone who registered for the July Uprising Memorial Award programme, with their university and club.
       </p>
+
+      <JulyAwardRegistrationToggle initialOpen={registrationOpen} />
 
       {result.ok && (
         <div className="mt-4 flex gap-4">
