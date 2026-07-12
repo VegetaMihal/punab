@@ -114,14 +114,27 @@ export async function appendJulyParticipantRegistrationRow(
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
     await ensureHeaderRow(sheets, spreadsheetId, tabKey);
-    // Atomic append — avoids the read-then-write race where two concurrent submissions compute
-    // the same "next row" and one overwrites the other under load.
-    await sheets.spreadsheets.values.append({
+    // Reserve a fresh row atomically by appending to column A only — Sheets' table-detection is
+    // unambiguous over a single column, unlike a wide A:N range, which can misplace the write.
+    // Two concurrent submissions each get their own distinct reserved row, no race.
+    const reserved = await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: `${quoteSheetTab(tabKey)}!A:${LAST_COL}`,
+      range: `${quoteSheetTab(tabKey)}!A:A`,
       valueInputOption: "USER_ENTERED",
       insertDataOption: "INSERT_ROWS",
-      requestBody: { values: [row] },
+      requestBody: { values: [[row[0]]] },
+    });
+    const updatedRange = reserved.data.updates?.updatedRange ?? "";
+    const rowMatch = /![A-Z]+(\d+)/.exec(updatedRange);
+    if (!rowMatch) {
+      return { ok: false, message: "Could not determine reserved row from Sheets response." };
+    }
+    const rowIndex = Number(rowMatch[1]);
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${quoteSheetTab(tabKey)}!B${rowIndex}:${LAST_COL}${rowIndex}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [row.slice(1)] },
     });
     return { ok: true };
   } catch (e) {

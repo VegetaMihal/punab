@@ -13,8 +13,8 @@ export const metadata = {
   description: "Register to attend the July Uprising Memorial Award programme.",
 };
 
-// Temporary: Supabase storage quota refills July 17, 2026. Flip to false once resolved.
-const MAINTENANCE_MODE = false;
+// Temporary: paused while fixing a sheet-append bug that misaligned some rows. Flip to false once fixed & verified.
+const MAINTENANCE_MODE = true;
 
 function MaintenanceNotice() {
   return (
