@@ -13,6 +13,10 @@ export const metadata = {
   description: "Register to attend the July Uprising Memorial Award programme.",
 };
 
+// Registration does a photo upload + two Sheets API calls + QR generation — can run past the
+// default 10s serverless timeout on slow mobile connections. Match the other heavy July routes.
+export const maxDuration = 60;
+
 // Temporary: paused while fixing a sheet-append bug that misaligned some rows. Flip to false once fixed & verified.
 const MAINTENANCE_MODE = false;
 
