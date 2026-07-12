@@ -32,6 +32,13 @@ const NAME_ALIASES: Record<string, string> = {
     "IUBAT - International University of Business Agriculture and Technology",
   "iubat-internationaluniversityofbusinessagricultureandtechnology":
     "IUBAT - International University of Business Agriculture and Technology",
+  adust: "Atish Dipankar University of Science and Technology",
+  atishdipankaruniversityofscienceandtechnology: "Atish Dipankar University of Science and Technology",
+  atishdipankaruniversity: "Atish Dipankar University of Science and Technology",
+  atishdepankaruniversity: "Atish Dipankar University of Science and Technology",
+  atishdipankarscienceoftechnology: "Atish Dipankar University of Science and Technology",
+  "atishdipankaruniversityofscience&technology": "Atish Dipankar University of Science and Technology",
+  atishdipongkoruniversityofscienceandtechnology: "Atish Dipankar University of Science and Technology",
 };
 
 function deepNormalize(name: string): string {
