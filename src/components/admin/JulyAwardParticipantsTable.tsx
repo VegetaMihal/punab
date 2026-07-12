@@ -69,11 +69,16 @@ export function JulyAwardParticipantsTable({
 }) {
   const [universityQuery, setUniversityQuery] = useState("");
   const [clubQuery, setClubQuery] = useState("");
+  const [nameQuery, setNameQuery] = useState("");
   const uniQ = universityQuery.trim().toLowerCase();
   const clubQ = clubQuery.trim().toLowerCase();
+  const nameQ = nameQuery.trim().toLowerCase();
 
   const filteredRows = rows.filter(
-    (r) => r.universityName.toLowerCase().includes(uniQ) && r.clubName.toLowerCase().includes(clubQ)
+    (r) =>
+      r.universityName.toLowerCase().includes(uniQ) &&
+      r.clubName.toLowerCase().includes(clubQ) &&
+      (r.fullName.toLowerCase().includes(nameQ) || r.email.toLowerCase().includes(nameQ))
   );
   const filteredUniversitySummary = universitySummary.filter(([university]) =>
     university.toLowerCase().includes(uniQ)
@@ -85,6 +90,13 @@ export function JulyAwardParticipantsTable({
   return (
     <>
       <div className="mt-6 flex flex-wrap gap-3">
+        <input
+          type="text"
+          value={nameQuery}
+          onChange={(e) => setNameQuery(e.target.value)}
+          placeholder="Search by name or email..."
+          className="rounded-md border border-stone-300 px-3 py-1.5 text-sm dark:border-stone-600 dark:bg-stone-900 dark:text-stone-100"
+        />
         <input
           type="text"
           value={universityQuery}
