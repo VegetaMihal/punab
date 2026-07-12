@@ -14,7 +14,7 @@ export const metadata = {
 };
 
 // Temporary: paused while fixing a sheet-append bug that misaligned some rows. Flip to false once fixed & verified.
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 function MaintenanceNotice() {
   return (
