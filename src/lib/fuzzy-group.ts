@@ -74,6 +74,15 @@ function isNearMatch(a: string, b: string): boolean {
   return distance <= Math.floor(maxLen * 0.15);
 }
 
+/** True if two raw name strings (typos, case, abbreviations aside) refer to the same real-world entity. */
+export function namesMatch(a: string, b: string): boolean {
+  const canonical = (name: string) => {
+    const alias = aliasCanonical(name);
+    return alias ? deepNormalize(alias) : deepNormalize(name);
+  };
+  return isNearMatch(canonical(a), canonical(b));
+}
+
 /**
  * Groups raw name variants into clusters of the same real-world entity.
  * Returns a map from each original raw name to its cluster's canonical display label

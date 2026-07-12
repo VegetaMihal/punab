@@ -5,10 +5,13 @@ import {
   findJulyParticipantByTicketId,
   markJulyParticipantCheckedIn,
 } from "@/lib/july-participant-google-sheet";
+import { namesMatch } from "@/lib/fuzzy-group";
 
 const JULY_AWARD_VOLUNTEER_COOKIE = "july_award_volunteer";
-/** Scope value meaning "no club restriction" — the shared master passcode. */
+/** Scope value meaning "no club/university restriction" — the shared master passcode. */
 const ALL_CLUBS_SCOPE = "__ALL__";
+/** Prefix marking a scope as "any club under this university" rather than one specific club. */
+const UNIVERSITY_SCOPE_PREFIX = "UNIV::";
 
 function masterPasscode(): string | null {
   return process.env.JULY_AWARD_VOLUNTEER_PASSCODE?.trim() || null;
@@ -27,23 +30,42 @@ function clubPasscodes(): Record<string, string> {
   return {};
 }
 
-/** Matches an entered passcode against the master passcode or a club passcode. Returns the scope to store, or null. */
+/** Per-university passcodes: covers every club under that university. Same shape as JULY_AWARD_CLUB_PASSCODES. */
+function universityPasscodes(): Record<string, string> {
+  const raw = process.env.JULY_AWARD_UNIVERSITY_PASSCODES?.trim();
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") return parsed as Record<string, string>;
+  } catch {
+    // assumed: malformed env value — treat as no per-university passcodes rather than crash
+  }
+  return {};
+}
+
+/** Matches an entered passcode against the master, club, or university passcode. Returns the scope to store, or null. */
 function matchPasscode(entered: string): string | null {
   if (masterPasscode() && entered === masterPasscode()) return ALL_CLUBS_SCOPE;
   const clubs = clubPasscodes();
   const club = Object.keys(clubs).find((name) => clubs[name] === entered);
-  return club ?? null;
+  if (club) return club;
+  const universities = universityPasscodes();
+  const university = Object.keys(universities).find((name) => universities[name] === entered);
+  return university ? `${UNIVERSITY_SCOPE_PREFIX}${university}` : null;
 }
 
 export type VolunteerPasscodeState = { error?: string };
 
-/** Gate: volunteers enter a shared or club passcode once; sets an httpOnly cookie scoped to their club for the rest of the event. */
+/** Gate: volunteers enter a shared, club, or university passcode once; sets an httpOnly cookie scoped for the rest of the event. */
 export async function submitJulyAwardVolunteerPasscode(
   _prev: VolunteerPasscodeState,
   formData: FormData
 ): Promise<VolunteerPasscodeState> {
-  if (!masterPasscode() && Object.keys(clubPasscodes()).length === 0) {
-    return { error: "Volunteer access is not configured. Set JULY_AWARD_VOLUNTEER_PASSCODE or JULY_AWARD_CLUB_PASSCODES." };
+  if (!masterPasscode() && Object.keys(clubPasscodes()).length === 0 && Object.keys(universityPasscodes()).length === 0) {
+    return {
+      error:
+        "Volunteer access is not configured. Set JULY_AWARD_VOLUNTEER_PASSCODE, JULY_AWARD_CLUB_PASSCODES, or JULY_AWARD_UNIVERSITY_PASSCODES.",
+    };
   }
   const entered = formData.get("passcode")?.toString().trim() ?? "";
   const scope = matchPasscode(entered);
@@ -61,13 +83,32 @@ export async function submitJulyAwardVolunteerPasscode(
   return {};
 }
 
-/** Returns the authenticated volunteer's club, ALL_CLUBS_SCOPE for master access, or null if unauthenticated. */
+/** Returns the authenticated volunteer's scope (club name, "UNIV::<university>", ALL_CLUBS_SCOPE), or null if unauthenticated. */
 export async function getVolunteerScope(): Promise<string | null> {
   const jar = await cookies();
   const value = jar.get(JULY_AWARD_VOLUNTEER_COOKIE)?.value;
   if (!value) return null;
   if (value === ALL_CLUBS_SCOPE) return masterPasscode() ? ALL_CLUBS_SCOPE : null;
+  if (value.startsWith(UNIVERSITY_SCOPE_PREFIX)) {
+    const university = value.slice(UNIVERSITY_SCOPE_PREFIX.length);
+    return universityPasscodes()[university] === undefined ? null : value;
+  }
   return clubPasscodes()[value] === undefined ? null : value;
+}
+
+/** True if the given participant row is within the volunteer's scope. Uses fuzzy name matching so raw spelling
+ * variants of the same club/university (typos, case, abbreviations) in the sheet still match the configured scope. */
+function rowInScope(scope: string, row: { clubName: string; universityName: string }): boolean {
+  if (scope === ALL_CLUBS_SCOPE) return true;
+  if (scope.startsWith(UNIVERSITY_SCOPE_PREFIX)) {
+    const university = scope.slice(UNIVERSITY_SCOPE_PREFIX.length);
+    return Boolean(row.universityName) && namesMatch(row.universityName, university);
+  }
+  return Boolean(row.clubName) && namesMatch(row.clubName, scope);
+}
+
+function scopeDenialLabel(row: { clubName: string; universityName: string }): string {
+  return row.clubName || row.universityName || "another club";
 }
 
 export async function isVolunteerAuthenticated(): Promise<boolean> {
@@ -91,8 +132,8 @@ export async function lookupJulyAwardTicket(ticketId: string): Promise<TicketLoo
   const result = await findJulyParticipantByTicketId(ticketId);
   if (!result.ok) return { ok: false, error: result.message };
   if (!result.row) return { ok: true, found: false };
-  if (scope !== ALL_CLUBS_SCOPE && result.row.clubName !== scope) {
-    return { ok: false, error: `This ticket belongs to ${result.row.clubName || "another club"}, not your club.` };
+  if (!rowInScope(scope, result.row)) {
+    return { ok: false, error: `This ticket belongs to ${scopeDenialLabel(result.row)}, not your club.` };
   }
   return {
     ok: true,
@@ -123,8 +164,8 @@ export async function checkInJulyAwardTicket(
     const found = await findJulyParticipantByTicketId(ticketId);
     if (!found.ok) return { error: found.message };
     if (!found.row) return { error: "Ticket not found." };
-    if (found.row.clubName !== scope) {
-      return { error: `This ticket belongs to ${found.row.clubName || "another club"}, not your club.` };
+    if (!rowInScope(scope, found.row)) {
+      return { error: `This ticket belongs to ${scopeDenialLabel(found.row)}, not your club.` };
     }
   }
   const result = await markJulyParticipantCheckedIn(ticketId);
