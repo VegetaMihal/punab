@@ -114,15 +114,13 @@ export async function appendJulyParticipantRegistrationRow(
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
     await ensureHeaderRow(sheets, spreadsheetId, tabKey);
-    const existing = await sheets.spreadsheets.values.get({
+    // Atomic append — avoids the read-then-write race where two concurrent submissions compute
+    // the same "next row" and one overwrites the other under load.
+    await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${quoteSheetTab(tabKey)}!A:${LAST_COL}`,
-    });
-    const nextRow = (existing.data.values?.length ?? 1) + 1;
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `${quoteSheetTab(tabKey)}!A${nextRow}:${LAST_COL}${nextRow}`,
       valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
       requestBody: { values: [row] },
     });
     return { ok: true };
