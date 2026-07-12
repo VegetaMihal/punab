@@ -74,6 +74,12 @@ export async function isVolunteerAuthenticated(): Promise<boolean> {
   return (await getVolunteerScope()) !== null;
 }
 
+/** Clears the volunteer cookie so a different club/master passcode can be entered. */
+export async function logoutJulyAwardVolunteer(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(JULY_AWARD_VOLUNTEER_COOKIE);
+}
+
 export type TicketLookupResult =
   | { ok: true; found: true; ticketId: string; fullName: string; universityName: string; clubName: string; phoneNumber: string; photoUrl: string; checkedInAt: string }
   | { ok: true; found: false }
