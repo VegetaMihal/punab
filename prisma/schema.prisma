@@ -1,0 +1,333 @@
+// Code-first schema for PUNAB public tables.
+// Auth (auth.users), session, and Storage stay on Supabase.
+
+generator client {
+  provider = "prisma-client-js"
+  // MultiSchema is removed to prevent Prisma from touching protected Supabase internal tables.
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model University {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String   @unique
+  slug       String?  @unique
+  district   String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  profiles Profile[]
+  chapters Chapter[]
+
+  @@map("universities")
+}
+
+model Profile {
+  id                String   @id @db.Uuid // Matches auth.users.id
+  full_name         String
+  email             String   @unique
+  role              String   @default("member")
+  admin_scopes      String[] @default([])
+  membership_status String   @default("pending")
+  phone             String?
+  university_id     String?  @db.Uuid
+  university_other  String?
+  department        String?
+  student_id        String?
+  session           String?
+  district          String?
+  photo_url         String?
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  university University? @relation(fields: [university_id], references: [id], onDelete: SetNull)
+
+  @@index([university_id])
+  @@index([membership_status])
+  @@index([created_at])
+  @@map("profiles")
+}
+
+model Chapter {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  university_id String?  @db.Uuid
+  title         String
+  description   String?
+  contact_email String?
+  member_count  Int      @default(0)
+  image_url     String?
+  is_published  Boolean  @default(false)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  university University? @relation(fields: [university_id], references: [id], onDelete: SetNull)
+
+  @@index([university_id])
+  @@map("chapters")
+}
+
+model LeadershipLayer {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  slug         String   @unique
+  description  String?
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  members LeadershipMember[]
+
+  @@map("leadership_layers")
+}
+
+model LeadershipMember {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  layer_id     String?  @db.Uuid
+  name         String
+  position     String
+  bio          String?
+  photo_url    String?
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  layer LeadershipLayer? @relation(fields: [layer_id], references: [id], onDelete: SetNull)
+
+  @@index([layer_id])
+  @@map("leadership_members")
+}
+
+model Forum {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  slug         String   @unique
+  description  String?
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  labels  ForumLabel[]
+  members ForumMember[]
+
+  @@map("forums")
+}
+
+model ForumLabel {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id     String   @db.Uuid
+  title        String
+  description  String?
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  forum   Forum         @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  members ForumMember[]
+
+  @@index([forum_id])
+  @@map("forum_labels")
+}
+
+model ForumMember {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id     String   @db.Uuid
+  label_id     String?  @db.Uuid
+  name         String
+  position     String
+  bio          String?
+  photo_url    String?
+  sort_order   Int      @default(0)
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  forum Forum       @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  label ForumLabel? @relation(fields: [label_id], references: [id], onDelete: SetNull)
+
+  @@index([forum_id])
+  @@index([label_id])
+  @@map("forum_members")
+}
+
+model Notice {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  slug         String?   @unique
+  excerpt      String?
+  body         String
+  is_published Boolean   @default(false)
+  published_at DateTime? @db.Timestamptz(6)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("notices")
+}
+
+model Event {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  slug         String?   @unique
+  description  String?
+  location     String?
+  banner_url   String?
+  post_url     String?
+  start_at     DateTime  @db.Timestamptz(6)
+  end_at       DateTime? @db.Timestamptz(6)
+  is_published Boolean   @default(false)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("events")
+}
+
+model SiteSetting {
+  key        String   @id
+  value      String   @default("")
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("site_settings")
+}
+
+model GalleryAlbum {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title            String
+  slug             String   @unique
+  description      String?
+  cover_image_url  String?
+  is_published     Boolean  @default(false)
+  sort_order       Int      @default(0)
+  featured_on_home Boolean  @default(false)
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  images GalleryImage[]
+
+  @@map("gallery_albums")
+}
+
+model GalleryImage {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  album_id     String   @db.Uuid
+  storage_path String
+  public_url   String
+  caption      String?
+  alt_text     String?
+  sort_order   Int      @default(0)
+  is_featured  Boolean  @default(false)
+  is_cover     Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  album GalleryAlbum @relation(fields: [album_id], references: [id], onDelete: Cascade)
+
+  @@index([album_id])
+  @@map("gallery_images")
+}
+
+model Page {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug             String   @unique
+  title            String
+  body             String
+  meta_description String?
+  is_published     Boolean  @default(false)
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("pages")
+}
+
+// --- BLOODHERO MODELS ---
+
+model BloodHeroAdminAccess {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id String @db.Uuid // No formal Prisma relation to Auth to avoid P3016/P4002 errors
+  role    String @default("admin")
+
+  @@map("bloodhero_admin_access")
+}
+
+model Certificate {
+  id                    String   @id @default(cuid())
+  certificateNumber     String   @unique
+  certificateTitle      String
+  certificateType       String
+  recipientName         String
+  recipientEmail        String?
+  universityName        String?
+  eventName             String?
+  role                  String?
+  achievement           String?
+  timePeriod            String?
+  reason                String
+  issueDate             DateTime
+  templateId            String?
+  pdfUrl                String?
+  verificationUrl       String?
+  status                String   @default("DRAFT")
+  signatoryName1        String?
+  signatoryDesignation1 String?
+  signatoryName2        String?
+  signatoryDesignation2 String?
+  signatorySignature1Url String?
+  signatorySignature2Url String?
+  customFields          Json?
+  emailSentAt           DateTime?
+  revokedAt             DateTime?
+  revokedReason         String?
+  createdById           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  template              CertificateTemplate? @relation(fields: [templateId], references: [id])
+  emailLogs             CertificateEmailLog[]
+}
+
+model CertificateTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  type         String?
+  htmlContent  String
+  cssContent   String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  certificates Certificate[]
+}
+
+model CertificateEmailLog {
+  id             String   @id @default(cuid())
+  certificateId  String
+  recipientEmail String
+  subject        String?
+  status         String
+  sentAt         DateTime @default(now())
+  certificate    Certificate @relation(fields: [certificateId], references: [id])
+}
+
+model JulyMemorialInvitation {
+  id                   String    @id @default(cuid())
+  templateSlug         String    @default("july-memorial-award")
+  recipientName        String
+  recipientDesignation String    @default("")
+  recipientInstitution String
+  contactPerson        String
+  specialContact       String
+  isChiefGuest         Boolean   @default(false)
+  responseStatus       String    @default("MAYBE")
+  pdfGeneratedAt       DateTime?
+  createdById          String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@unique([templateSlug, recipientName, recipientInstitution])
+  @@index([responseStatus])
+}

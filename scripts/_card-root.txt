@@ -1,0 +1,447 @@
+C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("c1a09dda-e1d8-442d-9e1b-72b0a4fc027a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("8df21131-a3b7-49d8-9b17-78d4c302c948") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("26669bbd-4228-4417-bce8-f6b1d648f948") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("7c853f4d-d654-4cc2-aa89-e2c50b211338") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("ef2ecaa0-c6ea-4997-9b90-6fd9128aa94c") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fa015a91-0f90-4fe6-84ce-e03a68ceef44") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("c1a09dda-e1d8-442d-9e1b-72b0a4fc027a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("8df21131-a3b7-49d8-9b17-78d4c302c948") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("26669bbd-4228-4417-bce8-f6b1d648f948") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("7c853f4d-d654-4cc2-aa89-e2c50b211338") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("ef2ecaa0-c6ea-4997-9b90-6fd9128aa94c") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("fa015a91-0f90-4fe6-84ce-e03a68ceef44") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("c1a09dda-e1d8-442d-9e1b-72b0a4fc027a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+
+<script src="a13a386d-7b9b-4cca-9428-5e4ac8bae3e8" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="8188c35b-8895-4e47-9502-48afaf6e98ee" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="d73df598-54ac-42d7-8f2a-f8906fce734f" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<!-- html-to-image for client-side PNG export -->
+<script src="4a6dd7f7-7bde-4735-b379-bb424c012e52"></script>
+
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #1A1A1A;
+    font-family: 'Manrope', system-ui, sans-serif;
+    color: #f6efde;
+    overflow: hidden;
+  }
+  #stage {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  #card-wrap {
+    /* 1080×1350 — scaled to fit viewport */
+    width: 1080px; height: 1350px;
+    transform-origin: center center;
+    flex: 0 0 auto;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+  }
+
+  .actions {
+    position: fixed; left: 20px; bottom: 20px; z-index: 10;
+    display: flex; flex-direction: column; gap: 10px;
+    font-family: 'Manrope', sans-serif;
+    max-width: 240px;
+  }
+  .actions .res-row {
+    display:flex; gap:4px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px; padding: 4px;
+  }
+  .actions .res-row button {
+    flex:1; appearance:none; border:0; cursor:pointer;
+    background: transparent; color: rgba(255,255,255,.6);
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase;
+    padding: 8px 4px; border-radius: 8px;
+    transition: all .15s;
+  }
+  .actions .res-row button.active {
+    background: linear-gradient(180deg, #f4f4f4 0%, #c8161e 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .actions .res-label {
+    color: rgba(255,255,255,.55); font-size: 9px;
+    letter-spacing:.24em; text-transform: uppercase;
+    padding-left: 4px;
+  }
+  .actions button.dl {
+    appearance: none; border: 0;
+    background: linear-gradient(180deg, #d8313a 0%, #8E0C12 100%);
+    color: #ffffff; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    font-size: 11px; padding: 14px 18px;
+    border-radius: 999px; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(142,12,18,.4), inset 0 1px 0 rgba(255,255,255,.25);
+    transition: transform .12s;
+  }
+  .actions button.dl:active { transform: translateY(1px); }
+  .actions button.dl:disabled { opacity: .55; cursor: progress; }
+  .actions button.secondary {
+    appearance:none; border: 1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.85);
+    font-weight: 500; letter-spacing:.14em; text-transform:uppercase;
+    font-size: 10px; padding: 10px 14px;
+    border-radius: 999px; cursor: pointer;
+  }
+  .actions .hint {
+    color: rgba(255,255,255,.55); font-size: 10px;
+    letter-spacing:.18em; text-transform: uppercase;
+    padding-left: 4px;
+  }
+
+  /* Export progress overlay */
+  #export-veil {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(5, 8, 15, .82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 18px;
+    color: #f5ecd2; font-family: 'Manrope', sans-serif;
+  }
+  #export-veil.on { display: flex; }
+  #export-veil .spin {
+    width: 56px; height: 56px;
+    border: 3px solid rgba(255,255,255,.18);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin .9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #export-veil .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+    font-size: 18px; letter-spacing: .28em; text-transform: uppercase;
+    color: #ffffff;
+  }
+  #export-veil .sub {
+    font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
+    opacity: .75; max-width: 340px; text-align: center; line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="card-wrap"></div>
+</div>
+
+<div class="actions">
+  <div class="res-label">Export Resolution</div>
+  <div class="res-row" id="res-row">
+    <button data-pr="1">1K</button>
+    <button data-pr="1.5">HD</button>
+    <button data-pr="2">2K</button>
+    <button data-pr="3" class="active">4K</button>
+    <button data-pr="4">5K</button>
+    <button data-pr="6">6K</button>
+  </div>
+  <button id="download-btn" class="dl">⬇ Download PNG</button>
+  <button id="jpg-btn" class="secondary">Download JPG (smaller)</button>
+  <button id="reset-btn" class="secondary">Reset Logo</button>
+  <div class="hint" id="size-hint">4K · 3240 × 4050</div>
+</div>
+
+<div id="export-veil">
+  <div class="spin"></div>
+  <div class="ttl">Rendering…</div>
+  <div class="sub" id="export-msg">Encoding your card at the chosen resolution. Larger sizes can take a moment.</div>
+</div>
+
+<script type="text/babel" src="06daeac8-9fa7-4397-8830-98c28292be2d"></script>
+<script type="text/babel" src="a42208a8-8554-4b92-a890-5798e774b450"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "tricolor",
+  "clubName": "PUNAB Business Club",
+  "universityName": "Example University",
+  "partnerNo": "AP-2026-0012"
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [photo, setPhoto] = useState(null);
+  const [editing, setEditing] = useState(true); // controls slot upload UI
+  const theme = THEMES[t.theme] || THEMES.tricolor;
+
+  // Scale card to fit viewport
+  useEffect(() => {
+    const fit = () => {
+      const wrap = document.getElementById("card-wrap");
+      if (!wrap) return;
+      const pad = 48;
+      const sx = (window.innerWidth  - pad) / 1080;
+      const sy = (window.innerHeight - pad) / 1350;
+      const s = Math.min(sx, sy, 1);
+      wrap.style.transform = `scale(${s})`;
+      // expose inverse for tweaks panel sizing
+      document.documentElement.style.setProperty("--dc-inv-zoom", 1/s);
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
+
+  // Track selected export pixel-ratio. Default = 3 (4K).
+  const [pxRatio, setPxRatio] = useState(3);
+  const [fmt, setFmt] = useState("png");
+
+  useEffect(() => {
+    const row = document.getElementById("res-row");
+    if (!row) return;
+    const onClick = (e) => {
+      const btn = e.target.closest("button[data-pr]");
+      if (!btn) return;
+      row.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const pr = parseFloat(btn.dataset.pr);
+      setPxRatio(pr);
+      const w = Math.round(1080 * pr), h = Math.round(1350 * pr);
+      const lbl = btn.textContent.trim();
+      document.getElementById("size-hint").textContent = `${lbl} · ${w} × ${h}`;
+    };
+    row.addEventListener("click", onClick);
+    return () => row.removeEventListener("click", onClick);
+  }, []);
+
+  // Download — capture the card at full 1080×1350 (independent of viewport scale)
+  const handleDownload = useCallback(async (format = "png") => {
+    const node = document.getElementById("card-root");
+    if (!node) return;
+
+    const veil = document.getElementById("export-veil");
+    veil.classList.add("on");
+    setEditing(false);
+    await new Promise(r => setTimeout(r, 200));
+
+    const tryAt = async (pixelRatio) => {
+      const opts = {
+        width: 1080, height: 1350,
+        pixelRatio,
+        cacheBust: true,
+        style: { transform: "none" },
+      };
+      if (format === "jpg") {
+        opts.backgroundColor = "#FFFCF5";
+        opts.quality = 0.92;
+        return await htmlToImage.toBlob(node, { ...opts, type: "image/jpeg" });
+      }
+      return await htmlToImage.toBlob(node, opts);
+    };
+
+    // Start at the user-selected ratio, fall back if browser canvas-size cap rejects it.
+    const order = [pxRatio, ...[6, 5, 4, 3, 2.5, 2, 1.5, 1].filter(x => x !== pxRatio)];
+    let blob = null, lastErr = null;
+    for (const pr of order) {
+      try {
+        blob = await tryAt(pr);
+        if (blob && blob.size > 0) break;
+      } catch (e) { lastErr = e; }
+    }
+
+    veil.classList.remove("on");
+
+    if (!blob) {
+      console.error("download failed", lastErr);
+      alert("Couldn't generate image. Try a smaller resolution or a smaller logo file.");
+      setEditing(true);
+      return;
+    }
+
+    try {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const name = (t.clubName || "club").replace(/[^\w\s-]/g,"").replace(/\s+/g,"-");
+      const ext = format === "jpg" ? "jpg" : "png";
+      link.download = `PUNAB-2026-AppreciationPartner-${name}.${ext}`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } finally {
+      setEditing(true);
+    }
+  }, [t.clubName, pxRatio]);
+
+  const handleReset = () => setPhoto(null);
+
+  useEffect(() => {
+    document.getElementById("download-btn").onclick = () => handleDownload("png");
+    document.getElementById("jpg-btn").onclick     = () => handleDownload("jpg");
+    document.getElementById("reset-btn").onclick   = handleReset;
+  }, [handleDownload]);
+
+  return (
+    <>
+      <Card
+        theme={theme}
+        photo={photo}
+        editing={editing}
+        onFile={setPhoto}
+        clubName={t.clubName}
+        universityName={t.universityName}
+        partnerNo={t.partnerNo}
+        onClubNameChange={(v) => setTweak('clubName', v)}
+        onUniversityNameChange={(v) => setTweak('universityName', v)}
+        onPartnerNoChange={(v) => setTweak('partnerNo', v)}
+      />
+
+      <TweaksPanel title="Card Tweaks">
+        <TweakSection label="Color Theme"/>
+        <TweakSelect
+          label="Palette"
+          value={t.theme}
+          options={[
+            { value: "tricolor", label: "Tricolor (RWG)" },
+            { value: "emerald",  label: "Emerald"        },
+            { value: "ruby",     label: "Ruby Plate"     },
+          ]}
+          onChange={(v) => setTweak('theme', v)}
+        />
+
+        <TweakSection label="Club"/>
+        <TweakText
+          label="Club Name"
+          value={t.clubName}
+          onChange={(v) => setTweak('clubName', v)}
+        />
+        <TweakText
+          label="University"
+          value={t.universityName}
+          onChange={(v) => setTweak('universityName', v)}
+        />
+        <TweakText
+          label="Partner N°"
+          value={t.partnerNo}
+          onChange={(v) => setTweak('partnerNo', v)}
+        />
+      </TweaksPanel>
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("card-wrap"));
+root.render(<App/>);
+</script>
+
+
+
+</body></html>

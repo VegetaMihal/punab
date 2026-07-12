@@ -1,0 +1,141 @@
+/* Card art (logo, headline, date/time/venue, crowd photo, footer) is a single
+   flattened background image — only the photo well is layered on top here. */
+
+.root {
+  --card-w: 1080px;
+  --card-h: 1230px;
+}
+
+.root * {
+  box-sizing: border-box;
+}
+
+.removingBgOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(16, 51, 28, 0.78);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: removingBgPulse 1.6s ease-in-out infinite;
+}
+
+.removingBgSpinner,
+.removingBgSpinnerInline {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: removingBgSpin 0.7s linear infinite;
+}
+
+.removingBgSpinnerInline {
+  width: 1rem;
+  height: 1rem;
+  border-color: color-mix(in srgb, var(--brand-green) 30%, transparent);
+  border-top-color: var(--brand-green);
+}
+
+.removingBgText {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+@keyframes removingBgSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes removingBgPulse {
+  0%,
+  100% {
+    background: rgba(16, 51, 28, 0.78);
+  }
+  50% {
+    background: rgba(16, 51, 28, 0.92);
+  }
+}
+
+.previewViewport {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  max-height: min(85vh, 52rem);
+  padding: 0.75rem 1rem;
+}
+
+.scaleShell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  overflow: hidden;
+  background: #f7f5ef;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+  isolation: isolate;
+}
+
+.bgImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.photoWell {
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 2;
+}
+.photoImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+.plabel {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.plabelTitle {
+  font-family: "Archivo", sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 4px;
+  color: #15562d;
+}
+.plabelSub {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 6px;
+  color: rgba(21, 86, 45, 0.55);
+}

@@ -1,0 +1,62 @@
+PASTE THIS TO CLAUDE (in the repo root, with this handoff/ folder present):
+------------------------------------------------------------------------
+
+I'm adding a new card type — a personal FACECARD — to our existing
+client-side greeting-card generator. It must match the architecture of
+JulyAwardClubCardGenerator.tsx / JulyAwardParticipationCardGenerator.tsx
+(CSS-transform live preview + a separate canvas draw fn that replicates the
+same math for PNG export).
+
+Everything you need is in ./handoff/ — read ./handoff/README.md first, then
+./handoff/facecard-design.html (the layout/colors/spacing source of
+truth; the .png next to it is the visual target), ./handoff/facecard-constants.ts
+(shared constants), and ./handoff/facecard-photo-transform.reference.ts (the
+exact preview↔canvas transform + the 3 controls to copy).
+
+KEY DIFFERENCE from the club/participation cards: here the PUNAB logo is FIXED
+top-left. The user-adjustable element is THEIR PHOTO, dropped into the portrait
+4:5 photo well in the upper-middle. So repurpose the logoPlace zoom/pan pattern
+as `photoPlace`, controlling the user photo inside that well, clipped to the
+well's rounded rect.
+
+Build, matching our conventions exactly:
+
+1) JulyAwardFaceCardGenerator.tsx
+   - Copy photoPlace state + 3 range inputs (zoom 0.72–1.28 step 0.02,
+     panX/panY ±120) + "Reset photo" button verbatim from the club generator
+     (logoPlace → photoPlace). Ranges/defaults are in facecard-constants.ts.
+   - Live preview: user <img> inside the photo-well <div>, CSS-transformed
+     translate(panX,panY) scale(zoom), transformOrigin center, well has
+     overflow:hidden to clip. Placeholder label when no photo.
+   - Reproduce the rest of the card (logo, fist-flame badge, headline,
+     date/time/venue, CTAs, treated crowd-photo bg) from the HTML as static UI.
+
+2) julyAwardFaceCard.module.css
+   - Port every measurement/color/gradient from the HTML. Reference the photo
+     well rect from facecard-constants.ts so it matches the canvas exactly.
+   - Background: use ./handoff/assets/facecard-bg.jpg with the same gradient
+     mask + paper-wash overlay as the HTML (.photobg / .paperwash).
+
+3) julyAwardFaceCard-canvas.ts
+   - drawJulyAwardFaceCard(canvas, { template, photo, photoPlace }) — same
+     signature shape as our other draw fns.
+   - ctx.scale(EXPORT_SCALE) once, then draw in base 1080x1350 coords.
+   - Replicate the photo transform from facecard-photo-transform.reference.ts
+     (clip to well rounded-rect → translate to well center → translate(pan) →
+     scale(zoom) → cover-draw the photo). Draw bg, frame, logo, badge, text,
+     CTAs to match the HTML pixel-for-pixel at export resolution.
+   - Use our existing exportJulyAwardCanvasPng helper.
+
+Sync contract: CSS preview and canvas export must use the SAME well rect and
+SAME translate→scale order so preview === export. The card's responsive
+transform:scale(previewScale) wrapper is separate sizing — never fold it into
+photoPlace.
+
+Fonts (Anton, Archivo, Bricolage, Inter) are in ./handoff/fonts — load them the
+way the app loads its other fonts and ensure they're ready before the canvas
+draws text.
+
+FIRST: read facecard-design.html and facecard-constants.ts and list the
+exact constants you'll share between the CSS module and the canvas fn (well rect,
+badge rect, colors, font sizes), flagging any mismatch. THEN implement the three
+files.

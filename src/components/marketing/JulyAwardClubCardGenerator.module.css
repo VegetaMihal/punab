@@ -1,0 +1,83 @@
+/* Mirrors `punab_july_award_club_card_template.html` — 1080×1350 export card + `.club-badge` / `.club-logo`. */
+
+.root {
+  --card-w: 1080px;
+  --card-h: 1350px;
+}
+
+.root * {
+  box-sizing: border-box;
+}
+
+.previewViewport {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  max-height: min(85vh, 52rem);
+  padding: 0.75rem 1rem;
+}
+
+.scaleShell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  overflow: hidden;
+  background-color: #ffffff;
+  /* Full-bleed art via `.templateArt` (not CSS bg-image) — html2canvas resamples bg-image poorly vs <img>. */
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+  isolation: isolate;
+}
+
+.templateArt {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  object-fit: fill;
+  pointer-events: none;
+  display: block;
+}
+
+.clubBadge {
+  position: absolute;
+  left: 50%;
+  top: 184px;
+  width: 520px;
+  height: 520px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 7px solid #f7d778;
+  /* Neutral shadow only — gold glows rasterize as tan fill inside the disc with html2canvas. */
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  z-index: 5;
+}
+
+.clubBadge::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(117, 81, 20, 0.22);
+  pointer-events: none;
+}
+
+.clubLogo {
+  width: 76%;
+  height: 76%;
+  object-fit: contain;
+  border-radius: 50%;
+  user-select: none;
+  pointer-events: none;
+}
