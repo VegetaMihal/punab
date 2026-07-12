@@ -518,6 +518,17 @@ export async function listGalleryImagesAdmin(albumId: string) {
   return repoListGalleryImagesAdmin(albumId);
 }
 
+export async function setJulyAwardRegistrationOpen(open: boolean): Promise<CmsResult> {
+  try {
+    await assertFullAdmin();
+    await upsertSiteSettings({ "july_award.registration_open": open ? "true" : "false" });
+    revalidatePath("/july-award-2026/participants/register");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to save" };
+  }
+}
+
 export async function saveSiteSettingsForm(_prev: CmsResult, formData: FormData): Promise<CmsResult> {
   const entries: Record<string, string> = {};
   for (const [key, value] of formData.entries()) {

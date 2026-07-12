@@ -53,6 +53,7 @@ export const SITE_DEFAULTS: Record<string, string> = {
     "Unite private university communities; defend constitutional values and good governance; and equip students, teachers, and alumni to advance education and national development with clear accountability.",
   "about.media":
     "Coverage has included DBC News, Somoy, Dhaka Post, Ekhon TV, Dainik Amader Desh, New Age, and other outlets reporting on PUNAB's work.",
+  "july_award.registration_open": "true",
 };
 
 export function getSetting(map: Record<string, string>, key: string): string {
