@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   submitJulyAwardVolunteerPasscode,
@@ -13,6 +13,7 @@ const initial: VolunteerPasscodeState = {};
 export function VolunteerPasscodeForm() {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(submitJulyAwardVolunteerPasscode, initial);
+  const [showPasscode, setShowPasscode] = useState(false);
 
   useEffect(() => {
     if (!state || state.error) return;
@@ -24,14 +25,23 @@ export function VolunteerPasscodeForm() {
       <p className="text-small text-[color:var(--color-text-muted)]">
         Volunteer access only. Enter your club&apos;s passcode (or the event master passcode) to verify tickets.
       </p>
-      <input
-        type="password"
-        name="passcode"
-        required
-        autoFocus
-        className="ds-input"
-        placeholder="Passcode"
-      />
+      <div className="relative">
+        <input
+          type={showPasscode ? "text" : "password"}
+          name="passcode"
+          required
+          autoFocus
+          className="ds-input pr-16"
+          placeholder="Passcode"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPasscode((v) => !v)}
+          className="absolute inset-y-0 right-3 text-small font-medium text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)]"
+        >
+          {showPasscode ? "Hide" : "Show"}
+        </button>
+      </div>
       {state?.error && (
         <p className="text-small font-medium text-[color:var(--color-error)]" role="alert">
           {state.error}
