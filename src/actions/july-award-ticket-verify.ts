@@ -3,9 +3,10 @@
 import { cookies } from "next/headers";
 import {
   findJulyParticipantByTicketId,
+  listJulyParticipantRegistrationRows,
   markJulyParticipantCheckedIn,
 } from "@/lib/july-participant-google-sheet";
-import { namesMatch } from "@/lib/fuzzy-group";
+import { buildNameClusterMap, namesMatch } from "@/lib/fuzzy-group";
 
 const JULY_AWARD_VOLUNTEER_COOKIE = "july_award_volunteer";
 /** Scope value meaning "no club/university restriction" — the shared master passcode. */
@@ -96,13 +97,31 @@ export async function getVolunteerScope(): Promise<string | null> {
   return clubPasscodes()[value] === undefined ? null : value;
 }
 
+/** Whether `clubName` is otherwise known (from other registrations) to belong to `university` —
+ * fallback for rows where the participant mistyped the University field but their club is a known
+ * fixture of that university (e.g. typed their own name instead of the university). */
+async function clubKnownUnderUniversity(clubName: string, university: string): Promise<boolean> {
+  if (!clubName) return false;
+  const all = await listJulyParticipantRegistrationRows();
+  if (!all.ok) return false;
+  const clubLabelMap = buildNameClusterMap(all.rows.map((r) => r.clubName || "Unspecified"));
+  const targetClubLabel = clubLabelMap.get(clubName) ?? clubName;
+  return all.rows.some(
+    (r) =>
+      (clubLabelMap.get(r.clubName || "Unspecified") ?? r.clubName) === targetClubLabel &&
+      r.universityName &&
+      namesMatch(r.universityName, university)
+  );
+}
+
 /** True if the given participant row is within the volunteer's scope. Uses fuzzy name matching so raw spelling
  * variants of the same club/university (typos, case, abbreviations) in the sheet still match the configured scope. */
-function rowInScope(scope: string, row: { clubName: string; universityName: string }): boolean {
+async function rowInScope(scope: string, row: { clubName: string; universityName: string }): Promise<boolean> {
   if (scope === ALL_CLUBS_SCOPE) return true;
   if (scope.startsWith(UNIVERSITY_SCOPE_PREFIX)) {
     const university = scope.slice(UNIVERSITY_SCOPE_PREFIX.length);
-    return Boolean(row.universityName) && namesMatch(row.universityName, university);
+    if (row.universityName && namesMatch(row.universityName, university)) return true;
+    return clubKnownUnderUniversity(row.clubName, university);
   }
   return Boolean(row.clubName) && namesMatch(row.clubName, scope);
 }
@@ -139,7 +158,7 @@ export async function lookupJulyAwardTicket(ticketId: string): Promise<TicketLoo
   const result = await findJulyParticipantByTicketId(ticketId);
   if (!result.ok) return { ok: false, error: result.message };
   if (!result.row) return { ok: true, found: false };
-  if (!rowInScope(scope, result.row)) {
+  if (!(await rowInScope(scope, result.row))) {
     return { ok: false, error: `This ticket belongs to ${scopeDenialLabel(result.row)}, not your club.` };
   }
   return {
@@ -178,7 +197,7 @@ export async function checkInJulyAwardTicket(
     const found = await findJulyParticipantByTicketId(ticketId);
     if (!found.ok) return { error: found.message };
     if (!found.row) return { error: "Ticket not found." };
-    if (!rowInScope(scope, found.row)) {
+    if (!(await rowInScope(scope, found.row))) {
       return { error: `This ticket belongs to ${scopeDenialLabel(found.row)}, not your club.` };
     }
   }
