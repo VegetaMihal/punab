@@ -148,6 +148,7 @@ async function submitJulyParticipantRegistrationInner(
     d.donatesBlood === "yes" ? "Yes" : "No",
     d.donatesBlood === "yes" ? d.bloodGroup : "",
     "Yes",
+    "",
   ];
 
   const sheet = await appendJulyParticipantRegistrationRow(row);

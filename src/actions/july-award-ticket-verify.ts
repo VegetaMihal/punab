@@ -111,6 +111,13 @@ function scopeDenialLabel(row: { clubName: string; universityName: string }): st
   return row.clubName || row.universityName || "another club";
 }
 
+/** Human-readable label for which pass/passcode approved a check-in, stored in the sheet for audit. */
+function scopeLabel(scope: string): string {
+  if (scope === ALL_CLUBS_SCOPE) return "Master pass";
+  if (scope.startsWith(UNIVERSITY_SCOPE_PREFIX)) return `${scope.slice(UNIVERSITY_SCOPE_PREFIX.length)} (university pass)`;
+  return `${scope} (club pass)`;
+}
+
 export async function isVolunteerAuthenticated(): Promise<boolean> {
   return (await getVolunteerScope()) !== null;
 }
@@ -122,7 +129,7 @@ export async function logoutJulyAwardVolunteer(): Promise<void> {
 }
 
 export type TicketLookupResult =
-  | { ok: true; found: true; ticketId: string; fullName: string; universityName: string; clubName: string; phoneNumber: string; photoUrl: string; checkedInAt: string }
+  | { ok: true; found: true; ticketId: string; fullName: string; universityName: string; clubName: string; phoneNumber: string; photoUrl: string; checkedInAt: string; checkedInVia: string }
   | { ok: true; found: false }
   | { ok: false; error: string };
 
@@ -145,10 +152,17 @@ export async function lookupJulyAwardTicket(ticketId: string): Promise<TicketLoo
     phoneNumber: result.row.phoneNumber,
     photoUrl: result.row.photoUrl,
     checkedInAt: result.row.checkedInAt,
+    checkedInVia: result.row.checkedInVia,
   };
 }
 
-export type CheckInState = { ok?: true; checkedInAt?: string; alreadyCheckedIn?: boolean; error?: string };
+export type CheckInState = {
+  ok?: true;
+  checkedInAt?: string;
+  checkedInVia?: string;
+  alreadyCheckedIn?: boolean;
+  error?: string;
+};
 
 export async function checkInJulyAwardTicket(
   _prev: CheckInState,
@@ -168,7 +182,12 @@ export async function checkInJulyAwardTicket(
       return { error: `This ticket belongs to ${scopeDenialLabel(found.row)}, not your club.` };
     }
   }
-  const result = await markJulyParticipantCheckedIn(ticketId);
+  const result = await markJulyParticipantCheckedIn(ticketId, scopeLabel(scope));
   if (!result.ok) return { error: result.message };
-  return { ok: true, checkedInAt: result.checkedInAt, alreadyCheckedIn: result.alreadyCheckedIn };
+  return {
+    ok: true,
+    checkedInAt: result.checkedInAt,
+    checkedInVia: scopeLabel(scope),
+    alreadyCheckedIn: result.alreadyCheckedIn,
+  };
 }
