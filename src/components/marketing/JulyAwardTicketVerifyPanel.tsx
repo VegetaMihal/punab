@@ -53,6 +53,7 @@ export function JulyAwardTicketVerifyPanel({ ticketId, initial }: Props) {
   }
 
   const checkedInAt = state?.checkedInAt ?? initial.checkedInAt;
+  const checkedInVia = state?.checkedInVia ?? initial.checkedInVia;
 
   return (
     <div className="space-y-4">
@@ -87,6 +88,7 @@ export function JulyAwardTicketVerifyPanel({ ticketId, initial }: Props) {
       {checkedInAt ? (
         <p className="text-small font-medium text-[color:var(--color-success)]">
           Checked in at {formatTimestamp(checkedInAt)}
+          {checkedInVia ? ` via ${checkedInVia}` : ""}
         </p>
       ) : (
         <form action={formAction}>

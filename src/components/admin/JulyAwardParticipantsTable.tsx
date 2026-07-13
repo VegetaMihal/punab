@@ -7,6 +7,7 @@ type Row = {
   email: string;
   submittedAt: string;
   checkedInAt: string | null;
+  checkedInVia: string | null;
   fullName: string;
   phoneNumber: string;
   universityName: string;
@@ -207,6 +208,7 @@ export function JulyAwardParticipantsTable({
             <thead className="bg-stone-50 text-xs uppercase tracking-wide text-muted dark:bg-stone-900">
               <tr>
                 <th className="px-3 py-2">Checked in</th>
+                <th className="px-3 py-2">Checked in via</th>
                 <th className="px-3 py-2">
                   <SortLink label="Submitted" sortKey="date" activeSort={sortKey} activeDir={sortDir} />
                 </th>
@@ -231,6 +233,7 @@ export function JulyAwardParticipantsTable({
                       <span className="text-muted">Not yet</span>
                     )}
                   </td>
+                  <td className="px-3 py-2 whitespace-nowrap">{r.checkedInVia || <span className="text-muted">—</span>}</td>
                   <td className="px-3 py-2 whitespace-nowrap">{formatSubmittedAt(r.submittedAt)}</td>
                   <td className="px-3 py-2">{r.fullName}</td>
                   <td className="px-3 py-2 whitespace-nowrap">{r.phoneNumber}</td>

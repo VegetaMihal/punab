@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Site has no dark-mode toggle — pin `dark:` to a .dark class instead of OS
+   prefers-color-scheme, so phones in system dark mode don't get a half-styled
+   dark/light mix (dark bg from `dark:` classes + light-only text elsewhere). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @keyframes july-scan-line {
   0%,
   100% {

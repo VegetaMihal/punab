@@ -18,10 +18,11 @@ export const JULY_PARTICIPANT_SHEET_HEADER_ROW: string[] = [
   "Donates blood",
   "Blood group",
   "Attendance confirmed",
+  "Checked in via",
 ];
 
-function sheetLastColumnLetter(): string {
-  let n = JULY_PARTICIPANT_SHEET_HEADER_ROW.length;
+function columnLetter(oneBasedIndex: number): string {
+  let n = oneBasedIndex;
   let s = "";
   while (n > 0) {
     const m = (n - 1) % 26;
@@ -29,6 +30,10 @@ function sheetLastColumnLetter(): string {
     n = Math.floor((n - 1) / 26);
   }
   return s;
+}
+
+function sheetLastColumnLetter(): string {
+  return columnLetter(JULY_PARTICIPANT_SHEET_HEADER_ROW.length);
 }
 
 const LAST_COL = sheetLastColumnLetter();
@@ -162,6 +167,7 @@ export type JulyParticipantRegistrationRow = {
   donatesBlood: string;
   bloodGroup: string;
   attendanceConfirm: string;
+  checkedInVia: string;
 };
 
 function mapJulyParticipantRow(row: unknown[]): JulyParticipantRegistrationRow {
@@ -180,6 +186,7 @@ function mapJulyParticipantRow(row: unknown[]): JulyParticipantRegistrationRow {
     donatesBlood: String(row[11] ?? ""),
     bloodGroup: String(row[12] ?? ""),
     attendanceConfirm: String(row[13] ?? ""),
+    checkedInVia: String(row[14] ?? ""),
   };
 }
 
@@ -228,17 +235,7 @@ export async function listJulyParticipantRegistrationRows(): Promise<
 
 const TICKET_ID_COL = 8;
 const CHECKED_IN_COL = 9;
-
-function checkedInColLetter(): string {
-  let n = CHECKED_IN_COL + 1;
-  let s = "";
-  while (n > 0) {
-    const m = (n - 1) % 26;
-    s = String.fromCharCode(65 + m) + s;
-    n = Math.floor((n - 1) / 26);
-  }
-  return s;
-}
+const CHECKED_IN_VIA_COL = 14;
 
 /** Looks up one participant by ticket id (case-insensitive). Returns the row plus its 1-based sheet row index for check-in updates. */
 export async function findJulyParticipantByTicketId(
@@ -275,9 +272,10 @@ export async function findJulyParticipantByTicketId(
   }
 }
 
-/** Stamps the check-in column for a ticket's row. No-ops (returns already-set value) if already checked in. */
+/** Stamps the check-in column (and which volunteer pass approved it) for a ticket's row. No-ops if already checked in. */
 export async function markJulyParticipantCheckedIn(
-  ticketId: string
+  ticketId: string,
+  checkedInVia: string
 ): Promise<{ ok: true; checkedInAt: string; alreadyCheckedIn: boolean } | { ok: false; message: string }> {
   const found = await findJulyParticipantByTicketId(ticketId);
   if (!found.ok) return found;
@@ -291,12 +289,19 @@ export async function markJulyParticipantCheckedIn(
   const checkedInAt = new Date().toISOString();
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
-    const col = checkedInColLetter();
+    const checkedInColL = columnLetter(CHECKED_IN_COL + 1);
+    const checkedInViaColL = columnLetter(CHECKED_IN_VIA_COL + 1);
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `${quoteSheetTab(tabKey)}!${col}${found.sheetRowIndex}`,
+      range: `${quoteSheetTab(tabKey)}!${checkedInColL}${found.sheetRowIndex}`,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [[checkedInAt]] },
+    });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${quoteSheetTab(tabKey)}!${checkedInViaColL}${found.sheetRowIndex}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [[checkedInVia]] },
     });
     return { ok: true, checkedInAt, alreadyCheckedIn: false };
   } catch (e) {
