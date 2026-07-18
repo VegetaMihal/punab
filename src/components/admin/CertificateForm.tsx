@@ -101,7 +101,7 @@ export function CertificateForm({ templates, initialValues }: Props) {
       if (isEditMode && initialValues?.id === data.item.id) {
         router.refresh();
       } else {
-        router.push(`/admin/certificates/${data.item.id}`);
+        router.push(`/admin/certificates/${data.item.id}?autogen=1`);
         router.refresh();
       }
     } catch {
