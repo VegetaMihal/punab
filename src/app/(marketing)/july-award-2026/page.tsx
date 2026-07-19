@@ -368,6 +368,33 @@ export default function JulyAward2026Page() {
         </div>
       </section>
 
+      <Section
+        surface="muted"
+        divider
+        paddingY="md"
+        className="relative overflow-hidden bg-[linear-gradient(90deg,color-mix(in_srgb,var(--brand-green-muted)_60%,var(--color-surface-2))_0%,var(--color-surface-2)_60%)]"
+      >
+        <MarketingContainer>
+          <Reveal>
+            <div className="flex flex-col items-start gap-4 rounded-[var(--radius-xl)] border border-[color:color-mix(in_srgb,var(--brand-green)_25%,var(--color-border))] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] md:flex-row md:items-center md:justify-between md:p-7">
+              <div>
+                <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[color:var(--brand-green)]">
+                  Results are in
+                </p>
+                <h2 className="text-h3 mt-2 text-[color:var(--color-text)]">See the 2026 Award Winners</h2>
+                <p className="mt-1.5 max-w-xl text-[0.9375rem] leading-relaxed text-[color:var(--color-text-muted)]">
+                  Club excellence, national special awards, appreciation crests, honoured teachers, and the injured
+                  crest list—everyone named at the 2026 programme.
+                </p>
+              </div>
+              <Button href="/july-award-2026/winners" prefetch={false} variant="primary" size="lg" className="w-full shrink-0 md:w-auto">
+                See the winners
+              </Button>
+            </div>
+          </Reveal>
+        </MarketingContainer>
+      </Section>
+
       <Section surface="white" divider paddingY="section" className="relative overflow-hidden">
         <div
           aria-hidden

@@ -42,8 +42,7 @@ const nav: NavItem[] = [
     label: "July Award",
     items: [
       { href: "/july-award-2026", label: "July Award 2026" },
-      { href: "/july-award-2026/participants/register", label: "Register as a participant" },
-      { href: "/july-award-2026/facecard", label: "Facecard generator" },
+      { href: "/july-award-2026/winners", label: "Award Winners" },
     ],
   },
   {
