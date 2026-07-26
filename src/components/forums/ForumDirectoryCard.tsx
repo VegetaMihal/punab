@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/components/ui/cn";
 import type { Forum } from "@/types/database";
@@ -41,7 +42,17 @@ export function ForumDirectoryCard({ forum }: Props) {
             )}
             aria-hidden
           >
-            {initial}
+            {forum.logo_url ? (
+              <Image
+                src={forum.logo_url}
+                alt=""
+                width={52}
+                height={52}
+                className="h-full w-full rounded-2xl object-contain p-1"
+              />
+            ) : (
+              initial
+            )}
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-text-muted)]">

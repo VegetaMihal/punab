@@ -199,6 +199,7 @@ export function toForum(f: PrismaForum): Forum {
     title: f.title,
     slug: f.slug,
     description: f.description,
+    logo_url: f.logo_url,
     sort_order: f.sort_order,
     is_published: f.is_published,
     created_at: f.created_at.toISOString(),

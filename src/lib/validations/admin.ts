@@ -88,6 +88,7 @@ export const forumSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().optional(),
   description: z.string().optional(),
+  logoUrl: z.string().url().optional().or(z.literal("")),
   sortOrder: z.coerce.number().int().default(0),
   isPublished: z.boolean(),
 });
