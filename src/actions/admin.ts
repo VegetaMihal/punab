@@ -440,6 +440,7 @@ export async function upsertForum(_prev: AdminActionState, formData: FormData): 
     title: formData.get("title"),
     slug: formData.get("slug")?.toString() || undefined,
     description: formData.get("description")?.toString() || undefined,
+    logoUrl: formData.get("logoUrl")?.toString() || undefined,
     sortOrder: formData.get("sortOrder"),
     isPublished: formData.get("isPublished") === "true",
   });
@@ -452,6 +453,7 @@ export async function upsertForum(_prev: AdminActionState, formData: FormData): 
     title: parsed.data.title,
     slug,
     description: parsed.data.description ?? null,
+    logo_url: parsed.data.logoUrl || null,
     sort_order: parsed.data.sortOrder,
     is_published: parsed.data.isPublished,
   };

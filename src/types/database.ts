@@ -139,6 +139,7 @@ export type Forum = {
   title: string;
   slug: string;
   description: string | null;
+  logo_url: string | null;
   sort_order: number;
   is_published: boolean;
   created_at: string;

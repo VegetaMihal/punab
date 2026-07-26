@@ -160,6 +160,46 @@ export async function uploadForumMemberPhoto(
   }
 }
 
+export async function uploadForumLogo(
+  formData: FormData
+): Promise<{ url?: string; error?: string; storagePath?: string }> {
+  try {
+    await assertFullAdmin();
+    const storage = createServiceRoleSupabase();
+    const file = formData.get("file") as File | null;
+    if (!file || file.size === 0) {
+      return { error: "No file" };
+    }
+    const forumId = formData.get("forumId")?.toString().trim() || "";
+    const prevPath = formData.get("prevStoragePath")?.toString().trim() || "";
+    const bucket = getLeadershipBucket();
+    const safeName = sanitizeStorageFileName(file.name);
+    const folder = forumId ? `forums/${forumId}` : "forums/temp";
+    const storagePath = `${folder}/${Date.now()}-${safeName}`;
+    const { error: upErr } = await storage.storage.from(bucket).upload(storagePath, file, {
+      upsert: false,
+      contentType: file.type || "application/octet-stream",
+      cacheControl: "31536000",
+    });
+    if (upErr) {
+      const msg = upErr.message.toLowerCase().includes("bucket not found")
+        ? `Storage bucket "${bucket}" not found. Create it in Supabase.`
+        : upErr.message;
+      return { error: msg };
+    }
+    const { data: pub } = storage.storage.from(bucket).getPublicUrl(storagePath);
+    const url = ensureSupabasePublicObjectUrl(pub.publicUrl);
+    const canRemovePrev =
+      prevPath && prevPath !== storagePath && !prevPath.includes("..") && prevPath.startsWith("forums/");
+    if (canRemovePrev) {
+      await storage.storage.from(bucket).remove([prevPath]);
+    }
+    return { url, storagePath };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Upload failed" };
+  }
+}
+
 export async function uploadEventBanner(
   formData: FormData
 ): Promise<{ url?: string; error?: string; storagePath?: string }> {
