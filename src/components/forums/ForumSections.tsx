@@ -15,9 +15,18 @@ type Props = {
   errorTitle: string;
   emptyTitle: string;
   emptyDescription: string;
+  /** Only the MUN forum gets the globe watermark card treatment; others keep the plain card. */
+  showWatermark?: boolean;
 };
 
-export function ForumSections({ sectionData, loadError, errorTitle, emptyTitle, emptyDescription }: Props) {
+export function ForumSections({
+  sectionData,
+  loadError,
+  errorTitle,
+  emptyTitle,
+  emptyDescription,
+  showWatermark = false,
+}: Props) {
   return (
     <>
       {loadError && (
@@ -48,7 +57,23 @@ export function ForumSections({ sectionData, loadError, errorTitle, emptyTitle, 
                         aria-hidden
                         className={`absolute inset-x-0 top-0 h-1.5 ${i % 2 === 0 ? "bg-[linear-gradient(90deg,var(--color-brand)_0%,var(--brand-green)_100%)]" : "bg-[linear-gradient(90deg,var(--brand-green)_0%,var(--color-brand)_100%)]"}`}
                       />
-                      <div className="relative mx-auto mt-7 h-32 w-32 shrink-0 overflow-hidden rounded-full ring-4 ring-[color:color-mix(in_srgb,var(--brand-green-muted)_55%,var(--color-surface))] sm:h-36 sm:w-36">
+                      {showWatermark && (
+                        <Image
+                          src="/branding/mun-watermark-card-bg-trimmed.jpg"
+                          alt=""
+                          aria-hidden
+                          fill
+                          sizes="(max-width: 640px) 320px, 400px"
+                          className="pointer-events-none absolute inset-0 z-0 scale-150 object-cover object-center opacity-[0.20]"
+                        />
+                      )}
+                      <div
+                        className={
+                          showWatermark
+                            ? "relative z-1 mx-auto mt-9 h-32 w-32 shrink-0 overflow-hidden rounded-full bg-[color:var(--color-surface)] ring-[6px] ring-[color:var(--color-surface)] shadow-[var(--shadow-md)] sm:h-36 sm:w-36"
+                            : "relative mx-auto mt-7 h-32 w-32 shrink-0 overflow-hidden rounded-full ring-4 ring-[color:color-mix(in_srgb,var(--brand-green-muted)_55%,var(--color-surface))] sm:h-36 sm:w-36"
+                        }
+                      >
                         {m.photo_url ? (
                           <Image
                             src={ensureSupabasePublicObjectUrl(m.photo_url)}
@@ -64,7 +89,13 @@ export function ForumSections({ sectionData, loadError, errorTitle, emptyTitle, 
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-1 flex-col items-center p-5 text-center">
+                      <div
+                        className={
+                          showWatermark
+                            ? "relative z-1 mx-4 mb-4 mt-5 flex flex-1 flex-col items-center rounded-[var(--radius-lg)] bg-[color:color-mix(in_srgb,var(--color-surface)_88%,transparent)] p-5 text-center shadow-[var(--shadow-sm)] backdrop-blur-sm"
+                            : "flex flex-1 flex-col items-center p-5 text-center"
+                        }
+                      >
                         <p className="font-semibold text-[color:var(--color-text)]">{m.name}</p>
                         <p className="mt-2 inline-flex rounded-[var(--radius-full)] bg-[color:color-mix(in_srgb,var(--brand-green-muted)_55%,var(--color-surface))] px-3 py-1 text-small font-semibold text-[color:var(--brand-green)]">
                           {m.position}

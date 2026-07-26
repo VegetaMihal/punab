@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { SmartBackLink } from "@/components/ui/SmartBackLink";
@@ -11,9 +12,11 @@ type Props = {
   breadcrumbs?: BreadcrumbItem[];
   className?: string;
   tone?: "default" | "pattern";
+  /** Shown next to the title, e.g. a forum's uploaded logo. */
+  logoUrl?: string | null;
 };
 
-export function PageHeader({ title, description, breadcrumbs, className, tone = "default" }: Props) {
+export function PageHeader({ title, description, breadcrumbs, className, tone = "default", logoUrl }: Props) {
   const breadcrumbFallback =
     breadcrumbs?.length && breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2]?.href : undefined;
   const backFallback = breadcrumbFallback || "/";
@@ -53,7 +56,14 @@ export function PageHeader({ title, description, breadcrumbs, className, tone = 
             ))}
           </nav>
         )}
-        <h1 className="text-h1 text-[color:var(--color-text)]">{title}</h1>
+        <div className="flex flex-wrap items-center gap-5 sm:flex-nowrap sm:gap-6">
+          {logoUrl && (
+            <span className="relative h-24 w-24 shrink-0 overflow-hidden rounded-3xl border border-[color:color-mix(in_srgb,var(--color-brand)_18%,var(--color-border))] bg-[linear-gradient(160deg,var(--color-surface)_0%,color-mix(in_srgb,var(--brand-green-muted)_35%,var(--color-surface))_100%)] p-2 shadow-[var(--shadow-md)] sm:h-32 sm:w-32">
+              <Image src={logoUrl} alt="" aria-hidden fill sizes="128px" className="object-contain p-1.5" />
+            </span>
+          )}
+          <h1 className="text-h1 text-[color:var(--color-text)]">{title}</h1>
+        </div>
         {description && (
           <p className="text-body mt-4 max-w-3xl text-[color:var(--color-text-muted)]">{description}</p>
         )}
