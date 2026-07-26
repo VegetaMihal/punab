@@ -14,10 +14,14 @@ export async function generateMetadata({ params }: Props) {
   return { title: forum?.title ?? "Forum" };
 }
 
+/** Slugs that get the MUN globe watermark card treatment; every other forum keeps the plain card. */
+const WATERMARKED_FORUM_SLUGS = new Set(["punab-international-model-united-nations-forum"]);
+
 export default async function ForumPublicPage({ params }: Props) {
   const { slug } = await params;
   let forumTitle = "";
   let forumDescription: string | null = null;
+  let forumLogoUrl: string | null = null;
   let sectionData: ForumSectionGroup[] = [];
   let loadError: string | null = null;
   try {
@@ -27,6 +31,7 @@ export default async function ForumPublicPage({ params }: Props) {
     }
     forumTitle = data.forum.title;
     forumDescription = data.forum.description;
+    forumLogoUrl = data.forum.logo_url;
     sectionData = data.labels
       .map((label) => ({
         label,
@@ -41,6 +46,7 @@ export default async function ForumPublicPage({ params }: Props) {
     <>
       <PageHeader
         title={forumTitle || "Forum"}
+        logoUrl={forumLogoUrl}
         description={
           forumDescription ??
           "Forum moderators and representatives, organised by section."
@@ -59,6 +65,7 @@ export default async function ForumPublicPage({ params }: Props) {
           errorTitle="Unable to load forum"
           emptyTitle="No published profiles yet"
           emptyDescription="There are no profiles to show for this forum yet."
+          showWatermark={WATERMARKED_FORUM_SLUGS.has(slug)}
         />
       </MarketingContainer>
     </>
