@@ -67,7 +67,12 @@ export type BloodHeroRequestRow = {
 
 export type MembershipStatus = "pending" | "approved" | "rejected";
 export type ProfileRole = "admin" | "member";
-export type AdminScope = "invitations" | "certificates" | "july_award_cards" | "july_award_participants";
+export type AdminScope =
+  | "invitations"
+  | "certificates"
+  | "july_award_cards"
+  | "july_award_participants"
+  | "monitoring_form";
 
 export type Profile = {
   id: string;
