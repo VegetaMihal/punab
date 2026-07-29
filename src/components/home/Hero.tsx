@@ -5,7 +5,7 @@ import { PUNAB_MEMBERSHIP_GOOGLE_FORM_URL } from "@/lib/punab-external-urls";
 
 /** Fixed in code — not CMS/DB. */
 const HERO_EYEBROW = "Country's largest private university–based organization.";
-const HERO_CTA_SECONDARY_LABEL = "July Awards 2026";
+const HERO_CTA_SECONDARY_LABEL = "July Monitoring Form";
 
 export type HeroContent = {
   title: string;
@@ -57,7 +57,7 @@ export function Hero({ content }: { content: HeroContent }) {
             >
               {content.ctaPrimary}
             </Button>
-            <Button href="/july-award-2026" variant="heroPulseRed" size="lg" className="w-full sm:w-auto">
+            <Button href="/monitoring-form" variant="heroPulseRed" size="lg" className="w-full sm:w-auto">
               {HERO_CTA_SECONDARY_LABEL}
             </Button>
           </div>

@@ -65,6 +65,7 @@ export async function assertAdminScope(scope: AdminScope): Promise<AdminAuthCont
     certificates: ctx.access.canCertificates,
     july_award_cards: ctx.access.canJulyAwardCards,
     july_award_participants: ctx.access.canJulyAwardParticipants,
+    monitoring_form: ctx.access.canMonitoringForm,
   }[scope];
   if (!allowed) {
     throw new Error("Forbidden");

@@ -8,10 +8,17 @@ export type AdminAccess = {
   canCertificates: boolean;
   canJulyAwardCards: boolean;
   canJulyAwardParticipants: boolean;
+  canMonitoringForm: boolean;
   scopes: AdminScope[];
 };
 
-const ADMIN_SCOPES = new Set<AdminScope>(["invitations", "certificates", "july_award_cards", "july_award_participants"]);
+const ADMIN_SCOPES = new Set<AdminScope>([
+  "invitations",
+  "certificates",
+  "july_award_cards",
+  "july_award_participants",
+  "monitoring_form",
+]);
 
 function parseScopes(raw: readonly string[] | null | undefined): AdminScope[] {
   if (!raw?.length) return [];
@@ -31,6 +38,7 @@ export function resolveAdminAccess(profile: {
       canCertificates: false,
       canJulyAwardCards: false,
       canJulyAwardParticipants: false,
+      canMonitoringForm: false,
       scopes: [],
     };
   }
@@ -44,6 +52,7 @@ export function resolveAdminAccess(profile: {
     canCertificates: isFullAdmin || scopes.includes("certificates"),
     canJulyAwardCards: isFullAdmin || scopes.includes("july_award_cards"),
     canJulyAwardParticipants: isFullAdmin || scopes.includes("july_award_participants"),
+    canMonitoringForm: isFullAdmin || scopes.includes("monitoring_form"),
     scopes,
   };
 }
@@ -67,6 +76,9 @@ export function canAccessAdminPath(access: AdminAccess, pathname: string): boole
   }
   if (pathname.startsWith("/admin/certificates") || pathname.startsWith("/api/admin/certificates")) {
     return access.canCertificates;
+  }
+  if (pathname.startsWith("/admin/monitoring-form") || pathname.startsWith("/api/admin/monitoring-form")) {
+    return access.canMonitoringForm;
   }
   return false;
 }
@@ -92,6 +104,7 @@ export function navLinksForAdminAccess(access: AdminAccess): { href: string; lab
     { href: "/admin/july-award/participation-cards", label: "July Award cards" },
     { href: "/admin/july-award/participants", label: "July Award participants" },
     { href: "/admin/july-award/trends", label: "July Award trends" },
+    { href: "/admin/monitoring-form", label: "Monitoring form" },
     { href: "/admin/access", label: "Admin access" },
   ];
   if (access.isFullAdmin) return all;
@@ -105,5 +118,6 @@ export function navLinksForAdminAccess(access: AdminAccess): { href: string; lab
     links.push({ href: "/admin/july-award/trends", label: "July Award trends" });
   }
   if (access.canCertificates) links.push({ href: "/admin/certificates", label: "Certificates" });
+  if (access.canMonitoringForm) links.push({ href: "/admin/monitoring-form", label: "Monitoring form" });
   return links;
 }
