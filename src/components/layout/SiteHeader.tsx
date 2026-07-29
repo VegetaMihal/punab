@@ -39,10 +39,11 @@ const nav: NavItem[] = [
   },
   { href: "/events", label: "Upcoming Events" },
   {
-    label: "July Award",
+    label: "July Corner",
     items: [
       { href: "/july-award-2026", label: "July Award 2026" },
       { href: "/july-award-2026/winners", label: "Award Winners" },
+      { href: "/monitoring-form", label: "Monitoring Form" },
     ],
   },
   {
@@ -76,17 +77,22 @@ function wingsPathsActive(pathname: string) {
 }
 
 function julyAwardPathsActive(pathname: string) {
-  return pathname === "/july-award-2026" || pathname.startsWith("/july-award-2026/");
+  return (
+    pathname === "/july-award-2026" ||
+    pathname.startsWith("/july-award-2026/") ||
+    pathname === "/monitoring-form" ||
+    pathname.startsWith("/monitoring-form/")
+  );
 }
 
 function navSubLinkActive(pathname: string, href: string) {
   if (href === "/forums") {
     return pathname === "/forums" || pathname.startsWith("/forums/");
   }
-  if (href === "/july-award-2026") {
-    return pathname === "/july-award-2026";
+  if (href === "/july-award-2026" || href === "/monitoring-form") {
+    return pathname === href;
   }
-  if (href.startsWith("/july-award-2026/")) {
+  if (href.startsWith("/july-award-2026/") || href.startsWith("/monitoring-form/")) {
     return pathname === href || pathname.startsWith(`${href}/`);
   }
   return pathname === href;
@@ -183,7 +189,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
                       navDesktopBase,
                       (item.label === "Leadership" && leadershipPathsActive(pathname)) ||
                       (item.label === "Wings" && wingsPathsActive(pathname)) ||
-                      (item.label === "July Award" && julyAwardPathsActive(pathname))
+                      (item.label === "July Corner" && julyAwardPathsActive(pathname))
                         ? navDesktopActive
                         : navDesktopIdle,
                     )}

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const JULY_AWARD_PREFIX = "/july-award-2026";
+const MONITORING_FORM_PREFIX = "/monitoring-form";
 const MAX_PARTICLES = 96;
 const SPAWN_MS_SPARKLE = 20;
 const SPAWN_MS_BLOOD = 34;
@@ -14,7 +15,8 @@ type CursorMode = "sparkle" | "blood";
 
 function isJulyAwardPath(pathname: string | null) {
   if (!pathname) return false;
-  return pathname === JULY_AWARD_PREFIX || pathname.startsWith(`${JULY_AWARD_PREFIX}/`);
+  const prefixes = [JULY_AWARD_PREFIX, MONITORING_FORM_PREFIX];
+  return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 function trimParticles(root: HTMLDivElement) {
