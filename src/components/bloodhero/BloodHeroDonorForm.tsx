@@ -17,6 +17,7 @@ import {
   bloodHeroDonorFormSchema,
   parseBloodHeroDonorFormData,
 } from "@/lib/validations/bloodhero-donor";
+import { BloodHeroLocationPicker } from "@/components/bloodhero/BloodHeroLocationPicker";
 
 const initial: BloodHeroDonorActionState = {};
 
@@ -232,31 +233,17 @@ export function BloodHeroDonorForm() {
               </p>
             ) : null}
           </div>
-          <div>
-            <label htmlFor="center_point_address" className={labelClass}>
-              Center donation point address {req}
-            </label>
-            <input
-              id="center_point_address"
-              name="center_point_address"
-              type="text"
-              autoComplete="street-address"
-              required
-              className={controlClass}
-              placeholder="Hospital/campus/area where you can donate from"
-              aria-invalid={fieldErrors.center_point_address ? "true" : undefined}
-              aria-describedby={
-                fieldErrors.center_point_address ? "err-center_point_address" : "hint-center_point_address"
-              }
-            />
-            {fieldErrors.center_point_address ? (
-              <p id="err-center_point_address" className={errClass}>
-                {fieldErrors.center_point_address}
-              </p>
-            ) : (
-              <FieldHint id="hint-center_point_address">Used for nearest-donor matching.</FieldHint>
-            )}
-          </div>
+          <BloodHeroLocationPicker
+            addressFieldId="center_point_address"
+            addressName="center_point_address"
+            latName="center_point_lat"
+            lngName="center_point_lng"
+            addressLabel="Center donation point address"
+            addressPlaceholder="Hospital/campus/area where you can donate from"
+            addressRequired
+            hint="Used for nearest-donor matching."
+            fieldError={fieldErrors.center_point_address}
+          />
           <div>
             <label htmlFor="district_or_area" className={labelClass}>
               District / area label <span className="font-normal text-zinc-500">(optional)</span>

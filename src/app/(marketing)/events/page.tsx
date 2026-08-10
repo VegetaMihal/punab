@@ -179,6 +179,7 @@ export default async function EventsPage() {
 function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; staggerIndex: number }) {
   const badge = formatDayBadge(ev.start_at);
   const banner = ev.banner_url ? ensureSupabasePublicObjectUrl(ev.banner_url) : null;
+  const isMun = ev.title.toLowerCase().includes("model united nations") || ev.title.toLowerCase().includes("imun");
 
   return (
     <li>
@@ -189,7 +190,7 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
           }`}
         >
           <Link href={`/events/${ev.id}`} className="block focus-visible:outline-none">
-            <div className="relative aspect-[21/9] bg-[color:var(--color-surface-3)]">
+            <div className="relative aspect-[21/9] overflow-hidden bg-[color:var(--color-surface-3)]">
               {banner ? (
                 <Image
                   src={banner}
@@ -198,6 +199,14 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
                   className="object-cover"
                   sizes="(max-width:768px) 100vw,50vw"
                   quality={90}
+                />
+              ) : isMun ? (
+                <Image
+                  src="/images/mun-globe-watermark.jpg"
+                  alt=""
+                  fill
+                  className="object-contain p-6 opacity-90 mix-blend-multiply"
+                  sizes="(max-width:768px) 100vw,50vw"
                 />
               ) : (
                 <div className="absolute inset-0 punab-hero-sheen opacity-60" aria-hidden />

@@ -8,6 +8,11 @@ const sectionDefs = [
     key: "pending" as const,
   },
   {
+    title: "Active donors",
+    description: "Approved donors (status active) eligible for matching, including auto-approved.",
+    key: "active" as const,
+  },
+  {
     title: "Requests",
     description: "Blood requests, tracking, and coordinator workflow.",
     key: "requests" as const,
@@ -31,7 +36,10 @@ const sectionDefs = [
 
 function hrefForSection(paths: BloodHeroAdminUrls, key: (typeof sectionDefs)[number]["key"]): string | null {
   if (key === "pending") return paths.pendingDonors;
+  if (key === "active") return paths.activeDonors;
   if (key === "requests") return paths.requests;
+  if (key === "notifications") return paths.notifications;
+  if (key === "matches") return paths.matches;
   return null;
 }
 

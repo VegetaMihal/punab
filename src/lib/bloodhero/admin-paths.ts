@@ -15,10 +15,13 @@ export function bloodHeroAdminUrls(root: BloodHeroAdminRoot) {
   return {
     root: base,
     pendingDonors: `${base}/pending-donors`,
+    activeDonors: `${base}/active-donors`,
     requests: `${base}/requests`,
     requestDetail: (id: string) => `${base}/requests/${id}`,
     requestsWithStatus: (status: string) =>
       status === "all" ? `${base}/requests` : `${base}/requests?status=${status}`,
+    notifications: `${base}/notifications`,
+    matches: `${base}/matches`,
   };
 }
 

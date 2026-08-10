@@ -31,6 +31,7 @@ export function Logo({ variant = "navbar", className }: LogoProps) {
           !isNavbar && !isFooter && "h-10 w-10 max-w-10",
         )}
         sizes={isNavbar ? "60px" : isFooter ? "64px" : "40px"}
+        style={{ width: "auto", height: isNavbar ? 60 : isFooter ? 64 : 40 }}
       />
     </div>
   );

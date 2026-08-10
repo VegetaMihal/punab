@@ -61,6 +61,43 @@ export async function listPendingDonorsForAdmin(): Promise<{
   return { donors: (data ?? []) as PendingDonorRow[] };
 }
 
+export type ActiveDonorRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  blood_group: string;
+  district: string;
+  block_until: string | null;
+  total_successful_donations: number;
+  created_at: string;
+};
+
+export async function listActiveDonorsForAdmin(): Promise<{
+  donors: ActiveDonorRow[];
+  error?: string;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || !(await canAccessBloodHeroAdmin(supabase))) {
+    return { donors: [], error: "Unauthorized" };
+  }
+
+  const { data, error } = await supabase
+    .from("bloodhero_donors")
+    .select("id, full_name, email, phone, blood_group, district, block_until, total_successful_donations, created_at")
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { donors: [], error: error.message };
+  }
+
+  return { donors: (data ?? []) as ActiveDonorRow[] };
+}
+
 export type ReviewDonorState = { error?: string };
 export type DonorAutoApprovalState = { error?: string; success?: boolean };
 const BLOODHERO_AUTO_APPROVAL_LOAD_ERROR =

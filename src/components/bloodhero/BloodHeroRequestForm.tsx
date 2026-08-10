@@ -19,6 +19,7 @@ import {
 } from "@/lib/validations/bloodhero-request";
 import { BLOOD_HERO_BLOOD_GROUPS } from "@/lib/validations/bloodhero-shared";
 import { BloodHeroVoiceRecorder } from "./BloodHeroVoiceRecorder";
+import { BloodHeroLocationPicker } from "./BloodHeroLocationPicker";
 
 const initial: BloodHeroRequestActionState = {};
 
@@ -388,29 +389,16 @@ export function BloodHeroRequestForm() {
           subtitle="So donors and coordinators align on place, group, and timing."
         >
           <div className="space-y-5 sm:space-y-5">
-            <div>
-              <label htmlFor="donation_location" className={labelClass}>
-                Hospital or venue {req}
-              </label>
-              <input
-                id="donation_location"
-                name="donation_location"
-                type="text"
-                autoComplete="off"
-                required
-                className={controlClass}
-                placeholder="Hospital name, ward if known"
-                aria-invalid={fieldErrors.donation_location ? true : undefined}
-                aria-describedby={
-                  fieldErrors.donation_location ? "err-donation_location" : undefined
-                }
-              />
-              {fieldErrors.donation_location ? (
-                <p id="err-donation_location" className={errClass}>
-                  {fieldErrors.donation_location}
-                </p>
-              ) : null}
-            </div>
+            <BloodHeroLocationPicker
+              addressFieldId="donation_location"
+              addressName="donation_location"
+              latName="donation_location_lat"
+              lngName="donation_location_lng"
+              addressLabel="Hospital or venue"
+              addressPlaceholder="Hospital name, ward if known"
+              addressRequired
+              fieldError={fieldErrors.donation_location}
+            />
             <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
               <div>
                 <label htmlFor="district" className={labelClass}>
