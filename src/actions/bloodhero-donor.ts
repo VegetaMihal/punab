@@ -414,7 +414,12 @@ export async function registerBloodHeroDonor(
 
   if (inserted) {
     const centerPointAddress = d.center_point_address.trim();
-    const centerPoint = await geocodeBloodHeroAddress(centerPointAddress);
+    const mapLat = Number.parseFloat(formData.get("center_point_lat")?.toString() ?? "");
+    const mapLng = Number.parseFloat(formData.get("center_point_lng")?.toString() ?? "");
+    const centerPoint =
+      Number.isFinite(mapLat) && Number.isFinite(mapLng)
+        ? { lat: mapLat, lng: mapLng }
+        : await geocodeBloodHeroAddress(centerPointAddress);
     try {
       const service = createServiceRoleSupabase();
       await service

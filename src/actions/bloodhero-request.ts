@@ -150,7 +150,12 @@ export async function submitBloodHeroRequest(
       after(async () => {
         try {
           const normalizedAddress = d.donation_location.trim();
-          const loc = await geocodeBloodHeroAddress(normalizedAddress);
+          const mapLat = Number.parseFloat(formData.get("donation_location_lat")?.toString() ?? "");
+          const mapLng = Number.parseFloat(formData.get("donation_location_lng")?.toString() ?? "");
+          const loc =
+            Number.isFinite(mapLat) && Number.isFinite(mapLng)
+              ? { lat: mapLat, lng: mapLng }
+              : await geocodeBloodHeroAddress(normalizedAddress);
           try {
             const service = createServiceRoleSupabase();
             await service

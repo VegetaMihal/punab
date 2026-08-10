@@ -24,10 +24,28 @@ export function BloodHeroAdminSubnav({ root }: { root: BloodHeroAdminRoot }) {
         Pending donors
       </Link>
       <Link
+        href={u.activeDonors}
+        className="text-stone-600 hover:text-accent dark:text-stone-400 dark:hover:text-accent"
+      >
+        Active donors
+      </Link>
+      <Link
         href={u.requests}
         className="text-stone-600 hover:text-accent dark:text-stone-400 dark:hover:text-accent"
       >
         Requests
+      </Link>
+      <Link
+        href={u.notifications}
+        className="text-stone-600 hover:text-accent dark:text-stone-400 dark:hover:text-accent"
+      >
+        Notifications
+      </Link>
+      <Link
+        href={u.matches}
+        className="text-stone-600 hover:text-accent dark:text-stone-400 dark:hover:text-accent"
+      >
+        Matches
       </Link>
       <Link
         href="/bloodhero"

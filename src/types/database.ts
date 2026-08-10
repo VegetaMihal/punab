@@ -72,7 +72,8 @@ export type AdminScope =
   | "certificates"
   | "july_award_cards"
   | "july_award_participants"
-  | "monitoring_form";
+  | "monitoring_form"
+  | "mun_form";
 
 export type Profile = {
   id: string;
