@@ -5,18 +5,24 @@ import { useEffect, useRef } from "react";
 
 const JULY_AWARD_PREFIX = "/july-award-2026";
 const MONITORING_FORM_PREFIX = "/monitoring-form";
+const MUN_PREFIX = "/imun-2026";
 const MAX_PARTICLES = 96;
 const SPAWN_MS_SPARKLE = 20;
 const SPAWN_MS_BLOOD = 34;
 const MIN_MOVE_SPARKLE = 2;
 const MIN_MOVE_BLOOD = 3;
 
-type CursorMode = "sparkle" | "blood";
+type CursorMode = "sparkle" | "blood" | "gold";
 
 function isJulyAwardPath(pathname: string | null) {
   if (!pathname) return false;
   const prefixes = [JULY_AWARD_PREFIX, MONITORING_FORM_PREFIX];
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+function isMunPath(pathname: string | null) {
+  if (!pathname) return false;
+  return pathname === MUN_PREFIX || pathname.startsWith(`${MUN_PREFIX}/`);
 }
 
 function trimParticles(root: HTMLDivElement) {
@@ -29,7 +35,7 @@ function spawnSparkle(
   root: HTMLDivElement,
   x: number,
   y: number,
-  variant: "red" | "green" | "dual",
+  variant: "red" | "green" | "dual" | "gold",
 ) {
   trimParticles(root);
 
@@ -75,7 +81,7 @@ function spawnBloodDrop(root: HTMLDivElement, x: number, y: number) {
 
 export function BrandCursor() {
   const pathname = usePathname();
-  const mode: CursorMode = isJulyAwardPath(pathname) ? "blood" : "sparkle";
+  const mode: CursorMode = isJulyAwardPath(pathname) ? "blood" : isMunPath(pathname) ? "gold" : "sparkle";
 
   const rootRef = useRef<HTMLDivElement>(null);
   const lastSpawn = useRef(0);
@@ -111,6 +117,18 @@ export function BrandCursor() {
         spawnBloodDrop(layer, x, y);
         if (Math.random() < 0.32) {
           spawnBloodDrop(layer, x + (Math.random() - 0.5) * 14, y + (Math.random() - 0.5) * 10);
+        }
+        return;
+      }
+
+      if (mode === "gold") {
+        const ox = (Math.random() - 0.5) * 10;
+        const oy = (Math.random() - 0.5) * 10;
+        spawnSparkle(layer, x + ox, y + oy, "gold");
+        if (Math.random() < 0.52) {
+          const bx = x + (Math.random() - 0.5) * 16;
+          const by = y + (Math.random() - 0.5) * 16;
+          spawnSparkle(layer, bx, by, "gold");
         }
         return;
       }

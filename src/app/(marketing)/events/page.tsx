@@ -190,7 +190,13 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
           }`}
         >
           <Link href={`/events/${ev.id}`} className="block focus-visible:outline-none">
-            <div className="relative aspect-[21/9] overflow-hidden bg-[color:var(--color-surface-3)]">
+            <div
+              className={`relative aspect-[21/9] overflow-hidden ${
+                !banner && isMun
+                  ? "bg-[linear-gradient(135deg,var(--color-brand)_0%,color-mix(in_srgb,var(--color-brand)_55%,black)_100%)]"
+                  : "bg-[color:var(--color-surface-3)]"
+              }`}
+            >
               {banner ? (
                 <Image
                   src={banner}
@@ -201,13 +207,12 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
                   quality={90}
                 />
               ) : isMun ? (
-                <Image
-                  src="/images/mun-globe-watermark.jpg"
-                  alt=""
-                  fill
-                  className="object-contain p-6 opacity-90 mix-blend-multiply"
-                  sizes="(max-width:768px) 100vw,50vw"
-                />
+                <>
+                  <div className="pointer-events-none absolute top-1/2 -right-4 h-[140%] w-[42%] min-w-32 -translate-y-1/2">
+                    <Image src="/images/mun-globe-watermark.png" alt="" fill className="object-contain" sizes="16rem" />
+                  </div>
+                  <p className="absolute top-1/2 left-3 max-w-[55%] -translate-y-1/2 text-small font-bold leading-tight text-white">{ev.title}</p>
+                </>
               ) : (
                 <div className="absolute inset-0 punab-hero-sheen opacity-60" aria-hidden />
               )}
@@ -225,6 +230,12 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
               {ev.description && (
                 <p className="text-small mt-2 line-clamp-3 text-[color:var(--color-text-muted)]">{ev.description}</p>
               )}
+              <span className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--radius-full)] bg-[color:var(--color-brand)] px-4 py-2 text-small font-bold text-white motion-safe:transition-[transform,box-shadow] motion-safe:duration-[var(--transition-fast)] group-hover:scale-[1.03] group-hover:shadow-[var(--shadow-sm)]">
+                View Event
+                <span aria-hidden className="motion-safe:transition-transform motion-safe:duration-[var(--transition-base)] group-hover:translate-x-1">
+                  →
+                </span>
+              </span>
             </div>
           </Link>
         </article>
