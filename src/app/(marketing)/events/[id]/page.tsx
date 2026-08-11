@@ -82,22 +82,17 @@ export default async function EventDetailPage({ params }: Props) {
               className={
                 banner
                   ? "relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-[color:var(--color-border)] shadow-[var(--shadow-md)]"
-                  : "relative flex aspect-[21/9] w-full items-center justify-center overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] shadow-[var(--shadow-md)]"
+                  : "relative flex aspect-[21/9] w-full items-center overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[linear-gradient(135deg,var(--color-brand)_0%,color-mix(in_srgb,var(--color-brand)_55%,black)_100%)] shadow-[var(--shadow-md)]"
               }
             >
               {banner ? (
                 <Image src={banner} alt="" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 64rem" priority quality={90} />
               ) : (
                 <>
-                  <Image
-                    src="/images/mun-globe-watermark.jpg"
-                    alt=""
-                    fill
-                    className="object-contain p-8 opacity-80 mix-blend-multiply"
-                    sizes="(max-width: 1024px) 100vw, 64rem"
-                    priority
-                  />
-                  <span className="relative px-6 text-center text-h3 font-bold text-[color:var(--color-text)] drop-shadow-[0_1px_4px_rgba(255,255,255,0.6)]">
+                  <div className="pointer-events-none absolute top-1/2 -right-6 h-[130%] w-[45%] min-w-40 -translate-y-1/2 sm:-right-2">
+                    <Image src="/images/mun-globe-watermark.png" alt="" fill className="object-contain" sizes="20rem" priority />
+                  </div>
+                  <span className="relative max-w-[60%] px-6 text-left text-h4 font-bold leading-tight text-white sm:px-8 sm:text-h3">
                     {ev.title}
                   </span>
                 </>

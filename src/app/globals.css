@@ -273,6 +273,33 @@ body {
     0 0 14px 2px color-mix(in srgb, var(--brand-green) 30%, transparent);
 }
 
+.brand-cursor-sparkle--gold {
+  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+  box-shadow:
+    0 0 5px 1px color-mix(in srgb, #f59e0b 60%, transparent),
+    0 0 14px 2px color-mix(in srgb, #f59e0b 32%, transparent);
+}
+
+@keyframes mun-apply-pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, #f59e0b 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, #f59e0b 0%, transparent);
+  }
+}
+
+.mun-apply-pulse {
+  animation: mun-apply-pulse-glow 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mun-apply-pulse {
+    animation: none;
+  }
+}
+
 @keyframes brand-cursor-blood-drip {
   0% {
     opacity: 0;
