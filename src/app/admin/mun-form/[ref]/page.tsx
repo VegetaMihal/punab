@@ -165,7 +165,6 @@ export default async function AdminMunFormDetailPage({ params }: { params: Promi
           <Field label={labelFor("paymentSenderInfo")} value={r.paymentSenderInfo} />
           <Field label={labelFor("paymentAccountHolderName")} value={r.paymentAccountHolderName} />
           <Field label={labelFor("paymentBankName")} value={r.paymentBankName} />
-          <Field label={labelFor("paymentDepositSlipRef")} value={r.paymentDepositSlipRef} />
           <div className="sm:col-span-2">
             <Field label={labelFor("paymentAdditionalInfo")} value={r.paymentAdditionalInfo} />
           </div>

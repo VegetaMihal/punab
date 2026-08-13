@@ -89,7 +89,6 @@ export const MUN_SHEET_HEADER_ROW: string[] = [
   "Payment Sender Info",
   "Payment Account Holder Name",
   "Payment Bank Name",
-  "Payment Deposit Slip Ref",
   "Payment Proof URL",
   "Payment Additional Info",
   "Status",
@@ -161,11 +160,10 @@ export const MUN_COL = {
   paymentSenderInfo: 61,
   paymentAccountHolderName: 62,
   paymentBankName: 63,
-  paymentDepositSlipRef: 64,
-  paymentProofUrl: 65,
-  paymentAdditionalInfo: 66,
-  status: 67,
-  reviewerNote: 68,
+  paymentProofUrl: 64,
+  paymentAdditionalInfo: 65,
+  status: 66,
+  reviewerNote: 67,
 } as const;
 
 export function sheetColumnLetter(zeroBasedIndex: number): string {

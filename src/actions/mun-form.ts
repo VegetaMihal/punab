@@ -102,7 +102,6 @@ const TEXT_FIELD_KEYS = [
   "paymentSenderInfo",
   "paymentAccountHolderName",
   "paymentBankName",
-  "paymentDepositSlipRef",
   "paymentAdditionalInfo",
 ] as const;
 
@@ -210,7 +209,6 @@ export async function submitMunForm(
     paymentSenderInfo: fdStr(formData, "paymentSenderInfo"),
     paymentAccountHolderName: fdStr(formData, "paymentAccountHolderName"),
     paymentBankName: fdStr(formData, "paymentBankName"),
-    paymentDepositSlipRef: fdStr(formData, "paymentDepositSlipRef"),
     paymentAdditionalInfo: fdStr(formData, "paymentAdditionalInfo"),
     declarationAccepted: fdBool(formData, "declarationAccepted") || undefined,
     codeOfConductAccepted: fdBool(formData, "codeOfConductAccepted") || undefined,
@@ -310,7 +308,6 @@ export async function submitMunForm(
     d.paymentSenderInfo,
     d.paymentAccountHolderName,
     d.paymentBankName,
-    d.paymentDepositSlipRef,
     docUrls.paymentProofUrl ?? "",
     d.paymentAdditionalInfo,
     "Payment Pending",

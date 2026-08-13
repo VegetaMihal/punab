@@ -39,9 +39,9 @@ export const MUN_COMMITTEE_FULL_NAME: Record<MunCommittee, string> = {
   UNEP: "United Nations Environment Programme",
   "UN Women": "UN Women",
   INTERPOL: "International Criminal Police Organization",
-  MNAB: "International National Assembly of Bangladesh",
+  MNAB: "Model National Assembly of Bangladesh",
   "International Press": "International Press",
-  ICJ: "Court of Justice",
+  ICJ: "International Court of Justice",
   OIC: "Organisation of Islamic Cooperation",
 };
 
@@ -187,7 +187,6 @@ export const munFormSchema = z
     paymentSenderInfo: req("Sender's mobile number or bank account number is required"),
     paymentAccountHolderName: req("Account holder's name is required"),
     paymentBankName: optionalTrimmed,
-    paymentDepositSlipRef: optionalTrimmed,
     paymentAdditionalInfo: optionalTrimmed,
 
     // Declaration

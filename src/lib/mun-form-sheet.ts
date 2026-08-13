@@ -30,7 +30,6 @@ export type MunApplicationRow = {
   paymentSenderInfo: string;
   paymentAccountHolderName: string;
   paymentBankName: string;
-  paymentDepositSlipRef: string;
   paymentProofUrl: string;
   paymentAdditionalInfo: string;
   status: string;
@@ -118,7 +117,6 @@ function toMunRow(rowIndex: number, cells: string[]): MunApplicationRow {
     paymentSenderInfo: c(MUN_COL.paymentSenderInfo),
     paymentAccountHolderName: c(MUN_COL.paymentAccountHolderName),
     paymentBankName: c(MUN_COL.paymentBankName),
-    paymentDepositSlipRef: c(MUN_COL.paymentDepositSlipRef),
     paymentProofUrl: c(MUN_COL.paymentProofUrl),
     paymentAdditionalInfo: c(MUN_COL.paymentAdditionalInfo),
     status: c(MUN_COL.status),
