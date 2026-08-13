@@ -150,6 +150,11 @@ export default async function AdminMunFormDetailPage({ params }: { params: Promi
           </div>
         </dl>
 
+        <SectionHeading>Referral</SectionHeading>
+        <dl className="mt-2 grid grid-cols-1 gap-4">
+          <Field label={labelFor("referredBy")} value={c("referredBy")} />
+        </dl>
+
         <SectionHeading>Payment verification</SectionHeading>
         <dl className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label={labelFor("amount")} value={c("amount")} />
