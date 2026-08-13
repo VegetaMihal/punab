@@ -634,6 +634,17 @@ export function MunApplicationForm() {
       </Card>
 
       <Card>
+        <SectionHeading letter="J">Referred By</SectionHeading>
+        <TextField
+          name="referredBy"
+          label="Referred by"
+          placeholder="Name of the person who referred you (if any)"
+          defaultValue={fv.referredBy}
+          error={fe.referredBy}
+        />
+      </Card>
+
+      <Card>
         <SectionHeading>Declaration and Code of Conduct</SectionHeading>
         <label className="flex items-start gap-2 text-small">
           <input type="checkbox" name="declarationAccepted" required className="mt-1" />

@@ -176,6 +176,9 @@ export const munFormSchema = z
     departureDateTime: optionalTrimmed,
     travelNotes: optionalTrimmed,
 
+    // Referral
+    referredBy: optionalTrimmed,
+
     // Payment verification
     paymentMethod: z.enum(MUN_PAYMENT_METHODS, { error: () => ({ message: "Select a payment method." }) }),
     amountPaid: req("Amount paid is required"),
