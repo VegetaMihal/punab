@@ -541,6 +541,10 @@ export function MunApplicationForm() {
                 <dt className="text-[color:var(--color-text-muted)]">Branch Name</dt>
                 <dd className="font-semibold text-[color:var(--color-text)]">JATRABARI BRANCH (DHAKA)</dd>
               </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">SWIFT Code</dt>
+                <dd className="font-mono font-semibold text-[color:var(--color-text)]">CIBLBDDH</dd>
+              </div>
             </dl>
           </div>
         </div>
@@ -615,7 +619,7 @@ export function MunApplicationForm() {
           )}
           <TextField
             name="paymentDepositSlipRef"
-            label="Deposit Slip or Bank Reference Number"
+            label="Refference:"
             defaultValue={fv.paymentDepositSlipRef}
             error={fe.paymentDepositSlipRef}
           />
