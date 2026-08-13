@@ -91,7 +91,7 @@ export const MUN_STATUSES = [
 ] as const;
 export type MunStatus = (typeof MUN_STATUSES)[number];
 
-export const MUN_REGISTRATION_FEE_BDT = 3650;
+export const MUN_REGISTRATION_FEE_BDT = 3750;
 
 export const MUN_PAYMENT_METHODS = ["bkash", "nagad", "bank", "cash_deposit"] as const;
 export type MunPaymentMethod = (typeof MUN_PAYMENT_METHODS)[number];
@@ -117,7 +117,7 @@ export const munFormSchema = z
     dob: req("Date of birth is required"),
     gender: z.enum(MUN_GENDERS, { error: () => ({ message: "Select a gender." }) }),
     nationality: req("Nationality is required"),
-    idNumber: req("ID / birth registration / passport number is required"),
+    idNumber: optionalTrimmed,
     presentAddress: req("Present address is required"),
     permanentAddress: req("Permanent address is required"),
     mobile: z.string().trim().min(1, "Mobile number is required").regex(/^[\d+\-\s()]{8,22}$/, "Enter a valid mobile number"),
@@ -138,8 +138,8 @@ export const munFormSchema = z
     secondCommittee: z.enum(MUN_COMMITTEES, { error: () => ({ message: "Select your second committee preference." }) }),
     thirdCommittee: z.enum(MUN_COMMITTEES, { error: () => ({ message: "Select your third committee preference." }) }),
     firstCountry: req("First country/portfolio preference is required"),
-    secondCountry: optionalTrimmed,
-    thirdCountry: optionalTrimmed,
+    secondCountry: req("Second country/portfolio preference is required"),
+    thirdCountry: req("Third country/portfolio preference is required"),
 
     // MUN experience
     hasPriorMun: z.enum(MUN_YES_NO, { error: () => ({ message: "Choose Yes or No." }) }),
@@ -149,10 +149,6 @@ export const munFormSchema = z
     leadershipDetails: optionalTrimmed,
 
     // Motivation
-    whyParticipate: req("This field is required"),
-    whatToLearn: req("This field is required"),
-    whySelected: req("This field is required"),
-    relevantSkills: optionalTrimmed,
     areasOfInterest: z.array(z.enum(MUN_AREAS_OF_INTEREST)).min(1, "Select at least one area of interest"),
     areasOfInterestOther: optionalTrimmed,
 

@@ -282,10 +282,8 @@ export function MunApplicationForm() {
             <label htmlFor="gender" className="ds-label">
               Gender {req}
             </label>
-            <select id="gender" name="gender" required className="ds-input" defaultValue={fv.gender}>
-              <option value="" disabled>
-                Select
-              </option>
+            <select id="gender" name="gender" required className="ds-input" defaultValue={fv.gender ?? ""}>
+              <option value="">Select</option>
               {MUN_GENDERS.map((g) => (
                 <option key={g} value={g}>
                   {MUN_GENDER_LABEL[g]}
@@ -298,7 +296,6 @@ export function MunApplicationForm() {
           <TextField
             name="idNumber"
             label="National ID / Birth Registration / Passport Number"
-            required
             defaultValue={fv.idNumber}
             error={fe.idNumber}
           />
@@ -356,10 +353,8 @@ export function MunApplicationForm() {
               <label htmlFor={name} className="ds-label">
                 {["First", "Second", "Third"][i]} Committee Preference {req}
               </label>
-              <select id={name} name={name} required className="ds-input" defaultValue={fv[name]}>
-                <option value="" disabled>
-                  Select
-                </option>
+              <select id={name} name={name} required className="ds-input" defaultValue={fv[name] ?? ""}>
+                <option value="">Select</option>
                 {MUN_COMMITTEES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -372,8 +367,8 @@ export function MunApplicationForm() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <TextField name="firstCountry" label="First Country/Portfolio Preference" required defaultValue={fv.firstCountry} error={fe.firstCountry} />
-          <TextField name="secondCountry" label="Second Country/Portfolio Preference" defaultValue={fv.secondCountry} error={fe.secondCountry} />
-          <TextField name="thirdCountry" label="Third Country/Portfolio Preference" defaultValue={fv.thirdCountry} error={fe.thirdCountry} />
+          <TextField name="secondCountry" label="Second Country/Portfolio Preference" required defaultValue={fv.secondCountry} error={fe.secondCountry} />
+          <TextField name="thirdCountry" label="Third Country/Portfolio Preference" required defaultValue={fv.thirdCountry} error={fe.thirdCountry} />
         </div>
       </Card>
 
@@ -399,11 +394,7 @@ export function MunApplicationForm() {
       </Card>
 
       <Card>
-        <SectionHeading letter="E">Motivation and Skills</SectionHeading>
-        <TextAreaField name="whyParticipate" label="Why do you want to participate in PUNAB IMUN Conference 2026?" required defaultValue={fv.whyParticipate} error={fe.whyParticipate} />
-        <TextAreaField name="whatToLearn" label="What do you expect to learn from this conference?" required defaultValue={fv.whatToLearn} error={fe.whatToLearn} />
-        <TextAreaField name="whySelected" label="Why should you be selected as a delegate?" required defaultValue={fv.whySelected} error={fe.whySelected} />
-        <TextAreaField name="relevantSkills" label="Mention any relevant skills, experience or extracurricular activities" defaultValue={fv.relevantSkills} error={fe.relevantSkills} />
+        <SectionHeading letter="E">Areas of Interest</SectionHeading>
         <fieldset>
           <legend className="ds-label">
             Areas of Interest {req}
@@ -460,10 +451,8 @@ export function MunApplicationForm() {
           <label htmlFor="foodPreference" className="ds-label">
             Food Preference {req}
           </label>
-          <select id="foodPreference" name="foodPreference" required className="ds-input" defaultValue={fv.foodPreference}>
-            <option value="" disabled>
-              Select
-            </option>
+          <select id="foodPreference" name="foodPreference" required className="ds-input" defaultValue={fv.foodPreference ?? ""}>
+            <option value="">Select</option>
             {MUN_FOOD_PREFERENCES.map((f) => (
               <option key={f} value={f}>
                 {MUN_FOOD_PREFERENCE_LABEL[f]}
@@ -493,18 +482,18 @@ export function MunApplicationForm() {
 
       <Card>
         <SectionHeading letter="H">Required Documents</SectionHeading>
-        <Hint>Documents must be clear and readable. Photo, student ID, and national ID/passport are required.</Hint>
+        <Hint>Documents must be clear and readable. Photo and student ID are required.</Hint>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <DocumentField name="photoFile" label="Recent Passport-Size Photograph" required error={fe.photoFile} />
           <DocumentField name="studentIdFile" label="Student ID Card or Institutional Identification" required error={fe.studentIdFile} />
-          <DocumentField name="nationalIdFile" label="National ID Card, Birth Registration or Passport" required error={fe.nationalIdFile} />
+          <DocumentField name="nationalIdFile" label="National ID Card, Birth Registration or Passport" error={fe.nationalIdFile} />
           <DocumentField name="passportFile" label="Passport Copy (international participants, if applicable)" error={fe.passportFile} />
         </div>
       </Card>
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--color-border)] pb-4">
-          <h2 className="text-h4 font-semibold text-[color:var(--color-text)]">Registration Fee</h2>
+          <h2 className="text-h4 font-semibold text-[color:var(--color-text)]">Early Bird Registration Fee</h2>
           <span className="rounded-full bg-[color:var(--color-brand)] px-4 py-1 text-small font-bold text-white">
             BDT {MUN_REGISTRATION_FEE_BDT}
           </span>
@@ -527,13 +516,32 @@ export function MunApplicationForm() {
           </div>
           <div className="rounded-[var(--radius-md)] border-l-4 border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-4 text-small sm:col-span-2">
             <p className="font-semibold text-[color:var(--color-text)]">Bank Transfer</p>
-            <p className="mt-1 text-[color:var(--color-text-muted)]">
-              Bank account details will be announced by the Secretariat. Contact{" "}
-              <a href="mailto:punabinternationalmun@gmail.com" className="font-medium text-[color:var(--color-brand)] underline">
-                punabinternationalmun@gmail.com
-              </a>{" "}
-              if you wish to pay by bank transfer.
-            </p>
+            <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Bank Name</dt>
+                <dd className="font-semibold text-[color:var(--color-text)]">City Bank</dd>
+              </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Account Name</dt>
+                <dd className="font-semibold text-[color:var(--color-text)]">S.M SHOWKAT HOSSEN MIA</dd>
+              </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Account Number</dt>
+                <dd className="font-mono font-semibold text-[color:var(--color-text)]">2304842787001</dd>
+              </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Routing Number</dt>
+                <dd className="font-mono font-semibold text-[color:var(--color-text)]">225273238</dd>
+              </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Branch District</dt>
+                <dd className="font-semibold text-[color:var(--color-text)]">DHAKA-SOUTH</dd>
+              </div>
+              <div className="flex justify-between gap-2 sm:block">
+                <dt className="text-[color:var(--color-text-muted)]">Branch Name</dt>
+                <dd className="font-semibold text-[color:var(--color-text)]">JATRABARI BRANCH (DHAKA)</dd>
+              </div>
+            </dl>
           </div>
         </div>
 

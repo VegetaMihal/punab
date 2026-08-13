@@ -110,12 +110,8 @@ export default async function AdminMunFormDetailPage({ params }: { params: Promi
           </div>
         </dl>
 
-        <SectionHeading>Motivation and skills</SectionHeading>
+        <SectionHeading>Areas of interest</SectionHeading>
         <dl className="mt-2 grid grid-cols-1 gap-4">
-          <Field label={labelFor("whyParticipate")} value={c("whyParticipate")} />
-          <Field label={labelFor("whatToLearn")} value={c("whatToLearn")} />
-          <Field label={labelFor("whySelected")} value={c("whySelected")} />
-          <Field label={labelFor("relevantSkills")} value={c("relevantSkills")} />
           <Field label={labelFor("areasOfInterest")} value={c("areasOfInterest")} />
           <Field label={labelFor("areasOfInterestOther")} value={c("areasOfInterestOther")} />
         </dl>

@@ -120,7 +120,11 @@ export default function ImunLandingPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <PinIcon />
-                  Southeast University
+                  Academic Venue: Southeast University (To Be Decided)
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <PinIcon />
+                  Gala Venue: Jalshiri Golf Club
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] bg-white/15 px-3 py-1 font-bold text-white">
                   <SparkIcon />
