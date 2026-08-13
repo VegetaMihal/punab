@@ -120,7 +120,7 @@ export default function ImunLandingPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <PinIcon />
-                  Academic Venue: Southeast University (To Be Decided)
+                  Academic Venue: To Be Announced
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <PinIcon />
