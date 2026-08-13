@@ -617,12 +617,6 @@ export function MunApplicationForm() {
               error={fe.paymentBankName}
             />
           )}
-          <TextField
-            name="paymentDepositSlipRef"
-            label="Refference:"
-            defaultValue={fv.paymentDepositSlipRef}
-            error={fe.paymentDepositSlipRef}
-          />
         </div>
         <DocumentField name="paymentProofFile" label="Payment Screenshot / Deposit Slip" error={fe.paymentProofFile} />
         <TextAreaField
