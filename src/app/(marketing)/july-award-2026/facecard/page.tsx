@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Anton, Archivo, Bricolage_Grotesque, Inter } from "next/font/google";
+import { Anton, Archivo, Bricolage_Grotesque } from "next/font/google";
 import { JulyAwardFaceCardGenerator } from "@/components/marketing/JulyAwardFaceCardGenerator";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { Section } from "@/components/ui/Section";
@@ -9,7 +9,6 @@ import { Section } from "@/components/ui/Section";
 const display = Anton({ subsets: ["latin"], weight: "400" });
 const semiCondensed = Archivo({ subsets: ["latin"], weight: ["700", "800"] });
 const value = Bricolage_Grotesque({ subsets: ["latin"], weight: "700" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
   title: "July Award 2026 — Facecard",
@@ -48,7 +47,7 @@ export default function JulyAwardFaceCardPage() {
           </p>
         </header>
 
-        <div className={`${display.className} ${semiCondensed.className} ${value.className} ${body.className} mt-12`}>
+        <div className={`${display.className} ${semiCondensed.className} ${value.className} mt-12`}>
           <Suspense fallback={null}>
             <JulyAwardFaceCardGenerator />
           </Suspense>
