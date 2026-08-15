@@ -14,12 +14,12 @@ function resolveMunNotifyTo(): string | null {
 }
 
 function resolveMunMailFrom(): string {
-  const from = process.env.JULY_AWARD_RESEND_FROM?.trim() || process.env.CERTIFICATE_RESEND_FROM?.trim();
+  const from = process.env.MUN_FORM_RESEND_FROM?.trim();
   if (from) return from;
   if (process.env.NODE_ENV === "development") {
     return "PUNAB IMUN <onboarding@resend.dev>";
   }
-  return "PUNAB <noreply@punab.com>";
+  return "PUNAB IMUN <noreply@punab.com>";
 }
 
 /** Notify PUNAB inbox on a new MUN application. Does not throw. */
