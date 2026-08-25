@@ -136,6 +136,7 @@ export default async function AdminMunFormDetailPage({ params }: { params: Promi
           <Field label={labelFor("medicalRequirements")} value={c("medicalRequirements")} />
           <Field label={labelFor("medicalDetails")} value={c("medicalDetails")} />
           <Field label={labelFor("foodPreference")} value={c("foodPreference")} />
+          <Field label={labelFor("tshirtSize")} value={c("tshirtSize")} />
         </dl>
 
         <SectionHeading>Accommodation and travel</SectionHeading>

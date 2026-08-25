@@ -22,6 +22,7 @@ export type MunApplicationRow = {
   studentIdDocUrl: string;
   nationalIdOrPassportUrl: string;
   passportCopyUrl: string;
+  tshirtSize: string;
   amount: string;
   paymentMethod: string;
   amountPaid: string;
@@ -109,6 +110,7 @@ function toMunRow(rowIndex: number, cells: string[]): MunApplicationRow {
     studentIdDocUrl: c(MUN_COL.studentIdDocUrl),
     nationalIdOrPassportUrl: c(MUN_COL.nationalIdOrPassportUrl),
     passportCopyUrl: c(MUN_COL.passportCopyUrl),
+    tshirtSize: c(MUN_COL.tshirtSize),
     amount: c(MUN_COL.amount),
     paymentMethod: c(MUN_COL.paymentMethod),
     amountPaid: c(MUN_COL.amountPaid),
