@@ -18,6 +18,7 @@ import {
   MUN_PAYMENT_METHODS,
   MUN_PAYMENT_METHOD_LABEL,
   MUN_REGISTRATION_FEE_BDT,
+  MUN_TSHIRT_SIZES,
   MUN_YES_NO,
 } from "@/lib/validations/mun-form";
 
@@ -460,6 +461,21 @@ export function MunApplicationForm() {
             ))}
           </select>
           <FieldError id="foodPreference-err" message={fe.foodPreference} />
+        </div>
+
+        <div>
+          <label htmlFor="tshirtSize" className="ds-label">
+            T-Shirt Size {req}
+          </label>
+          <select id="tshirtSize" name="tshirtSize" required className="ds-input" defaultValue={fv.tshirtSize ?? ""}>
+            <option value="">Select</option>
+            {MUN_TSHIRT_SIZES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <FieldError id="tshirtSize-err" message={fe.tshirtSize} />
         </div>
       </Card>
 

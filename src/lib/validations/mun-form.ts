@@ -91,7 +91,10 @@ export const MUN_STATUSES = [
 ] as const;
 export type MunStatus = (typeof MUN_STATUSES)[number];
 
-export const MUN_REGISTRATION_FEE_BDT = 3750;
+export const MUN_REGISTRATION_FEE_BDT = 3500;
+
+export const MUN_TSHIRT_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+export type MunTshirtSize = (typeof MUN_TSHIRT_SIZES)[number];
 
 export const MUN_PAYMENT_METHODS = ["bkash", "nagad", "bank", "cash_deposit"] as const;
 export type MunPaymentMethod = (typeof MUN_PAYMENT_METHODS)[number];
@@ -167,6 +170,7 @@ export const munFormSchema = z
     medicalRequirements: z.enum(MUN_YES_NO, { error: () => ({ message: "Choose Yes or No." }) }),
     medicalDetails: optionalTrimmed,
     foodPreference: z.enum(MUN_FOOD_PREFERENCES, { error: () => ({ message: "Select a food preference." }) }),
+    tshirtSize: z.enum(MUN_TSHIRT_SIZES, { error: () => ({ message: "Select a T-shirt size." }) }),
 
     // Accommodation/travel
     needsAccommodation: z.enum(MUN_YES_NO, { error: () => ({ message: "Choose Yes or No." }) }),
