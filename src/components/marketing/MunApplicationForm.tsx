@@ -234,6 +234,7 @@ export function MunApplicationForm() {
   const [fromOutsideDhaka, setFromOutsideDhaka] = useState(fv.fromOutsideDhaka ?? "");
   const [areasOfInterest, setAreasOfInterest] = useState<string[]>([]);
   const [paymentMethod, setPaymentMethod] = useState(fv.paymentMethod ?? "");
+  const [referenceHint] = useState(() => `MUN-2026-DRAFT-${Math.random().toString(36).slice(2, 10).toUpperCase()}`);
 
   useEffect(() => {
     if (state?.success) {
@@ -281,6 +282,7 @@ export function MunApplicationForm() {
       )}
 
       <input type="hidden" name="stagedDocumentUrls" value={JSON.stringify(state?.stagedDocumentUrls ?? {})} />
+      <input type="hidden" name="referenceHint" value={referenceHint} />
 
       <Card>
         <SectionHeading letter="A">Personal Information</SectionHeading>
