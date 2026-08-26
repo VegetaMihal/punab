@@ -151,6 +151,25 @@ export async function submitMunForm(
   const stagedField = formData.get("stagedDocumentUrls");
   const staged: Record<string, string> =
     typeof stagedField === "string" && stagedField ? JSON.parse(stagedField) : {};
+  const referenceHint = formData.get("referenceHint")?.toString() || `MUN-2026-DRAFT-${Date.now().toString(36).toUpperCase()}`;
+
+  // Upload any newly selected documents before validation so a validation error on another
+  // field never loses a file the user already picked (file inputs get cleared by the browser
+  // after any form submission, success or not).
+  const docUrls: Record<string, string> = { ...staged };
+  const docErrors: Record<string, string> = {};
+  for (const doc of DOCUMENT_FIELDS) {
+    if (docUrls[doc.stagedKey]) continue;
+    const fileField = formData.get(doc.formKey);
+    const file = fileField instanceof File && fileField.size > 0 ? fileField : null;
+    if (!file) continue;
+    const up = await uploadMunDocumentFile(file, referenceHint, doc.kind);
+    if (!up.ok) {
+      docErrors[doc.formKey] = up.message;
+      continue;
+    }
+    docUrls[doc.stagedKey] = up.url;
+  }
 
   const parsed = munFormSchema.safeParse({
     fullName: fdStr(formData, "fullName"),
@@ -216,34 +235,23 @@ export async function submitMunForm(
     codeOfConductAccepted: fdBool(formData, "codeOfConductAccepted") || undefined,
   });
 
-  if (!parsed.success) {
-    return { fieldErrors: flattenFieldErrors(parsed.error), fieldValues: echo(), stagedDocumentUrls: staged };
+  for (const doc of DOCUMENT_FIELDS) {
+    if (doc.required && !docUrls[doc.stagedKey] && !docErrors[doc.formKey]) {
+      docErrors[doc.formKey] = "This document is required.";
+    }
+  }
+
+  if (!parsed.success || Object.keys(docErrors).length > 0) {
+    const fieldErrors = parsed.success ? {} : flattenFieldErrors(parsed.error);
+    return {
+      fieldErrors: { ...fieldErrors, ...docErrors },
+      fieldValues: echo(),
+      stagedDocumentUrls: docUrls,
+    };
   }
   const d = parsed.data;
 
   const referenceNumber = await generateUniqueReferenceNumber();
-
-  const docUrls: Record<string, string> = { ...staged };
-  for (const doc of DOCUMENT_FIELDS) {
-    if (docUrls[doc.stagedKey]) continue;
-    const fileField = formData.get(doc.formKey);
-    const file = fileField instanceof File && fileField.size > 0 ? fileField : null;
-    if (!file) {
-      if (doc.required) {
-        return {
-          fieldErrors: { [doc.formKey]: "This document is required." },
-          fieldValues: echo(),
-          stagedDocumentUrls: docUrls,
-        };
-      }
-      continue;
-    }
-    const up = await uploadMunDocumentFile(file, referenceNumber, doc.kind);
-    if (!up.ok) {
-      return { error: up.message, fieldValues: echo(), stagedDocumentUrls: docUrls };
-    }
-    docUrls[doc.stagedKey] = up.url;
-  }
 
   const row = [
     referenceNumber,
