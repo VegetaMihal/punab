@@ -123,8 +123,16 @@ export const munFormSchema = z
     idNumber: optionalTrimmed,
     presentAddress: req("Present address is required"),
     permanentAddress: req("Permanent address is required"),
-    mobile: z.string().trim().min(1, "Mobile number is required").regex(/^[\d+\-\s()]{8,22}$/, "Enter a valid mobile number"),
-    whatsapp: z.string().trim().min(1, "WhatsApp number is required").regex(/^[\d+\-\s()]{8,22}$/, "Enter a valid number"),
+    mobile: z
+      .string()
+      .trim()
+      .min(1, "Mobile number is required")
+      .refine((v) => /^[\d+\-\s()]{8,22}$/.test(v) && v.replace(/\D/g, "").length >= 7, "Enter a valid mobile number"),
+    whatsapp: z
+      .string()
+      .trim()
+      .min(1, "WhatsApp number is required")
+      .refine((v) => /^[\d+\-\s()]{8,22}$/.test(v) && v.replace(/\D/g, "").length >= 7, "Enter a valid number"),
     email: z.string().trim().email("Enter a valid email"),
     facebookLink: optionalTrimmed,
 

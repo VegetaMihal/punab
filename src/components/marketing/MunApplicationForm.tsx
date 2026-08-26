@@ -85,6 +85,9 @@ function TextField({
   placeholder?: string;
   readOnly?: boolean;
 }) {
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => setDismissed(false), [error]);
+  const shownError = dismissed ? undefined : error;
   return (
     <div>
       <label htmlFor={name} className="ds-label">
@@ -99,9 +102,10 @@ function TextField({
         readOnly={readOnly}
         className={`ds-input ${readOnly ? "cursor-not-allowed bg-[color:var(--color-surface-2)] text-[color:var(--color-text-muted)]" : ""}`}
         defaultValue={defaultValue}
-        aria-describedby={error ? `${name}-err` : undefined}
+        onChange={() => error && setDismissed(true)}
+        aria-describedby={shownError ? `${name}-err` : undefined}
       />
-      <FieldError id={`${name}-err`} message={error} />
+      <FieldError id={`${name}-err`} message={shownError} />
     </div>
   );
 }
@@ -234,8 +238,19 @@ export function MunApplicationForm() {
   useEffect(() => {
     if (state?.success) {
       toast.success("Application submitted");
+      return;
     }
-  }, [state?.success]);
+    if (state?.error) {
+      toast.error(state.error);
+    } else if (state?.fieldErrors && Object.keys(state.fieldErrors).length > 0) {
+      const count = Object.keys(state.fieldErrors).length;
+      toast.error(`${count} field${count > 1 ? "s" : ""} need attention`);
+      const firstKey = Object.keys(state.fieldErrors)[0];
+      const el = document.getElementById(firstKey) ?? document.getElementById(`${firstKey}-err`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   if (state?.success) {
     return (
