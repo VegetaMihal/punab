@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import { updateMemberApplication, updateProfilePhotoUrl } from "@/lib/repositories/profiles-repository";
 import { applicationSchema } from "@/lib/validations/member";
 import { revalidatePath } from "next/cache";
@@ -91,4 +92,41 @@ export async function updatePhotoUrl(photoUrl: string | null) {
 
   revalidatePath("/dashboard/profile");
   return { success: true };
+}
+
+export async function uploadMemberPhoto(formData: FormData): Promise<{ url?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "You must be signed in." };
+  }
+
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0) {
+    return { error: "No file" };
+  }
+
+  const serviceRole = createServiceRoleSupabase();
+  const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+  const { error: upErr } = await serviceRole.storage.from("member-photos").upload(path, file, {
+    upsert: true,
+    contentType: file.type || "application/octet-stream",
+    cacheControl: "31536000",
+  });
+  if (upErr) {
+    return { error: upErr.message };
+  }
+
+  const { data: pub } = serviceRole.storage.from("member-photos").getPublicUrl(path);
+
+  try {
+    await updateProfilePhotoUrl(user.id, pub.publicUrl);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Update failed" };
+  }
+
+  revalidatePath("/dashboard/profile");
+  return { url: pub.publicUrl };
 }

@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
-import { updatePhotoUrl } from "@/actions/member";
+import { uploadMemberPhoto } from "@/actions/member";
 
 type Props = {
   userId: string;
   currentUrl: string | null;
 };
 
-export function PhotoUpload({ userId, currentUrl }: Props) {
+export function PhotoUpload({ userId: _userId, currentUrl }: Props) {
   const [url, setUrl] = useState<string | null>(currentUrl);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,23 +22,13 @@ export function PhotoUpload({ userId, currentUrl }: Props) {
     setError(null);
     setBusy(true);
     try {
-      const supabase = createClient();
-      const path = `${userId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-      const { error: upErr } = await supabase.storage.from("member-photos").upload(path, file, {
-        upsert: true,
-        cacheControl: "31536000",
-      });
-      if (upErr) {
-        setError(upErr.message);
-        setBusy(false);
-        return;
-      }
-      const { data: pub } = supabase.storage.from("member-photos").getPublicUrl(path);
-      const res = await updatePhotoUrl(pub.publicUrl);
-      if ("error" in res && res.error) {
+      const fd = new FormData();
+      fd.set("file", file);
+      const res = await uploadMemberPhoto(fd);
+      if (res.error) {
         setError(res.error);
-      } else {
-        setUrl(pub.publicUrl);
+      } else if (res.url) {
+        setUrl(res.url);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
