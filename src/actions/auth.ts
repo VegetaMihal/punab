@@ -8,6 +8,7 @@ import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import {
   upsertProfileAfterSignup,
   completeFirstLoginPasswordChange as repoCompleteFirstLoginPasswordChange,
+  markWelcomeSeen,
 } from "@/lib/repositories/profiles-repository";
 import { firstLoginPasswordSchema, loginSchema, signupSchema } from "@/lib/validations/auth";
 import { revalidatePath } from "next/cache";
@@ -159,6 +160,16 @@ export async function signUp(
   }
 
   redirect("/register/submitted");
+}
+
+export async function dismissWelcomeIntro() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await markWelcomeSeen(user.id);
+  revalidatePath("/dashboard");
 }
 
 export async function signOut() {

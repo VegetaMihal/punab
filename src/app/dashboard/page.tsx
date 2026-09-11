@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { WelcomeIntro } from "@/components/dashboard/WelcomeIntro";
 import { getSessionProfile } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
 import { countPendingMembers } from "@/lib/repositories/profiles-repository";
@@ -75,29 +76,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
+      {!profile.welcomed_at && !profile.first_login_required && (
+        <WelcomeIntro firstName={profile.full_name.split(" ")[0]} />
+      )}
       {adminAccessNotice && (
         <div className="mb-8 rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-4 py-4 text-small text-[color:var(--color-text-2)]">
-          <p className="font-semibold text-[color:var(--color-text)]">PUNAB admin is not available for this session</p>
+          <p className="font-semibold text-[color:var(--color-text)]">Admin access unavailable</p>
           <p className="mt-2 text-[color:var(--color-text-muted)]">
-            The site checks <strong className="text-[color:var(--color-text)]">profiles.role</strong> in the database used by{" "}
-            <code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1 py-0.5 text-xs">DATABASE_URL</code>{" "}
-            (Prisma). It must be the <strong className="text-[color:var(--color-text)]">same Supabase project</strong> as your auth keys (
-            <code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1 py-0.5 text-xs">NEXT_PUBLIC_SUPABASE_URL</code>
-            ).
-          </p>
-          <p className="mt-2 text-[color:var(--color-text-muted)]">
-            In Supabase <strong className="text-[color:var(--color-text)]">SQL Editor</strong>, promote your account (use the email you log in with), then sign out and sign in again:
-          </p>
-          <pre className="mt-2 overflow-x-auto rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-3 text-xs text-[color:var(--color-text)]">
-            {`update public.profiles
-set role = 'admin'
-where email = 'your-email@example.com';`}
-          </pre>
-          <p className="mt-2 text-xs text-[color:var(--color-text-muted)]">
-            BloodHero-only coordinators (<code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1">bloodhero_admin_access</code>) do not open PUNAB{" "}
-            <code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1">/admin</code> until{" "}
-            <code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1">profiles.role</code> is{" "}
-            <code className="rounded-[var(--radius-sm)] bg-[color:var(--color-surface-3)] px-1">admin</code>.
+            Your account doesn&apos;t have admin permissions for this section. If you believe this is a mistake,
+            please contact the PUNAB secretariat.
           </p>
         </div>
       )}

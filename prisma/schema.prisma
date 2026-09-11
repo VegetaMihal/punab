@@ -37,6 +37,7 @@ model Profile {
   account_status         String    @default("pending_activation")
   first_login_required   Boolean   @default(false)
   temp_password_expires_at DateTime? @db.Timestamptz(6)
+  welcomed_at             DateTime? @db.Timestamptz(6)
   membership_number      String?   @unique
   phone             String?
   university_id     String?  @db.Uuid

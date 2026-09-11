@@ -110,6 +110,13 @@ export async function completeFirstLoginPasswordChange(profileId: string): Promi
   });
 }
 
+export async function markWelcomeSeen(profileId: string): Promise<void> {
+  await prisma.profile.update({
+    where: { id: profileId },
+    data: { welcomed_at: new Date() },
+  });
+}
+
 const ADMIN_PAGE_SIZE = 50;
 
 export async function listAllProfilesAdmin(

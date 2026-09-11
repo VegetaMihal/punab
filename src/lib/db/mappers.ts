@@ -129,6 +129,7 @@ export function toProfile(p: PrismaProfile): Profile {
     account_status: p.account_status as Profile["account_status"],
     first_login_required: p.first_login_required,
     temp_password_expires_at: p.temp_password_expires_at ? p.temp_password_expires_at.toISOString() : null,
+    welcomed_at: p.welcomed_at ? p.welcomed_at.toISOString() : null,
     membership_number: p.membership_number,
     phone: p.phone,
     university_id: p.university_id,
