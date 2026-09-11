@@ -16,7 +16,6 @@ function memberResendFrom(): string {
     process.env.MEMBER_ACCOUNT_RESEND_FROM?.trim() ||
     process.env.CERTIFICATE_RESEND_FROM?.trim() ||
     process.env.BLOODHERO_RESEND_FROM?.trim() ||
-    process.env.JULY_AWARD_RESEND_FROM?.trim() ||
     "PUNAB <no-reply@punab.com>"
   );
 }
