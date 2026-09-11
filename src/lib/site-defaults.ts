@@ -6,6 +6,7 @@ export const SITE_DEFAULTS: Record<string, string> = {
   "hero.cta_primary": "Become a Member",
   "hero.cta_secondary": "July Award 2026",
   "hero.image_url": "",
+  "hero.image_url_2": "",
   "home.cta_title": "Join the national association",
   "home.cta_body":
     "Register, complete your membership application, and connect with students, faculty, and alumni across Bangladesh's private universities. The secretariat reviews each application.",

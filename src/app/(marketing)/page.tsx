@@ -25,7 +25,9 @@ export default async function HomePage() {
 
   const featuredGalleryBlocks = featuredAlbums.filter((b) => b.images.length > 0);
 
-  const heroImage = getSetting(settings, "hero.image_url").trim();
+  const heroImages = [getSetting(settings, "hero.image_url"), getSetting(settings, "hero.image_url_2")]
+    .map((u) => u.trim())
+    .filter(Boolean);
 
   return (
     <>
@@ -34,7 +36,7 @@ export default async function HomePage() {
           title: getSetting(settings, "hero.title"),
           subtitle: getSetting(settings, "hero.subtitle"),
           ctaPrimary: getSetting(settings, "hero.cta_primary"),
-          imageUrl: heroImage || undefined,
+          images: heroImages,
         }}
       />
 

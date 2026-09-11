@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { SmartBackLink } from "@/components/ui/SmartBackLink";
 import { getSessionProfile } from "@/lib/auth/session";
 import { getPublicSettings } from "@/lib/data/site-content";
-import { PUNAB_MEMBERSHIP_GOOGLE_FORM_URL } from "@/lib/punab-external-urls";
 import { getSetting } from "@/lib/site-defaults";
 
 export const metadata = {
@@ -32,27 +31,18 @@ export default async function JoinPage({
 
         {params.registered === "1" && (
           <div className="mb-8 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
-            Account created. You can open the recruitment form below, then use the member dashboard when you sign in.
+            Account created. Our team will review your application, then you can use the member dashboard when you sign in.
           </div>
         )}
 
         <Card>
           <div className="flex flex-col items-center gap-6 py-4 text-center">
             <p className="text-body text-[color:var(--color-text)]">
-              Complete the official PUNAB member recruitment form (Google Forms). Our team will review your application.
+              Fill out the PUNAB member application on our site. Our team will review it.
             </p>
-            <Button
-              href={PUNAB_MEMBERSHIP_GOOGLE_FORM_URL}
-              prefetch={false}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="primary"
-              size="lg"
-              className="min-w-[12rem]"
-            >
-              Open recruitment form
+            <Button href="/register" variant="primary" size="lg" className="min-w-[12rem]">
+              Apply to join
             </Button>
-            <p className="text-sm text-muted">Opens in a new tab.</p>
           </div>
         </Card>
 
