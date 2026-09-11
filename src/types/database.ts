@@ -86,6 +86,7 @@ export type Profile = {
   account_status: AccountStatus;
   first_login_required: boolean;
   temp_password_expires_at: string | null;
+  welcomed_at: string | null;
   membership_number: string | null;
   phone: string | null;
   university_id: string | null;
