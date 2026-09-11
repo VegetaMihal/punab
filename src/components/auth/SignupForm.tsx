@@ -37,21 +37,6 @@ export function SignupForm({ universities }: { universities: UniversityOption[] 
         <input id="email" name="email" type="email" autoComplete="email" required className="ds-input" />
       </div>
       <div>
-        <label htmlFor="password" className="ds-label">
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={8}
-          className="ds-input"
-        />
-        <p className="ds-helper">At least 8 characters.</p>
-      </div>
-      <div>
         <label htmlFor="phone" className="ds-label">
           Phone
         </label>
@@ -98,8 +83,12 @@ export function SignupForm({ universities }: { universities: UniversityOption[] 
         </label>
         <input id="district" name="district" type="text" required className="ds-input" />
       </div>
+      <p className="ds-helper">
+        No password needed here. Once the secretariat approves your application, we&apos;ll email you a
+        temporary login password.
+      </p>
       <Button type="submit" variant="primary" className="w-full" loading={pending}>
-        {pending ? "Creating account…" : "Create account"}
+        {pending ? "Submitting…" : "Submit application"}
       </Button>
     </form>
   );

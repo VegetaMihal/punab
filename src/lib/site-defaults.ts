@@ -54,6 +54,22 @@ export const SITE_DEFAULTS: Record<string, string> = {
   "about.media":
     "Coverage has included DBC News, Somoy, Dhaka Post, Ekhon TV, Dainik Amader Desh, New Age, and other outlets reporting on PUNAB's work.",
   "july_award.registration_open": "true",
+  "org.timezone": "Asia/Dhaka",
+  "org.temp_password_expiry_hours": "48",
+  "org.promotion_cycle_months": "2",
+  "org.full_forum_min_age_months": "4",
+  "org.full_forum_min_moderator_plus": "5",
+  "org.max_secondary_reporters": "1",
+  "org.campus_representative_required_before_forum_member": "false",
+  "org.score.completed": "100",
+  "org.score.partial_obstacle": "90",
+  "org.score.absent_approved": "80",
+  "org.score.absent_unapproved": "0",
+  "org.activity_weight": "0.75",
+  "org.recommendation_weight": "0.25",
+  "org.low_recommendation_comment_threshold": "50",
+  "org.allow_no_activities_planned": "false",
+  "org.secondary_can_submit": "false",
 };
 
 export function getSetting(map: Record<string, string>, key: string): string {

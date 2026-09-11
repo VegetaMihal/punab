@@ -66,6 +66,7 @@ export type BloodHeroRequestRow = {
 };
 
 export type MembershipStatus = "pending" | "approved" | "rejected";
+export type AccountStatus = "pending_activation" | "active" | "suspended" | "cancelled" | "alumni";
 export type ProfileRole = "admin" | "member";
 export type AdminScope =
   | "invitations"
@@ -82,6 +83,10 @@ export type Profile = {
   role: ProfileRole;
   admin_scopes: AdminScope[];
   membership_status: MembershipStatus;
+  account_status: AccountStatus;
+  first_login_required: boolean;
+  temp_password_expires_at: string | null;
+  membership_number: string | null;
   phone: string | null;
   university_id: string | null;
   university_other: string | null;

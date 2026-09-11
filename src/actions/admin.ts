@@ -14,7 +14,15 @@ import {
   noticeSchema,
   universitySchema,
 } from "@/lib/validations/admin";
-import { setMembershipStatus as persistMembershipStatus } from "@/lib/repositories/profiles-repository";
+import {
+  setMembershipStatus as persistMembershipStatus,
+  markAccountProvisioned,
+} from "@/lib/repositories/profiles-repository";
+import { getSiteSettingsMap } from "@/lib/repositories/site-settings-repository";
+import { generateMembershipNumber } from "@/lib/auth/membership-number";
+import { generateTempPassword } from "@/lib/auth/temp-password";
+import { sendMemberAccountEmail } from "@/lib/member-account-provision-email";
+import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { MembershipStatus } from "@/types/database";
@@ -36,6 +44,75 @@ export async function setMembershipStatus(profileId: string, status: MembershipS
     await persistMembershipStatus(profileId, status);
     revalidatePath("/admin/members");
     revalidatePath("/admin");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Unauthorized" };
+  }
+}
+
+/** Full-admin-only role toggle. Only touches `role` — never membership_status or account provisioning. */
+export async function setMemberRole(profileId: string, role: "admin" | "member") {
+  try {
+    await assertFullAdmin();
+    await prisma.profile.update({ where: { id: profileId }, data: { role } });
+    revalidatePath("/admin/members");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Unauthorized" };
+  }
+}
+
+/**
+ * AUTH-001..003 approval flow: generates a temp password, sets it on the Supabase auth user,
+ * flips the profile to pending-activation + first-login-required, and emails the credential.
+ */
+export async function approveMemberAccount(profileId: string) {
+  try {
+    await assertFullAdmin();
+
+    const profile = await prisma.profile.findUnique({
+      where: { id: profileId },
+      select: { id: true, full_name: true, email: true },
+    });
+    if (!profile) {
+      return { error: "Member not found" };
+    }
+
+    const settings = await getSiteSettingsMap();
+    const expiryHours = Number.parseInt(settings["org.temp_password_expiry_hours"], 10) || 48;
+    const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
+    const tempPassword = generateTempPassword();
+
+    const serviceRole = createServiceRoleSupabase();
+    const { error: authError } = await serviceRole.auth.admin.updateUserById(profile.id, {
+      password: tempPassword,
+      email_confirm: true,
+    });
+    if (authError) {
+      return { error: authError.message };
+    }
+
+    await markAccountProvisioned({
+      profileId: profile.id,
+      membershipNumber: generateMembershipNumber(profile.id),
+      expiresAt,
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://punab.com";
+    const emailResult = await sendMemberAccountEmail({
+      fullName: profile.full_name,
+      email: profile.email,
+      tempPassword,
+      loginUrl: `${appUrl.replace(/\/+$/, "")}/login`,
+      expiryHours,
+    });
+
+    revalidatePath("/admin/members");
+    revalidatePath("/admin");
+
+    if (!emailResult.ok) {
+      return { error: `Account created, but the credential email failed to send: ${emailResult.reason}` };
+    }
     return { success: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
