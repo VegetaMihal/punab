@@ -5,15 +5,28 @@ import Image from "next/image";
 import { dismissWelcomeIntro } from "@/actions/auth";
 
 const STEPS = (firstName: string) => [
-  { eyebrow: "Welcome to PUNAB", title: `Hey ${firstName} 👋`, body: "Your membership is confirmed — glad to have you." },
-  { eyebrow: "Your dashboard", title: "Everything, one place", body: "Track your profile, applications, and updates from here." },
-  { eyebrow: "Let's go", title: "You're all set", body: "Explore the dashboard whenever you're ready." },
+  {
+    eyebrow: "Welcome to PUNAB",
+    title: `Welcome, ${firstName} 👋`,
+    body: "You're now part of the national community for private university students, teachers, and alumni across Bangladesh.",
+  },
+  {
+    eyebrow: "Your dashboard",
+    title: "One place for everything",
+    body: "Your profile, applications, and PUNAB updates all live here — nothing to chase down elsewhere.",
+  },
+  {
+    eyebrow: "Let's get started",
+    title: "You're all set",
+    body: "Step into your dashboard and start exploring what PUNAB has for you.",
+  },
 ];
 
-export function WelcomeIntro({ firstName }: { firstName: string }) {
+export function WelcomeIntro({ fullName, photoUrl }: { fullName: string; photoUrl: string | null }) {
   const [visible, setVisible] = useState(true);
   const [step, setStep] = useState(0);
   const [closing, setClosing] = useState(false);
+  const firstName = fullName.split(" ")[0];
   const steps = STEPS(firstName);
 
   function close() {
@@ -60,14 +73,21 @@ export function WelcomeIntro({ firstName }: { firstName: string }) {
           Skip
         </button>
 
-        <Image
-          src="/branding/punab-logo-v2.png"
-          alt="PUNAB"
-          width={72}
-          height={72}
-          className="mx-auto h-16 w-16 rounded-full bg-white p-1.5 shadow-lg"
-          priority
-        />
+        {photoUrl ? (
+          <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-lg">
+            <Image src={photoUrl} alt={fullName} fill className="object-cover" sizes="80px" priority />
+          </div>
+        ) : (
+          <Image
+            src="/branding/punab-logo-v2.png"
+            alt="PUNAB"
+            width={72}
+            height={72}
+            className="mx-auto h-16 w-16 rounded-full bg-white p-1.5 shadow-lg"
+            priority
+          />
+        )}
+        <p className="mt-3 text-sm font-semibold text-white/90">{fullName}</p>
 
         <div key={step} className="animate-[welcomeFadeIn_0.6s_ease-out] mt-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:color-mix(in_srgb,var(--brand-green)_75%,white)]">

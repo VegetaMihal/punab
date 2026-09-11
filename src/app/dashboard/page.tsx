@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -77,7 +78,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
       {!profile.welcomed_at && !profile.first_login_required && (
-        <WelcomeIntro firstName={profile.full_name.split(" ")[0]} />
+        <WelcomeIntro fullName={profile.full_name} photoUrl={profile.photo_url} />
       )}
       {adminAccessNotice && (
         <div className="mb-8 rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-4 py-4 text-small text-[color:var(--color-text-2)]">
@@ -91,9 +92,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       <div className="rounded-[var(--radius-lg)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-6 shadow-[var(--shadow-sm)] md:p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-small text-[color:var(--color-text-muted)]">{profile.email}</p>
-            <h1 className="text-h2 mt-1 text-[color:var(--color-text)]">Welcome, {profile.full_name}</h1>
+          <div className="flex items-center gap-4">
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-3)]">
+              {profile.photo_url ? (
+                <Image src={profile.photo_url} alt={profile.full_name} fill className="object-cover" sizes="56px" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-lg font-semibold text-[color:var(--color-text-muted)]">
+                  {profile.full_name.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="text-small text-[color:var(--color-text-muted)]">{profile.email}</p>
+              <h1 className="text-h2 mt-1 text-[color:var(--color-text)]">Welcome, {profile.full_name}</h1>
+            </div>
           </div>
           <span
             className={`inline-flex w-fit rounded-[var(--radius-full)] border px-4 py-1.5 text-sm font-semibold capitalize ${membershipBadgeClass(profile.membership_status)}`}
@@ -192,7 +204,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <p className="text-small mt-1 text-[color:var(--color-text-muted)]">Keep your chapter details current.</p>
             </Card>
           </Link>
-          <Link href="/join">
+          <Link href="/dashboard/profile">
             <Card variant="elevated" className="h-full p-5 motion-safe:transition-transform motion-safe:duration-[var(--transition-base)] motion-safe:hover:-translate-y-0.5">
               <p className="font-semibold text-[color:var(--color-text)]">Membership details</p>
               <p className="text-small mt-1 text-[color:var(--color-text-muted)]">Review your application information.</p>
@@ -203,11 +215,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       {profile.membership_status === "pending" && (
         <div className="mt-10 rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-warning)_40%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-warning)_10%,var(--color-surface))] px-4 py-3 text-small text-[color:var(--color-text)]">
-          Membership pending. Confirm your application on{" "}
-          <Link href="/join" className="font-semibold underline decoration-[color:var(--color-brand)]">
-            Join PUNAB
+          Membership pending. Confirm your{" "}
+          <Link href="/dashboard/profile" className="font-semibold underline decoration-[color:var(--color-brand)]">
+            application details
           </Link>{" "}
-          is complete and up to date.
+          are complete and up to date.
         </div>
       )}
     </div>
