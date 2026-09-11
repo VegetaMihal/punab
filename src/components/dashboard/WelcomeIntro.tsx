@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { dismissWelcomeIntro } from "@/actions/auth";
 
 const STEPS = (firstName: string) => [
@@ -50,8 +51,6 @@ export function WelcomeIntro({ firstName }: { firstName: string }) {
       aria-modal="true"
       aria-label="Welcome"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_20%,color-mix(in_srgb,var(--brand-green)_45%,transparent)_0%,transparent_65%)]" aria-hidden />
-
       <div className="relative w-full max-w-lg text-center">
         <button
           type="button"
@@ -61,7 +60,16 @@ export function WelcomeIntro({ firstName }: { firstName: string }) {
           Skip
         </button>
 
-        <div key={step} className="animate-[welcomeFadeIn_0.6s_ease-out]">
+        <Image
+          src="/branding/punab-logo-v2.png"
+          alt="PUNAB"
+          width={72}
+          height={72}
+          className="mx-auto h-16 w-16 rounded-full bg-white p-1.5 shadow-lg"
+          priority
+        />
+
+        <div key={step} className="animate-[welcomeFadeIn_0.6s_ease-out] mt-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:color-mix(in_srgb,var(--brand-green)_75%,white)]">
             {current.eyebrow}
           </p>

@@ -15,7 +15,7 @@ export function SignupForm({ universities }: { universities: UniversityOption[] 
   const [state, formAction, pending] = useActionState(signUp, initial);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} className="space-y-5" encType="multipart/form-data">
       {state?.error && (
         <div
           className="rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-3 py-2 text-small text-[color:var(--color-error)]"
@@ -82,6 +82,13 @@ export function SignupForm({ universities }: { universities: UniversityOption[] 
           District
         </label>
         <input id="district" name="district" type="text" required className="ds-input" />
+      </div>
+      <div>
+        <label htmlFor="photo" className="ds-label">
+          Photo (optional)
+        </label>
+        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" className="ds-input" />
+        <p className="ds-helper">Used on your member profile. You can also add or change it later.</p>
       </div>
       <p className="ds-helper">
         No password needed here. Once the secretariat approves your application, we&apos;ll email you a
