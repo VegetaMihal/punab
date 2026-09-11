@@ -44,3 +44,14 @@ FOR ALL
 TO anon, authenticated
 USING (false)
 WITH CHECK (false);
+
+-- July Memorial invitations: server actions use service_role/DATABASE_URL role; block PostgREST public access.
+ALTER TABLE IF EXISTS public."JulyMemorialInvitation" ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS july_memorial_invitation_no_public_access ON public."JulyMemorialInvitation";
+CREATE POLICY july_memorial_invitation_no_public_access
+ON public."JulyMemorialInvitation"
+FOR ALL
+TO anon, authenticated
+USING (false)
+WITH CHECK (false);

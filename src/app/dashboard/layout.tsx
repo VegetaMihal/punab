@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { signOut } from "@/actions/auth";
 import { getSessionProfile } from "@/lib/auth/session";
 
@@ -8,6 +9,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, profile } = await getSessionProfile();
+
+  if (profile?.first_login_required) {
+    redirect("/auth/change-password");
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-stone-50 dark:bg-stone-950">
@@ -25,6 +30,9 @@ export default async function DashboardLayout({
             </Link>
             <Link href="/join" className="rounded-md px-2 py-1 hover:bg-stone-100 dark:hover:bg-stone-800">
               Membership
+            </Link>
+            <Link href="/portal/me" className="rounded-md px-2 py-1 hover:bg-stone-100 dark:hover:bg-stone-800">
+              My Forum Activity
             </Link>
             {profile?.role === "admin" && (
               <Link

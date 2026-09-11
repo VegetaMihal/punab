@@ -8,7 +8,6 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   fullName: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().min(7, "Enter your phone number"),
   universityId: z.string().uuid("Select a university"),
   department: z.string().min(2, "Enter your department"),
@@ -17,5 +16,16 @@ export const signupSchema = z.object({
   district: z.string().min(2, "Enter your district"),
 });
 
+export const firstLoginPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Confirm your new password"),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
+export type FirstLoginPasswordInput = z.infer<typeof firstLoginPasswordSchema>;

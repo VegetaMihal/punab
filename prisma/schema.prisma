@@ -22,6 +22,7 @@ model University {
 
   profiles Profile[]
   chapters Chapter[]
+  org_campus_roles OrgCampusRole[]
 
   @@map("universities")
 }
@@ -33,6 +34,10 @@ model Profile {
   role              String   @default("member")
   admin_scopes      String[] @default([])
   membership_status String   @default("pending")
+  account_status         String    @default("pending_activation")
+  first_login_required   Boolean   @default(false)
+  temp_password_expires_at DateTime? @db.Timestamptz(6)
+  membership_number      String?   @unique
   phone             String?
   university_id     String?  @db.Uuid
   university_other  String?
@@ -45,6 +50,16 @@ model Profile {
   updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   university University? @relation(fields: [university_id], references: [id], onDelete: SetNull)
+
+  org_forum_memberships   OrgForumMembership[]
+  org_campus_roles        OrgCampusRole[]
+  org_reporter_assignments OrgReporterAssignment[]
+  org_designation_history OrgDesignationHistory[]
+  org_activity_assignments OrgActivityAssignment[]
+  org_monthly_recommendations OrgMonthlyRecommendation[]
+  org_monthly_performance_scores OrgMonthlyPerformanceScore[]
+  org_planned_activity_assignments OrgPlannedActivityAssignment[]
+  org_promotion_applications OrgPromotionApplication[]
 
   @@index([university_id])
   @@index([membership_status])
@@ -244,6 +259,368 @@ model Page {
   updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   @@map("pages")
+}
+
+// --- ORG PORTAL: FORUM MANAGEMENT / REPORTING / PERFORMANCE (PUNAB SRD Phase 1B) ---
+// Prefixed OrgXxx to avoid clashing with the CMS `Forum`/`ForumMember` showcase models above.
+
+model OrgHierarchyScheme {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String   @unique
+  description  String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  levels OrgDesignationLevel[]
+  forums OrgForum[]
+
+  @@map("org_hierarchy_schemes")
+}
+
+model OrgDesignationLevel {
+  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scheme_id           String  @db.Uuid
+  level_code          String
+  label               String
+  numeric_rank        Int
+  multiplicity        String  @default("multiple") // "single" | "multiple"
+  min_duration_months Int?
+
+  scheme      OrgHierarchyScheme    @relation(fields: [scheme_id], references: [id], onDelete: Cascade)
+  memberships OrgForumMembership[]
+
+  @@unique([scheme_id, level_code])
+  @@unique([scheme_id, numeric_rank])
+  @@index([scheme_id])
+  @@map("org_designation_levels")
+}
+
+model OrgForum {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String
+  slug                String    @unique
+  forum_type          String    @default("standard") // "standard" | "external" (e.g. IMUN)
+  status              String    @default("incomplete") // "incomplete" | "full"
+  hierarchy_scheme_id String    @db.Uuid
+  effective_start_at  DateTime  @default(now()) @db.Timestamptz(6)
+  full_recognition_at DateTime? @db.Timestamptz(6)
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  scheme               OrgHierarchyScheme    @relation(fields: [hierarchy_scheme_id], references: [id])
+  memberships          OrgForumMembership[]
+  campus_roles         OrgCampusRole[]
+  reporter_assignments OrgReporterAssignment[]
+  status_history       OrgForumStatusHistory[]
+  monthly_reports      OrgMonthlyReport[]
+  monthly_performance_scores OrgMonthlyPerformanceScore[]
+  promotion_applications OrgPromotionApplication[]
+
+  @@index([hierarchy_scheme_id])
+  @@map("org_forums")
+}
+
+model OrgForumMembership {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id            String    @db.Uuid
+  member_id           String    @db.Uuid
+  designation_level_id String   @db.Uuid
+  start_date          DateTime  @default(now()) @db.Timestamptz(6)
+  end_date            DateTime? @db.Timestamptz(6)
+  is_active           Boolean   @default(true)
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+
+  forum      OrgForum            @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  member     Profile             @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  designation OrgDesignationLevel @relation(fields: [designation_level_id], references: [id])
+
+  @@index([forum_id])
+  @@index([member_id])
+  @@index([designation_level_id])
+  @@map("org_forum_memberships")
+}
+
+model OrgCampusRole {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id     String    @db.Uuid
+  campus_id    String    @db.Uuid
+  member_id    String    @db.Uuid
+  campus_level String    // "member" | "associate" | "representative"
+  start_date   DateTime  @default(now()) @db.Timestamptz(6)
+  end_date     DateTime? @db.Timestamptz(6)
+  is_active    Boolean   @default(true)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+
+  forum   OrgForum   @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  campus  University @relation(fields: [campus_id], references: [id])
+  member  Profile    @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@index([forum_id])
+  @@index([campus_id])
+  @@index([member_id])
+  @@map("org_campus_roles")
+}
+
+// CAMPUS-002: only one active Representative per Forum per campus.
+// Enforced as a partial unique index in the migration SQL (Prisma can't express WHERE is_active).
+
+model OrgReporterAssignment {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id      String    @db.Uuid
+  member_id     String    @db.Uuid
+  reporter_type String    // "primary" | "secondary"
+  is_active     Boolean   @default(true)
+  authorized_by String?   @db.Uuid
+  start_date    DateTime  @default(now()) @db.Timestamptz(6)
+  end_date      DateTime? @db.Timestamptz(6)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+
+  forum  OrgForum @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  member Profile  @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@index([forum_id])
+  @@index([member_id])
+  @@map("org_reporter_assignments")
+}
+
+model OrgForumStatusHistory {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id               String   @db.Uuid
+  old_status             String
+  new_status              String
+  effective_at           DateTime @default(now()) @db.Timestamptz(6)
+  approved_by            String?  @db.Uuid
+  notes                  String?
+  qualification_snapshot Json?
+  created_at             DateTime @default(now()) @db.Timestamptz(6)
+
+  forum OrgForum @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+
+  @@index([forum_id])
+  @@map("org_forum_status_history")
+}
+
+model OrgDesignationHistory {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  member_id              String    @db.Uuid
+  forum_id               String?   @db.Uuid
+  old_designation_level_id String? @db.Uuid
+  new_designation_level_id String? @db.Uuid
+  effective_at           DateTime  @default(now()) @db.Timestamptz(6)
+  approved_by            String?   @db.Uuid
+  application_reference  String?
+  notes                  String?
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+
+  member Profile @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@index([member_id])
+  @@index([forum_id])
+  @@map("org_designation_history")
+}
+
+model OrgMonthlyReport {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  forum_id            String    @db.Uuid
+  year                Int
+  month               Int
+  status              String    @default("draft") // draft | submitted | late_submitted | reopened | resubmitted
+  due_at              DateTime  @db.Timestamptz(6)
+  submitted_at        DateTime? @db.Timestamptz(6)
+  primary_reporter_id String?   @db.Uuid
+  reopened_by         String?   @db.Uuid
+  reopened_at         DateTime? @db.Timestamptz(6)
+  reopen_reason       String?
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  forum          OrgForum                   @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+  activities     OrgActivity[]
+  recommendations OrgMonthlyRecommendation[]
+  plan           OrgMonthlyPlan?
+
+  @@unique([forum_id, year, month])
+  @@index([forum_id])
+  @@map("org_monthly_reports")
+}
+
+model OrgActivity {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  monthly_report_id String    @db.Uuid
+  name               String
+  description        String?
+  is_planned          Boolean   @default(false)
+  planned_date        DateTime? @db.Timestamptz(6)
+  actual_date         DateTime? @db.Timestamptz(6)
+  status              String    @default("planned") // planned | completed | partially_completed | not_completed | rescheduled | cancelled
+  evidence_url        String?
+  created_by          String?   @db.Uuid
+  updated_by          String?   @db.Uuid
+  source_planned_activity_id String? @db.Uuid // PLAN-002: traces an activity back to the plan item it was carried forward from
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  report      OrgMonthlyReport        @relation(fields: [monthly_report_id], references: [id], onDelete: Cascade)
+  assignments OrgActivityAssignment[]
+
+  @@index([monthly_report_id])
+  @@map("org_activities")
+}
+
+model OrgMonthlyPlan {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  source_report_id String   @unique @db.Uuid
+  target_year      Int
+  target_month     Int
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+
+  source_report      OrgMonthlyReport      @relation(fields: [source_report_id], references: [id], onDelete: Cascade)
+  planned_activities  OrgPlannedActivity[]
+
+  @@map("org_monthly_plans")
+}
+
+model OrgPlannedActivity {
+  id               String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  plan_id          String  @db.Uuid
+  name             String
+  approximate_date DateTime @db.Timestamptz(6)
+  description      String?
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+
+  plan        OrgMonthlyPlan                  @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  assignments OrgPlannedActivityAssignment[]
+
+  @@index([plan_id])
+  @@map("org_planned_activities")
+}
+
+model OrgPlannedActivityAssignment {
+  id                  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planned_activity_id String @db.Uuid
+  member_id           String @db.Uuid
+
+  planned_activity OrgPlannedActivity @relation(fields: [planned_activity_id], references: [id], onDelete: Cascade)
+  member           Profile            @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@unique([planned_activity_id, member_id])
+  @@index([planned_activity_id])
+  @@index([member_id])
+  @@map("org_planned_activity_assignments")
+}
+
+model OrgActivityAssignment {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activity_id       String   @db.Uuid
+  member_id         String   @db.Uuid
+  assigned_by       String?  @db.Uuid
+  assigned_at       DateTime @default(now()) @db.Timestamptz(6)
+  assignment_status String   @default("assigned") // assigned | cancelled
+
+  activity OrgActivity @relation(fields: [activity_id], references: [id], onDelete: Cascade)
+  member   Profile     @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  result   OrgActivityMemberResult?
+
+  @@unique([activity_id, member_id])
+  @@index([activity_id])
+  @@index([member_id])
+  @@map("org_activity_assignments")
+}
+
+model OrgActivityMemberResult {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assignment_id String   @unique @db.Uuid
+  result_type   String   // completed | partial_obstacle | absent_approved | absent_unapproved | cancelled
+  score         Int?     // NULL when result_type = cancelled (ACT-003: N/A, never 0)
+  comment       String?
+  evaluated_by  String?  @db.Uuid
+  evaluated_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  assignment OrgActivityAssignment @relation(fields: [assignment_id], references: [id], onDelete: Cascade)
+
+  @@map("org_activity_member_results")
+}
+
+model OrgMonthlyRecommendation {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  report_id         String    @db.Uuid
+  member_id         String    @db.Uuid
+  score             Int
+  comment           String?
+  reporter_id       String    @db.Uuid
+  needs_approval    Boolean   @default(false) // PERF-003: reporter scoring themselves
+  approved_by       String?   @db.Uuid
+  approved_at       DateTime? @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  report OrgMonthlyReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  member Profile          @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@unique([report_id, member_id])
+  @@index([report_id])
+  @@index([member_id])
+  @@map("org_monthly_recommendations")
+}
+
+model OrgMonthlyPerformanceScore {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  member_id           String   @db.Uuid
+  forum_id            String   @db.Uuid
+  year                Int
+  month               Int
+  activity_average    Float?   // NULL = Insufficient Activity Data (PERF-004), never coerced to 0
+  recommendation_score Int?
+  final_score         Float?   // NULL when activity_average is NULL (excluded from Overall Performance)
+  calc_version        String   @default("v1")
+  updated_at          DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  member Profile @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  forum  OrgForum @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+
+  @@unique([member_id, forum_id, year, month])
+  @@index([member_id])
+  @@index([forum_id])
+  @@map("org_monthly_performance_scores")
+}
+
+model OrgAuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actor_id    String?  @db.Uuid
+  action      String
+  entity_type String
+  entity_id   String?
+  old_value   Json?
+  new_value   Json?
+  notes       String?
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([entity_type, entity_id])
+  @@index([actor_id])
+  @@index([created_at])
+  @@map("org_audit_logs")
+}
+
+model OrgPromotionApplication {
+  id                          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  member_id                   String    @db.Uuid
+  forum_id                    String    @db.Uuid
+  current_designation_level_id String   @db.Uuid
+  target_designation_level_id String    @db.Uuid
+  eligibility_snapshot        Json?
+  status                      String    @default("pending") // pending | approved | rejected
+  applied_at                  DateTime  @default(now()) @db.Timestamptz(6)
+  decided_by                  String?   @db.Uuid
+  decided_at                  DateTime? @db.Timestamptz(6)
+  decision_notes              String?
+
+  member Profile  @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  forum  OrgForum @relation(fields: [forum_id], references: [id], onDelete: Cascade)
+
+  @@index([member_id])
+  @@index([forum_id])
+  @@index([status])
+  @@map("org_promotion_applications")
 }
 
 // --- BLOODHERO MODELS ---

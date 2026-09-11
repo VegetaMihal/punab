@@ -80,17 +80,52 @@ export async function setMembershipStatus(profileId: string, status: MembershipS
   });
 }
 
+/** AUTH-003/004: mark a member's temp password as issued and awaiting first login. */
+export async function markAccountProvisioned(input: {
+  profileId: string;
+  membershipNumber: string;
+  expiresAt: Date;
+}): Promise<void> {
+  await prisma.profile.update({
+    where: { id: input.profileId },
+    data: {
+      membership_status: "approved",
+      account_status: "pending_activation",
+      first_login_required: true,
+      temp_password_expires_at: input.expiresAt,
+      membership_number: input.membershipNumber,
+    },
+  });
+}
+
+/** Completes AUTH-003 forced first-login password change. */
+export async function completeFirstLoginPasswordChange(profileId: string): Promise<void> {
+  await prisma.profile.update({
+    where: { id: profileId },
+    data: {
+      account_status: "active",
+      first_login_required: false,
+      temp_password_expires_at: null,
+    },
+  });
+}
+
 const ADMIN_PAGE_SIZE = 50;
 
-export async function listAllProfilesAdmin(page = 1): Promise<{ profiles: Profile[]; total: number; pageSize: number }> {
+export async function listAllProfilesAdmin(
+  page = 1,
+  status?: MembershipStatus
+): Promise<{ profiles: Profile[]; total: number; pageSize: number }> {
   const skip = (page - 1) * ADMIN_PAGE_SIZE;
+  const where = status ? { membership_status: status } : {};
   const [rows, total] = await Promise.all([
     prisma.profile.findMany({
+      where,
       orderBy: { created_at: "desc" },
       take: ADMIN_PAGE_SIZE,
       skip,
     }),
-    prisma.profile.count(),
+    prisma.profile.count({ where }),
   ]);
   return { profiles: rows.map(toProfile), total, pageSize: ADMIN_PAGE_SIZE };
 }

@@ -10,9 +10,12 @@ import {
 import { getSessionProfile } from "@/lib/auth/session";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, adminAccess } = await getSessionProfile();
+  const { user, profile, isAdmin, adminAccess } = await getSessionProfile();
   if (!user) {
     redirect("/login?redirect=/admin");
+  }
+  if (profile?.first_login_required) {
+    redirect("/auth/change-password");
   }
   if (!isAdmin || !adminAccess) {
     redirect("/dashboard?notice=admin-access");
@@ -42,6 +45,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             ))}
           </nav>
           <div className="mt-6 space-y-2 border-t border-stone-200 pt-4 dark:border-stone-800">
+            <Link href="/portal/admin" className="block text-sm text-accent hover:underline">
+              Org Portal →
+            </Link>
             <Link href="/" className="block text-sm text-accent hover:underline">
               ← Public site
             </Link>
