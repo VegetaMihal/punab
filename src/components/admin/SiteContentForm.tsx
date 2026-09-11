@@ -10,6 +10,7 @@ const FIELD_LABELS: Partial<Record<keyof typeof SITE_DEFAULTS, string>> = {
   "hero.title": "Homepage hero title",
   "hero.subtitle": "Homepage hero subtitle",
   "hero.cta_primary": "Homepage primary CTA text",
+  "hero.image_url_2": "Hero slider — second photo",
   "about.intro": "About intro",
   "about.mission": "About mission text",
   "about.vision": "About vision text",
@@ -37,7 +38,7 @@ const GROUPS: { title: string; keys: (keyof typeof SITE_DEFAULTS)[] }[] = [
   },
   {
     title: "Hero",
-    keys: ["hero.title", "hero.subtitle", "hero.cta_primary", "hero.image_url"],
+    keys: ["hero.title", "hero.subtitle", "hero.cta_primary", "hero.image_url", "hero.image_url_2"],
   },
   {
     title: "Home — sections",
@@ -84,7 +85,7 @@ export function SiteContentForm({ initialValues }: { initialValues: Record<strin
     }
   }, [state]);
 
-  async function onHeroUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onHeroUpload(key: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) {
       return;
@@ -97,7 +98,7 @@ export function SiteContentForm({ initialValues }: { initialValues: Record<strin
       return;
     }
     if (res.url) {
-      const input = document.querySelector<HTMLInputElement>('input[name="s__hero.image_url"]');
+      const input = document.querySelector<HTMLInputElement>(`input[name="s__${key}"]`);
       if (input) {
         input.value = res.url;
       }
@@ -133,7 +134,7 @@ export function SiteContentForm({ initialValues }: { initialValues: Record<strin
                   <label className="block text-xs font-medium uppercase tracking-wide text-muted">
                     {FIELD_LABELS[key] ?? key}
                   </label>
-                  {key === "hero.image_url" ? (
+                  {key === "hero.image_url" || key === "hero.image_url_2" ? (
                     <div className="mt-1 space-y-2">
                       <input
                         type="url"
@@ -144,7 +145,12 @@ export function SiteContentForm({ initialValues }: { initialValues: Record<strin
                       />
                       <div>
                         <label className="text-xs text-muted">Upload to site assets</label>
-                        <input type="file" accept="image/*" onChange={onHeroUpload} className="mt-1 text-sm" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => onHeroUpload(key, e)}
+                          className="mt-1 text-sm"
+                        />
                       </div>
                     </div>
                   ) : multiline ? (

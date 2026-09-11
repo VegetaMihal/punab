@@ -9,7 +9,6 @@ import { Logo } from "@/components/layout/logo";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { cn } from "@/components/ui/cn";
 import { HONORARY_POSITION_PAGE_TITLE } from "@/lib/leadership-constants";
-import { PUNAB_MEMBERSHIP_GOOGLE_FORM_URL } from "@/lib/punab-external-urls";
 
 type NavLink = { href: string; label: string };
 type NavDisabledSubItem = { label: string; disabled: true; note: string };
@@ -277,10 +276,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
 
           {!user && (
             <Link
-              href={PUNAB_MEMBERSHIP_GOOGLE_FORM_URL}
-              prefetch={false}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/register"
               className={cn(
                 "hidden min-h-11 items-center justify-center rounded-[var(--radius-full)] bg-[color:var(--color-surface)] px-5 text-sm font-bold text-[color:var(--color-brand)] shadow-[0_14px_34px_color-mix(in_srgb,black_24%,transparent)] motion-safe:transition-[transform,background-color,box-shadow] motion-safe:hover:-translate-y-0.5 motion-safe:hover:bg-[color:color-mix(in_srgb,var(--color-surface)_92%,var(--brand-green-muted))] xl:inline-flex",
                 focusRing,
@@ -449,10 +445,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
               </div>
             ) : (
               <Link
-                href={PUNAB_MEMBERSHIP_GOOGLE_FORM_URL}
-                prefetch={false}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/register"
                 onClick={() => setMobileNavOpen(false)}
                 className={cn("flex min-h-12 w-full items-center justify-center rounded-[var(--radius-full)] bg-[color:var(--color-brand)] px-5 text-sm font-bold text-white shadow-md motion-safe:transition-[transform,box-shadow] motion-safe:active:scale-95", focusRing)}
               >

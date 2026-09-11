@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/Button";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { PUNAB_MEMBERSHIP_GOOGLE_FORM_URL } from "@/lib/punab-external-urls";
 
 export type CtaBandContent = {
   title: string;
@@ -18,15 +17,7 @@ export function CtaBand({ content }: { content: CtaBandContent }) {
           {content.body}
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
-          <Button
-            href={PUNAB_MEMBERSHIP_GOOGLE_FORM_URL}
-            prefetch={false}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="inverse"
-            size="lg"
-            className="w-full sm:w-auto"
-          >
+          <Button href="/register" variant="inverse" size="lg" className="w-full sm:w-auto">
             Become a Member
           </Button>
           <Button href="/contact" variant="inverseOutline" size="lg" className="w-full sm:w-auto">
