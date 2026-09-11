@@ -18,6 +18,7 @@ export async function upsertProfileAfterSignup(input: {
   student_id: string;
   session: string;
   district: string;
+  photo_url?: string;
 }): Promise<void> {
   await prisma.profile.upsert({
     where: { id: input.id },
@@ -33,6 +34,7 @@ export async function upsertProfileAfterSignup(input: {
       student_id: input.student_id,
       session: input.session,
       district: input.district,
+      photo_url: input.photo_url,
     },
     update: {
       full_name: input.full_name,
@@ -43,6 +45,7 @@ export async function upsertProfileAfterSignup(input: {
       student_id: input.student_id,
       session: input.session,
       district: input.district,
+      ...(input.photo_url ? { photo_url: input.photo_url } : {}),
     },
   });
 }

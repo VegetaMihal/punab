@@ -143,6 +143,21 @@ export async function signUp(
     return { error: "Application could not be submitted. Please try again." };
   }
 
+  let photoUrl: string | undefined;
+  const photo = formData.get("photo") as File | null;
+  if (photo && photo.size > 0) {
+    const path = `${userId}/${Date.now()}-${photo.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    const { error: upErr } = await serviceRole.storage.from("member-photos").upload(path, photo, {
+      upsert: true,
+      contentType: photo.type || "application/octet-stream",
+      cacheControl: "31536000",
+    });
+    if (!upErr) {
+      const { data: pub } = serviceRole.storage.from("member-photos").getPublicUrl(path);
+      photoUrl = pub.publicUrl;
+    }
+  }
+
   try {
     await upsertProfileAfterSignup({
       id: userId,
@@ -154,6 +169,7 @@ export async function signUp(
       student_id: parsed.data.studentId,
       session: parsed.data.session,
       district: parsed.data.district,
+      photo_url: photoUrl,
     });
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Could not save profile" };
