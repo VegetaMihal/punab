@@ -33,6 +33,7 @@ model Profile {
   email             String   @unique
   role              String   @default("member")
   admin_scopes      String[] @default([])
+  admin_title       String?
   membership_status String   @default("pending")
   account_status         String    @default("pending_activation")
   first_login_required   Boolean   @default(false)

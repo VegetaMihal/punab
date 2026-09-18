@@ -61,13 +61,22 @@ export function reporterTypeLabel(type: string): string {
   return map[type] ?? type;
 }
 
-export function campusLevelLabel(level: string): string {
-  const map: Record<string, string> = {
-    member: "Campus Member",
-    associate: "Campus Associate",
-    representative: "Campus Representative",
-  };
-  return map[level] ?? level;
+const CAMPUS_LEVEL_SUFFIX: Record<string, string> = {
+  member: "Member",
+  associate: "Associate",
+  representative: "Representative",
+};
+
+/** Forum's short noun for campus labels, e.g. "Debate Forum" -> "Debate", "PR" -> "PR". */
+function forumShortName(forumName: string): string {
+  return forumName.replace(/\s+forum$/i, "").trim() || forumName;
+}
+
+/** CAMPUS-001/6.1: label follows the Forum name, e.g. "Campus Debate Associate" for the Debate Forum. */
+export function campusLevelLabel(level: string, forumName?: string): string {
+  const suffix = CAMPUS_LEVEL_SUFFIX[level] ?? level;
+  if (!forumName) return `Campus ${suffix}`;
+  return `Campus ${forumShortName(forumName)} ${suffix}`;
 }
 
 export function promotionStatusLabel(status: string): string {

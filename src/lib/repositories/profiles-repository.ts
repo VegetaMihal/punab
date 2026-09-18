@@ -143,3 +143,47 @@ export async function listAllProfilesAdmin(
 export async function countPendingMembers(): Promise<number> {
   return prisma.profile.count({ where: { membership_status: "pending" } });
 }
+
+/** Each member's highest-ranked active Forum designation, plus Secondary Reporter if held — for admin listings that need the real org role, not just admin/member. */
+export async function getOrgRoleLabels(memberIds: string[]): Promise<Map<string, string>> {
+  if (memberIds.length === 0) return new Map();
+
+  const [memberships, secondaryAssignments] = await Promise.all([
+    prisma.orgForumMembership.findMany({
+      where: { member_id: { in: memberIds }, is_active: true },
+      select: {
+        member_id: true,
+        designation: { select: { label: true, numeric_rank: true } },
+        forum: { select: { name: true } },
+      },
+    }),
+    prisma.orgReporterAssignment.findMany({
+      where: { member_id: { in: memberIds }, is_active: true, reporter_type: "secondary" },
+      select: { member_id: true, forum: { select: { name: true } } },
+    }),
+  ]);
+
+  const byMember = new Map<string, { label: string; rank: number; forumName: string }>();
+  for (const m of memberships) {
+    const current = byMember.get(m.member_id);
+    if (!current || m.designation.numeric_rank > current.rank) {
+      byMember.set(m.member_id, { label: m.designation.label, rank: m.designation.numeric_rank, forumName: m.forum.name });
+    }
+  }
+
+  const secondaryByMember = new Map<string, string>();
+  for (const a of secondaryAssignments) {
+    secondaryByMember.set(a.member_id, a.forum.name);
+  }
+
+  const result = new Map<string, string>();
+  for (const id of memberIds) {
+    const top = byMember.get(id);
+    const secondaryForum = secondaryByMember.get(id);
+    const parts: string[] = [];
+    if (top) parts.push(`${top.label} (${top.forumName})`);
+    if (secondaryForum) parts.push(`Secondary Reporter (${secondaryForum})`);
+    if (parts.length > 0) result.set(id, parts.join(", "));
+  }
+  return result;
+}

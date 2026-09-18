@@ -2,9 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { approveMemberAccount, setMemberRole, setMembershipStatus } from "@/actions/admin";
+import { approveMemberAccount, setMembershipStatus } from "@/actions/admin";
+import { resolveAdminAccess } from "@/lib/auth/admin-access";
 import { accountStatusLabel } from "@/lib/org/labels";
-import type { MembershipStatus, Profile } from "@/types/database";
+import type { AdminTitle, MembershipStatus, Profile } from "@/types/database";
 
 const MEMBERSHIP_STATUS_LABEL: Record<string, string> = {
   pending: "Waiting for review",
@@ -12,11 +13,37 @@ const MEMBERSHIP_STATUS_LABEL: Record<string, string> = {
   rejected: "Not approved",
 };
 
-type Props = {
-  members: Profile[];
+const ADMIN_TITLE_LABELS: Record<AdminTitle, string> = {
+  central_forum_secretary: "Central Forum Management Secretary",
+  central_committee_officer: "Authorized Central Committee Officer",
 };
 
-export function MembersTable({ members }: Props) {
+/** Real role, not just the admin/member flag: admin scope breakdown, or the member's actual Forum designation. */
+function roleLabel(profile: Profile, orgRoles: Record<string, string>): string {
+  if (profile.role === "admin") {
+    const access = resolveAdminAccess(profile);
+    if (access.isFullAdmin) return "Full admin";
+    const parts: string[] = [];
+    if (access.canInvitations) parts.push("Invitations");
+    if (access.canCertificates) parts.push("Certificates");
+    if (access.canJulyAwardCards) parts.push("July Award cards");
+    if (access.canJulyAwardParticipants) parts.push("July Award participants");
+    if (access.canMonitoringForm) parts.push("Monitoring form");
+    if (access.canMunForm) parts.push("MUN form");
+    if (access.canOrgPortal) {
+      parts.push(profile.admin_title ? ADMIN_TITLE_LABELS[profile.admin_title] : "Org Portal");
+    }
+    return parts.length > 0 ? parts.join(", ") : "Admin (no scopes)";
+  }
+  return orgRoles[profile.id] ?? "Member";
+}
+
+type Props = {
+  members: Profile[];
+  orgRoles: Record<string, string>;
+};
+
+export function MembersTable({ members, orgRoles }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [approveError, setApproveError] = useState<string | null>(null);
@@ -32,15 +59,6 @@ export function MembersTable({ members }: Props) {
     setApproveError(null);
     startTransition(async () => {
       const result = await approveMemberAccount(id);
-      if (result?.error) setApproveError(result.error);
-      router.refresh();
-    });
-  }
-
-  function toggleRole(id: string, nextRole: "admin" | "member") {
-    setApproveError(null);
-    startTransition(async () => {
-      const result = await setMemberRole(id, nextRole);
       if (result?.error) setApproveError(result.error);
       router.refresh();
     });
@@ -83,7 +101,7 @@ export function MembersTable({ members }: Props) {
                       : "text-xs text-muted"
                   }
                 >
-                  {m.role === "admin" ? "Admin" : "Member"}
+                  {roleLabel(m, orgRoles)}
                 </span>
               </td>
               <td className="py-3">
@@ -96,26 +114,6 @@ export function MembersTable({ members }: Props) {
                   >
                     Approve &amp; email login details
                   </button>
-                  {m.membership_status === "approved" &&
-                    (m.role === "admin" ? (
-                      <button
-                        type="button"
-                        disabled={pending}
-                        onClick={() => toggleRole(m.id, "member")}
-                        className="rounded-md border border-stone-300 px-2 py-1 text-xs dark:border-stone-600"
-                      >
-                        Remove admin
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled={pending}
-                        onClick={() => toggleRole(m.id, "admin")}
-                        className="rounded-md border border-brand-green px-2 py-1 text-xs font-medium text-brand-green"
-                      >
-                        Make admin
-                      </button>
-                    ))}
                   <button
                     type="button"
                     disabled={pending || m.membership_status === "rejected"}

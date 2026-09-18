@@ -1,17 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { provisionAdminCredentials } from "@/lib/auth/admin-user-password";
 import { assertFullAdmin } from "@/lib/auth/require-admin";
 import {
+  getApprovedNonAdminProfile,
   getProfileByEmail,
+  searchApprovedMembersNotAdmin,
   setProfileAdminAccess,
   setProfileAdminAccessByEmail,
 } from "@/lib/repositories/admin-access-repository";
 import {
   adminAccessEmailSchema,
   grantAdminAccessSchema,
-  setAdminPasswordSchema,
   updateAdminAccessSchema,
 } from "@/lib/validations/admin-access";
 import type { AdminScope } from "@/types/database";
@@ -20,95 +20,60 @@ const scopesFromForm = (
   invitations: boolean,
   certificates: boolean,
   julyAwardCards: boolean,
-  julyAwardParticipants: boolean
+  julyAwardParticipants: boolean,
+  orgPortal: boolean
 ): AdminScope[] => {
   const scopes: AdminScope[] = [];
   if (invitations) scopes.push("invitations");
   if (certificates) scopes.push("certificates");
   if (julyAwardCards) scopes.push("july_award_cards");
   if (julyAwardParticipants) scopes.push("july_award_participants");
+  if (orgPortal) scopes.push("org_portal");
   return scopes;
 };
 
 export type AdminAccessActionState = { error?: string; success?: boolean };
 
-export async function grantAdminAccessByEmailAction(
+/** Approved members only — no manual email/password account creation from here. */
+export async function searchAdminMemberCandidatesAction(query: string) {
+  await assertFullAdmin();
+  if (query.trim().length < 2) return [];
+  return searchApprovedMembersNotAdmin(query.trim());
+}
+
+export async function grantAdminAccessAction(
   _prev: AdminAccessActionState,
   formData: FormData,
 ): Promise<AdminAccessActionState> {
   try {
     await assertFullAdmin();
     const parsed = grantAdminAccessSchema.safeParse({
-      email: formData.get("email"),
-      password: formData.get("password"),
+      memberId: formData.get("memberId"),
       invitations: formData.get("invitations") === "on",
       certificates: formData.get("certificates") === "on",
       julyAwardCards: formData.get("julyAwardCards") === "on",
       julyAwardParticipants: formData.get("julyAwardParticipants") === "on",
+      orgPortal: formData.get("orgPortal") === "on",
+      adminTitle: formData.get("adminTitle"),
     });
     if (!parsed.success) {
       const fieldErrors = parsed.error.flatten().fieldErrors;
-      return {
-        error:
-          fieldErrors.email?.[0] ??
-          fieldErrors.password?.[0] ??
-          parsed.error.message,
-      };
+      return { error: fieldErrors.memberId?.[0] ?? parsed.error.message };
     }
-    const { userId } = await provisionAdminCredentials({
-      email: parsed.data.email,
-      password: parsed.data.password,
-    });
-    await setProfileAdminAccess(userId, {
+    const candidate = await getApprovedNonAdminProfile(parsed.data.memberId);
+    if (!candidate) {
+      return { error: "That member is no longer available — refresh and search again" };
+    }
+    await setProfileAdminAccess(candidate.id, {
       role: "admin",
       admin_scopes: scopesFromForm(
         parsed.data.invitations,
         parsed.data.certificates,
         parsed.data.julyAwardCards,
-        parsed.data.julyAwardParticipants
+        parsed.data.julyAwardParticipants,
+        parsed.data.orgPortal
       ),
-    });
-    revalidatePath("/admin/access");
-    return { success: true };
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "Unauthorized" };
-  }
-}
-
-export async function setAdminPasswordByEmailAction(
-  _prev: AdminAccessActionState,
-  formData: FormData,
-): Promise<AdminAccessActionState> {
-  try {
-    const { user } = await assertFullAdmin();
-    const parsed = setAdminPasswordSchema.safeParse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
-    if (!parsed.success) {
-      const fieldErrors = parsed.error.flatten().fieldErrors;
-      return {
-        error:
-          fieldErrors.email?.[0] ??
-          fieldErrors.password?.[0] ??
-          parsed.error.message,
-      };
-    }
-    const email = parsed.data.email.toLowerCase();
-    const profile = await getProfileByEmail(email);
-    if (!profile) {
-      return { error: "Account not found" };
-    }
-    if (profile.id === user.id) {
-      return { error: "Your primary admin account cannot be changed here" };
-    }
-    if (profile.role !== "admin") {
-      return { error: "That email is not an admin account" };
-    }
-    await provisionAdminCredentials({
-      email: parsed.data.email,
-      password: parsed.data.password,
-      displayName: profile.full_name,
+      admin_title: parsed.data.adminTitle ?? null,
     });
     revalidatePath("/admin/access");
     return { success: true };
@@ -155,6 +120,8 @@ export async function updateAdminAccessByEmailAction(
       certificates: formData.get("certificates") === "on",
       julyAwardCards: formData.get("julyAwardCards") === "on",
       julyAwardParticipants: formData.get("julyAwardParticipants") === "on",
+      orgPortal: formData.get("orgPortal") === "on",
+      adminTitle: formData.get("adminTitle"),
     });
     if (!parsed.success) {
       return { error: "Invalid input" };
@@ -173,8 +140,10 @@ export async function updateAdminAccessByEmailAction(
         parsed.data.invitations,
         parsed.data.certificates,
         parsed.data.julyAwardCards,
-        parsed.data.julyAwardParticipants
+        parsed.data.julyAwardParticipants,
+        parsed.data.orgPortal
       ),
+      admin_title: parsed.data.adminTitle ?? null,
     });
     revalidatePath("/admin/access");
     return { success: true };

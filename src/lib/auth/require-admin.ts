@@ -1,3 +1,14 @@
+/**
+ * SRD role mapping (no separate role table — mapped onto role + admin_scopes):
+ *  - Resident / Super Admin        → role "admin", admin_scopes: [] (full admin)
+ *  - Central Forum Mgmt Secretary /
+ *    Authorized Central Committee
+ *    Officer                       → role "admin", admin_scopes includes granted scopes
+ *                                     (e.g. "org_portal" for the Forum/org module — no implicit
+ *                                     access beyond what's granted)
+ *  - Forum Convenor / Secondary
+ *    Reporter / Forum member       → role "member"; see require-reporter.ts for Forum-level access
+ */
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db/prisma";
 import {
@@ -67,6 +78,8 @@ export async function assertAdminScope(scope: AdminScope): Promise<AdminAuthCont
     july_award_participants: ctx.access.canJulyAwardParticipants,
     monitoring_form: ctx.access.canMonitoringForm,
     mun_form: ctx.access.canMunForm,
+    babbf_registrations: ctx.access.canBabbfRegistrations,
+    org_portal: ctx.access.canOrgPortal,
   }[scope];
   if (!allowed) {
     throw new Error("Forbidden");

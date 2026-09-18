@@ -23,6 +23,9 @@ export default async function ReporterPortalLayout({ children }: { children: Rea
             <Link href="/portal/me" className="rounded-md px-2 py-1 hover:bg-stone-100 dark:hover:bg-stone-800">
               My Forum Activity
             </Link>
+            <Link href="/portal/reporter/members" className="rounded-md px-2 py-1 hover:bg-stone-100 dark:hover:bg-stone-800">
+              Members
+            </Link>
             <form action={signOut}>
               <button
                 type="submit"

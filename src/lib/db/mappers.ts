@@ -123,8 +123,17 @@ export function toProfile(p: PrismaProfile): Profile {
     role: p.role as Profile["role"],
     admin_scopes: (p.admin_scopes ?? []).filter(
       (s): s is Profile["admin_scopes"][number] =>
-        s === "invitations" || s === "certificates" || s === "july_award_cards" || s === "july_award_participants",
+        s === "invitations" ||
+        s === "certificates" ||
+        s === "july_award_cards" ||
+        s === "july_award_participants" ||
+        s === "monitoring_form" ||
+        s === "mun_form" ||
+        s === "org_portal",
     ),
+    admin_title: (p.admin_title === "central_forum_secretary" || p.admin_title === "central_committee_officer")
+      ? p.admin_title
+      : null,
     membership_status: p.membership_status as Profile["membership_status"],
     account_status: p.account_status as Profile["account_status"],
     first_login_required: p.first_login_required,

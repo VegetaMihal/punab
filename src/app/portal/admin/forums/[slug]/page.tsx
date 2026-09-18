@@ -83,6 +83,7 @@ export default async function ForumDetailPage({ params }: { params: Promise<{ sl
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Campus committee</h2>
           <CampusCommitteePanel
             forumId={forum.id}
+            forumName={forum.name}
             roles={campusRoles.map((r) => ({
               id: r.id,
               campusName: r.campus.name,

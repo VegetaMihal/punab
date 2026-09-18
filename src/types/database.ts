@@ -74,7 +74,11 @@ export type AdminScope =
   | "july_award_cards"
   | "july_award_participants"
   | "monitoring_form"
-  | "mun_form";
+  | "mun_form"
+  | "babbf_registrations"
+  | "org_portal";
+/** Job title for an org_portal-scoped admin — picks between two SRD titles carrying the same permission scope. */
+export type AdminTitle = "central_forum_secretary" | "central_committee_officer";
 
 export type Profile = {
   id: string;
@@ -82,6 +86,7 @@ export type Profile = {
   email: string;
   role: ProfileRole;
   admin_scopes: AdminScope[];
+  admin_title: AdminTitle | null;
   membership_status: MembershipStatus;
   account_status: AccountStatus;
   first_login_required: boolean;

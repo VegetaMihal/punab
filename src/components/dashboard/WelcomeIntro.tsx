@@ -83,14 +83,14 @@ export function WelcomeIntro({ fullName, photoUrl }: { fullName: string; photoUr
             alt="PUNAB"
             width={72}
             height={72}
-            className="mx-auto h-16 w-16 rounded-full bg-white p-1.5 shadow-lg"
+            className="mx-auto h-16 w-16 rounded-xl bg-white p-1.5 shadow-lg"
             priority
           />
         )}
         <p className="mt-3 text-sm font-semibold text-white/90">{fullName}</p>
 
         <div key={step} className="animate-[welcomeFadeIn_0.6s_ease-out] mt-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:color-mix(in_srgb,var(--brand-green)_75%,white)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
             {current.eyebrow}
           </p>
           <h1 className="mt-4 text-4xl font-black tracking-tight text-white sm:text-5xl">{current.title}</h1>
