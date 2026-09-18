@@ -1,16 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState } from "react";
 import {
-  grantAdminAccessByEmailAction,
+  grantAdminAccessAction,
   revokeAdminAccessByEmailAction,
   updateAdminAccessByEmailAction,
   type AdminAccessActionState,
 } from "@/actions/admin-access";
-import { AdminPasswordResetForm } from "@/components/admin/AdminPasswordResetForm";
-import { EditableGeneratedPasswordField } from "@/components/admin/EditableGeneratedPasswordField";
+import { AdminMemberCombobox } from "@/components/admin/AdminMemberCombobox";
 import { resolveAdminAccess } from "@/lib/auth/admin-access";
-import type { Profile } from "@/types/database";
+import type { AdminTitle, Profile } from "@/types/database";
 
 type Props = {
   admins: Profile[];
@@ -18,6 +17,11 @@ type Props = {
 };
 
 const initial: AdminAccessActionState = {};
+
+const ADMIN_TITLE_LABELS: Record<AdminTitle, string> = {
+  central_forum_secretary: "Central Forum Management Secretary",
+  central_committee_officer: "Authorized Central Committee Officer",
+};
 
 function accessLabel(profile: Profile): string {
   const access = resolveAdminAccess(profile);
@@ -27,6 +31,9 @@ function accessLabel(profile: Profile): string {
   if (access.canJulyAwardCards) parts.push("July Award cards");
   if (access.canCertificates) parts.push("Certificates");
   if (access.canJulyAwardParticipants) parts.push("July Award participants");
+  if (access.canOrgPortal) {
+    parts.push(`Org Portal${profile.admin_title ? ` — ${ADMIN_TITLE_LABELS[profile.admin_title]}` : ""}`);
+  }
   return parts.length > 0 ? parts.join(", ") : "Admin (no scopes)";
 }
 
@@ -49,18 +56,9 @@ function StatusBanner({ state }: { state: AdminAccessActionState }) {
 }
 
 export function AdminAccessManager({ admins, currentUserEmail }: Props) {
-  const [grantState, grantAction, grantPending] = useActionState(grantAdminAccessByEmailAction, initial);
+  const [grantState, grantAction, grantPending] = useActionState(grantAdminAccessAction, initial);
   const [updateState, updateAction, updatePending] = useActionState(updateAdminAccessByEmailAction, initial);
   const [revokeState, revokeAction, revokePending] = useActionState(revokeAdminAccessByEmailAction, initial);
-  const [grantKey, setGrantKey] = useState(0);
-  const didIncrementForGrant = useRef(false);
-  useEffect(() => {
-    if (grantPending) { didIncrementForGrant.current = false; return; }
-    if (!grantState.success || didIncrementForGrant.current) return;
-    didIncrementForGrant.current = true;
-    try { sessionStorage.removeItem(`edgpf_password_${grantKey}`); } catch {}
-    setGrantKey((k) => k + 1);
-  }, [grantPending, grantState.success, grantKey]);
 
   const bannerState =
     [grantState, updateState, revokeState].find((s) => s.error || s.success) ?? initial;
@@ -72,27 +70,16 @@ export function AdminAccessManager({ admins, currentUserEmail }: Props) {
       <section>
         <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-50">Add admin access</h2>
         <p className="mt-1 text-xs text-muted">
-          Enter any email — no signup needed. Coordinator logs in at /login with the email and password you set.
-          Password auto-generates; edit or regenerate before saving. Leave all scopes unchecked for full admin.
+          Search an already-approved member below and grant them admin access — no manual email/password
+          account creation here. Leave all scopes unchecked for full admin.
+        </p>
+        <p className="mt-1 text-xs text-muted">
+          Org Portal here is for Authorized Central Committee Officers (org-wide, permission-based).
+          Forum Secretary / Convenor access is not granted here — it comes automatically from a
+          member&apos;s seat on a Forum (Forum page → Add Member).
         </p>
         <form action={grantAction} className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-          <label className="flex min-w-[220px] flex-1 flex-col gap-1 text-xs">
-            <span className="font-medium text-stone-700 dark:text-stone-300">Email</span>
-            <input
-              type="email"
-              name="email"
-              required
-              autoComplete="off"
-              placeholder="person@university.edu"
-              className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-600 dark:bg-stone-900"
-            />
-          </label>
-          <EditableGeneratedPasswordField
-            key={grantKey}
-            instanceKey={grantKey}
-            className="min-w-[280px] flex-1 text-xs"
-            inputClassName="w-full rounded-md border border-stone-300 bg-white px-3 py-2 font-mono text-sm dark:border-stone-600 dark:bg-stone-900"
-          />
+          <AdminMemberCombobox name="memberId" />
           <label className="flex items-center gap-2 text-xs">
             <input type="checkbox" name="invitations" className="rounded" />
             Invitations only
@@ -108,6 +95,22 @@ export function AdminAccessManager({ admins, currentUserEmail }: Props) {
           <label className="flex items-center gap-2 text-xs">
             <input type="checkbox" name="julyAwardParticipants" className="rounded" />
             July Award participants only
+          </label>
+          <label className="flex items-center gap-2 text-xs">
+            <input type="checkbox" name="orgPortal" className="rounded" />
+            Org Portal only
+          </label>
+          <label className="flex min-w-[220px] flex-1 flex-col gap-1 text-xs">
+            <span className="font-medium text-stone-700 dark:text-stone-300">Org Portal job title</span>
+            <select
+              name="adminTitle"
+              defaultValue=""
+              className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-600 dark:bg-stone-900"
+            >
+              <option value="">— none —</option>
+              <option value="central_forum_secretary">Central Forum Management Secretary</option>
+              <option value="central_committee_officer">Authorized Central Committee Officer</option>
+            </select>
           </label>
           <button
             type="submit"
@@ -148,7 +151,11 @@ export function AdminAccessManager({ admins, currentUserEmail }: Props) {
                           <span className="text-xs text-muted">Primary account — not editable here</span>
                         ) : (
                           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                            <form action={updateAction} className="flex flex-wrap items-center gap-2">
+                            <form
+                              key={`${p.admin_scopes.join(",")}|${p.admin_title ?? ""}`}
+                              action={updateAction}
+                              className="flex flex-wrap items-center gap-2"
+                            >
                               <input type="hidden" name="email" value={p.email} />
                               <label className="flex items-center gap-1 text-xs">
                                 <input
@@ -190,6 +197,28 @@ export function AdminAccessManager({ admins, currentUserEmail }: Props) {
                                 />
                                 July Award participants
                               </label>
+                              <label className="flex items-center gap-1 text-xs">
+                                <input
+                                  type="checkbox"
+                                  name="orgPortal"
+                                  defaultChecked={access.canOrgPortal && !access.isFullAdmin}
+                                  disabled={updatePending}
+                                  className="rounded"
+                                />
+                                Org Portal
+                              </label>
+                              {!access.isFullAdmin && (
+                                <select
+                                  name="adminTitle"
+                                  defaultValue={p.admin_title ?? ""}
+                                  disabled={updatePending}
+                                  className="rounded-md border border-stone-300 bg-white px-2 py-1 text-xs dark:border-stone-600 dark:bg-stone-900"
+                                >
+                                  <option value="">— job title —</option>
+                                  <option value="central_forum_secretary">Central Forum Mgmt Secretary</option>
+                                  <option value="central_committee_officer">Central Committee Officer</option>
+                                </select>
+                              )}
                               <button
                                 type="submit"
                                 disabled={updatePending}
@@ -198,7 +227,6 @@ export function AdminAccessManager({ admins, currentUserEmail }: Props) {
                                 Update
                               </button>
                             </form>
-                            <AdminPasswordResetForm email={p.email} />
                             <form action={revokeAction}>
                               <input type="hidden" name="email" value={p.email} />
                               <button

@@ -1,8 +1,17 @@
 import { toProfile } from "@/lib/db/mappers";
 import { prisma } from "@/lib/db/prisma";
-import type { AdminScope, Profile } from "@/types/database";
+import type { AdminScope, AdminTitle, Profile } from "@/types/database";
 
-const ALLOWED = new Set<AdminScope>(["invitations", "certificates", "july_award_cards", "july_award_participants"]);
+const ALLOWED = new Set<AdminScope>([
+  "invitations",
+  "certificates",
+  "july_award_cards",
+  "july_award_participants",
+  "monitoring_form",
+  "mun_form",
+  "babbf_registrations",
+  "org_portal",
+]);
 
 function normalizeScopes(scopes: AdminScope[]): AdminScope[] {
   return [...new Set(scopes.filter((s) => ALLOWED.has(s)))];
@@ -23,56 +32,45 @@ export async function getProfileByEmail(email: string): Promise<Profile | null> 
   return row ? toProfile(row) : null;
 }
 
+export async function getApprovedNonAdminProfile(memberId: string): Promise<Profile | null> {
+  const row = await prisma.profile.findFirst({
+    where: { id: memberId, membership_status: "approved", role: { not: "admin" } },
+  });
+  return row ? toProfile(row) : null;
+}
+
+/** Type-to-search candidates for granting admin access — approved members only, excludes existing admins. */
+export async function searchApprovedMembersNotAdmin(query: string) {
+  return prisma.profile.findMany({
+    where: {
+      membership_status: "approved",
+      role: { not: "admin" },
+      OR: [
+        { full_name: { contains: query, mode: "insensitive" } },
+        { email: { contains: query, mode: "insensitive" } },
+      ],
+    },
+    select: { id: true, full_name: true, email: true },
+    orderBy: { full_name: "asc" },
+    take: 20,
+  });
+}
+
 export async function setProfileAdminAccess(
   profileId: string,
-  input: { role: "admin" | "member"; admin_scopes: AdminScope[] },
+  input: { role: "admin" | "member"; admin_scopes: AdminScope[]; admin_title?: AdminTitle | null },
 ): Promise<Profile | null> {
-  const scopes = input.role === "admin" ? normalizeScopes(input.admin_scopes) : [];
+  const wantsTitle = input.role === "admin" && Boolean(input.admin_title);
+  // Picking an Org Portal job title implies the org_portal scope — no need to also tick the checkbox.
+  const rawScopes = wantsTitle ? [...input.admin_scopes, "org_portal" as AdminScope] : input.admin_scopes;
+  const scopes = input.role === "admin" ? normalizeScopes(rawScopes) : [];
+  const title = input.role === "admin" && scopes.includes("org_portal") ? (input.admin_title ?? null) : null;
   const row = await prisma.profile.update({
     where: { id: profileId },
     data: {
       role: input.role,
       admin_scopes: scopes,
-    },
-  });
-  return toProfile(row);
-}
-
-/** Minimal profile for admin-only coordinators (no member signup). */
-/** Align profiles.id with auth.users.id when they diverged (e.g. seeded admin@punab.test). */
-export async function syncProfileIdToAuthUser(input: {
-  email: string;
-  authUserId: string;
-}): Promise<void> {
-  const profile = await getProfileByEmail(input.email);
-  if (!profile || profile.id === input.authUserId) return;
-
-  const conflict = await prisma.profile.findUnique({ where: { id: input.authUserId } });
-  if (conflict) {
-    throw new Error(
-      `Cannot link ${input.email}: another profile already uses this login id. Ask support to merge accounts.`,
-    );
-  }
-
-  await prisma.$executeRaw`
-    UPDATE profiles
-    SET id = ${input.authUserId}::uuid, updated_at = now()
-    WHERE id = ${profile.id}::uuid
-  `;
-}
-
-export async function createProvisionerProfile(input: {
-  id: string;
-  email: string;
-  full_name: string;
-}): Promise<Profile> {
-  const row = await prisma.profile.create({
-    data: {
-      id: input.id,
-      full_name: input.full_name,
-      email: input.email.toLowerCase(),
-      role: "member",
-      membership_status: "approved",
+      admin_title: title,
     },
   });
   return toProfile(row);
@@ -80,7 +78,7 @@ export async function createProvisionerProfile(input: {
 
 export async function setProfileAdminAccessByEmail(
   email: string,
-  input: { role: "admin" | "member"; admin_scopes: AdminScope[] },
+  input: { role: "admin" | "member"; admin_scopes: AdminScope[]; admin_title?: AdminTitle | null },
 ): Promise<Profile | null> {
   const existing = await getProfileByEmail(email);
   if (!existing) return null;

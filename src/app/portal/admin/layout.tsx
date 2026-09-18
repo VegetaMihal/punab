@@ -4,14 +4,14 @@ import { signOut } from "@/actions/auth";
 import { getSessionProfile } from "@/lib/auth/session";
 
 export default async function OrgPortalAdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, profile, isFullAdmin } = await getSessionProfile();
+  const { user, profile, adminAccess } = await getSessionProfile();
   if (!user) {
     redirect("/login?redirect=/portal/admin/forums");
   }
   if (profile?.first_login_required) {
     redirect("/auth/change-password");
   }
-  if (!isFullAdmin) {
+  if (!adminAccess?.canOrgPortal) {
     redirect("/dashboard?notice=org-portal-access");
   }
 
@@ -26,6 +26,9 @@ export default async function OrgPortalAdminLayout({ children }: { children: Rea
             </Link>
             <Link href="/portal/admin/forums" className="rounded-md px-2 py-1.5 text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800">
               Forums
+            </Link>
+            <Link href="/portal/reporter/members" className="rounded-md px-2 py-1.5 text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800">
+              Members
             </Link>
             <Link href="/portal/admin/promotions" className="rounded-md px-2 py-1.5 text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800">
               Promotions

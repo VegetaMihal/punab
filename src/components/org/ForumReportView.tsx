@@ -4,6 +4,7 @@ import { listActiveForumMembers } from "@/lib/repositories/org-memberships-repos
 import { getOrCreateCurrentReport, getReportWithActivities } from "@/lib/repositories/org-reports-repository";
 import { listMonthlyPerformanceForReport, listRecommendationsForReport } from "@/lib/repositories/org-scoring-repository";
 import { getPlanWithActivities } from "@/lib/repositories/org-plans-repository";
+import { assertReportViewAccess } from "@/lib/auth/require-reporter";
 import { CreateActivityForm } from "@/components/org/CreateActivityForm";
 import { ActivityList } from "@/components/org/ActivityList";
 import { ReportSubmitPanel } from "@/components/org/ReportSubmitPanel";
@@ -20,6 +21,10 @@ const MONTH_NAMES = [
 export async function ForumReportView({ slug }: { slug: string }) {
   const forum = await getForumBySlug(slug);
   if (!forum) notFound();
+
+  // RBAC-003: enforce here, not just in the caller page — this view renders every member's
+  // scores/recommendations/comments for the Forum.
+  await assertReportViewAccess(forum.id);
 
   const reportShell = await getOrCreateCurrentReport(forum.id);
   const [report, activeMembers, performance, plan, recommendations] = await Promise.all([

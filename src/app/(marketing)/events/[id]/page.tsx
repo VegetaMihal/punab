@@ -64,6 +64,8 @@ export default async function EventDetailPage({ params }: Props) {
   const banner = ev.banner_url ? ensureSupabasePublicObjectUrl(ev.banner_url) : null;
   const badge = statusBadge(start, end);
   const paragraphs = ev.description ? ev.description.split(/\n{2,}/).filter((p) => p.trim()) : [];
+  // assumed: matched by title since Event has no dedicated "registration form" link field — adjust the match if the event title changes
+  const isBabbfChampionship = /babbf|armwrestl/i.test(ev.title);
 
   const badgeToneClass = {
     brand: "bg-[color:var(--color-brand)] text-white",
@@ -151,9 +153,14 @@ export default async function EventDetailPage({ params }: Props) {
 
         <Reveal>
           <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-[color:var(--color-border)] pt-8">
+            {isBabbfChampionship && (
+              <Button variant="primary" size="md" href="/babbf-championship-2026/register">
+                Register Now
+              </Button>
+            )}
             {ev.post_url && (
               <Button
-                variant="primary"
+                variant={isBabbfChampionship ? "secondary" : "primary"}
                 size="md"
                 href={ev.post_url}
                 {...(ev.post_url.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}

@@ -26,8 +26,7 @@ export default async function AdminAccessPage() {
     <div>
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50">Admin access</h1>
       <p className="mt-1 text-sm text-muted">
-        Add coordinators by email and password — they can log in immediately without signing up. Leave both scopes
-        unchecked when adding for full admin.
+        Grant admin access to an already-approved member. Leave all scopes unchecked for full admin.
       </p>
       <div className="mt-8 rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
         {error && <EmptyState title="Could not load admins" description={error} />}

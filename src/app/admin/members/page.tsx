@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MembersTable } from "@/components/admin/MembersTable";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { listAllProfilesAdmin } from "@/lib/repositories/profiles-repository";
+import { getOrgRoleLabels, listAllProfilesAdmin } from "@/lib/repositories/profiles-repository";
 import type { MembershipStatus } from "@/types/database";
 
 export const metadata = {
@@ -23,12 +23,14 @@ export default async function AdminMembersPage({ searchParams }: Props) {
   const status = TABS.find((t) => t.value === statusParam)?.value;
 
   let profiles: Awaited<ReturnType<typeof listAllProfilesAdmin>>["profiles"] = [];
+  let orgRoles = new Map<string, string>();
   let total = 0;
   let pageSize = 50;
   let error: string | null = null;
 
   try {
     ({ profiles, total, pageSize } = await listAllProfilesAdmin(page, status));
+    orgRoles = await getOrgRoleLabels(profiles.map((p) => p.id));
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load";
   }
@@ -38,7 +40,11 @@ export default async function AdminMembersPage({ searchParams }: Props) {
   return (
     <div>
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50">Member applications</h1>
-      <p className="mt-1 text-sm text-muted">Approve, reject, or reset membership status.</p>
+      <p className="mt-1 text-sm text-muted">
+        Approve, reject, or reset membership status. To grant admin access, use{" "}
+        <Link href="/admin/access" className="text-brand-green hover:underline">Admin access</Link>. Forum roles
+        (Convenor, Reporter, etc.) come from a Forum&apos;s own Members page.
+      </p>
       <div className="mt-4 flex gap-2 text-sm">
         {TABS.map((t) => (
           <Link
@@ -59,7 +65,9 @@ export default async function AdminMembersPage({ searchParams }: Props) {
         {!error && profiles.length === 0 && (
           <EmptyState title="No profiles" description="No members have registered yet." />
         )}
-        {!error && profiles.length > 0 && <MembersTable members={profiles} />}
+        {!error && profiles.length > 0 && (
+          <MembersTable members={profiles} orgRoles={Object.fromEntries(orgRoles)} />
+        )}
       </div>
       {!error && totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between text-sm text-muted">

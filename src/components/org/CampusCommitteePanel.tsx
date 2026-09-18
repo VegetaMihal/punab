@@ -12,11 +12,13 @@ type CampusRole = { id: string; campusName: string; memberName: string; level: s
 
 export function CampusCommitteePanel({
   forumId,
+  forumName,
   roles,
   campuses,
   members,
 }: {
   forumId: string;
+  forumName: string;
   roles: CampusRole[];
   campuses: { id: string; name: string }[];
   members: { id: string; full_name: string; email: string }[];
@@ -48,7 +50,7 @@ export function CampusCommitteePanel({
             <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm">
               <span>{r.memberName} — {r.campusName}</span>
               <span className="flex items-center gap-3">
-                <span className="text-xs text-muted">{campusLevelLabel(r.level)}</span>
+                <span className="text-xs text-muted">{campusLevelLabel(r.level, forumName)}</span>
                 <button
                   type="button"
                   disabled={removing}
@@ -91,9 +93,9 @@ export function CampusCommitteePanel({
           <div>
             <label htmlFor="campusLevel" className="ds-label">At what level?</label>
             <select id="campusLevel" name="campusLevel" defaultValue="member" className="ds-select">
-              <option value="member">{campusLevelLabel("member")}</option>
-              <option value="associate">{campusLevelLabel("associate")}</option>
-              <option value="representative">{campusLevelLabel("representative")}</option>
+              <option value="member">{campusLevelLabel("member", forumName)}</option>
+              <option value="associate">{campusLevelLabel("associate", forumName)}</option>
+              <option value="representative">{campusLevelLabel("representative", forumName)}</option>
             </select>
           </div>
           <Button type="submit" variant="secondary" size="sm" loading={pending}>

@@ -50,18 +50,6 @@ export async function setMembershipStatus(profileId: string, status: MembershipS
   }
 }
 
-/** Full-admin-only role toggle. Only touches `role` — never membership_status or account provisioning. */
-export async function setMemberRole(profileId: string, role: "admin" | "member") {
-  try {
-    await assertFullAdmin();
-    await prisma.profile.update({ where: { id: profileId }, data: { role } });
-    revalidatePath("/admin/members");
-    return { success: true };
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "Unauthorized" };
-  }
-}
-
 /**
  * AUTH-001..003 approval flow: generates a temp password, sets it on the Supabase auth user,
  * flips the profile to pending-activation + first-login-required, and emails the credential.

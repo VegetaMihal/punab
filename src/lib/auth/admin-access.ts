@@ -10,6 +10,9 @@ export type AdminAccess = {
   canJulyAwardParticipants: boolean;
   canMonitoringForm: boolean;
   canMunForm: boolean;
+  canBabbfRegistrations: boolean;
+  /** Central Forum Management Secretary / Authorized Central Committee Officer — org/forum portal (`/portal/admin/*`). */
+  canOrgPortal: boolean;
   scopes: AdminScope[];
 };
 
@@ -20,6 +23,8 @@ const ADMIN_SCOPES = new Set<AdminScope>([
   "july_award_participants",
   "monitoring_form",
   "mun_form",
+  "babbf_registrations",
+  "org_portal",
 ]);
 
 function parseScopes(raw: readonly string[] | null | undefined): AdminScope[] {
@@ -42,6 +47,8 @@ export function resolveAdminAccess(profile: {
       canJulyAwardParticipants: false,
       canMonitoringForm: false,
       canMunForm: false,
+      canBabbfRegistrations: false,
+      canOrgPortal: false,
       scopes: [],
     };
   }
@@ -57,6 +64,8 @@ export function resolveAdminAccess(profile: {
     canJulyAwardParticipants: isFullAdmin || scopes.includes("july_award_participants"),
     canMonitoringForm: isFullAdmin || scopes.includes("monitoring_form"),
     canMunForm: isFullAdmin || scopes.includes("mun_form"),
+    canBabbfRegistrations: isFullAdmin || scopes.includes("babbf_registrations"),
+    canOrgPortal: isFullAdmin || scopes.includes("org_portal"),
     scopes,
   };
 }
@@ -87,6 +96,12 @@ export function canAccessAdminPath(access: AdminAccess, pathname: string): boole
   if (pathname.startsWith("/admin/mun-form") || pathname.startsWith("/api/admin/mun-form")) {
     return access.canMunForm;
   }
+  if (pathname.startsWith("/admin/babbf-registrations") || pathname.startsWith("/api/admin/babbf-registrations")) {
+    return access.canBabbfRegistrations;
+  }
+  if (pathname.startsWith("/portal/admin")) {
+    return access.canOrgPortal;
+  }
   return false;
 }
 
@@ -113,6 +128,7 @@ export function navLinksForAdminAccess(access: AdminAccess): { href: string; lab
     { href: "/admin/july-award/trends", label: "July Award trends" },
     { href: "/admin/monitoring-form", label: "Monitoring form" },
     { href: "/admin/mun-form", label: "IMUN applications" },
+    { href: "/admin/babbf-registrations", label: "BABBF Championship registrations" },
     { href: "/admin/access", label: "Admin access" },
   ];
   if (access.isFullAdmin) return all;
@@ -128,5 +144,8 @@ export function navLinksForAdminAccess(access: AdminAccess): { href: string; lab
   if (access.canCertificates) links.push({ href: "/admin/certificates", label: "Certificates" });
   if (access.canMonitoringForm) links.push({ href: "/admin/monitoring-form", label: "Monitoring form" });
   if (access.canMunForm) links.push({ href: "/admin/mun-form", label: "IMUN applications" });
+  if (access.canBabbfRegistrations) {
+    links.push({ href: "/admin/babbf-registrations", label: "BABBF Championship registrations" });
+  }
   return links;
 }

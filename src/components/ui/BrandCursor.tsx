@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 const JULY_AWARD_PREFIX = "/july-award-2026";
 const MONITORING_FORM_PREFIX = "/monitoring-form";
 const MUN_PREFIX = "/imun-2026";
+const BABBF_PREFIX = "/babbf-championship-2026";
 const MAX_PARTICLES = 96;
 const SPAWN_MS_SPARKLE = 20;
 const SPAWN_MS_BLOOD = 34;
@@ -23,6 +24,11 @@ function isJulyAwardPath(pathname: string | null) {
 function isMunPath(pathname: string | null) {
   if (!pathname) return false;
   return pathname === MUN_PREFIX || pathname.startsWith(`${MUN_PREFIX}/`);
+}
+
+function isBabbfPath(pathname: string | null) {
+  if (!pathname) return false;
+  return pathname === BABBF_PREFIX || pathname.startsWith(`${BABBF_PREFIX}/`);
 }
 
 function trimParticles(root: HTMLDivElement) {
@@ -81,6 +87,7 @@ function spawnBloodDrop(root: HTMLDivElement, x: number, y: number) {
 
 export function BrandCursor() {
   const pathname = usePathname();
+  const disabled = isBabbfPath(pathname);
   const mode: CursorMode = isJulyAwardPath(pathname) ? "blood" : isMunPath(pathname) ? "gold" : "sparkle";
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -91,6 +98,11 @@ export function BrandCursor() {
 
   useEffect(() => {
     const root = rootRef.current;
+    if (disabled) {
+      root?.replaceChildren();
+      root?.classList.add("hidden");
+      return;
+    }
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     if (reduceMotion.matches) {
@@ -196,7 +208,7 @@ export function BrandCursor() {
       root?.replaceChildren();
       root?.classList.add("hidden");
     };
-  }, [mode]);
+  }, [mode, disabled]);
 
   return (
     <div

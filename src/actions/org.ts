@@ -1,11 +1,14 @@
 "use server";
 
-import { assertFullAdmin } from "@/lib/auth/require-admin";
+import { assertAdminScope, assertFullAdmin } from "@/lib/auth/require-admin";
 import {
+  assertCanManageMembers,
+  assertCanManageReporters,
   assertCanSubmitReport,
   assertReporterAccess,
   resolveForumIdForAssignment,
   resolveForumIdForReport,
+  resolveForumIdForReporterAssignment,
 } from "@/lib/auth/require-reporter";
 import {
   changeForumStatus,
@@ -147,7 +150,7 @@ export async function setForumStatusAction(
 /** Type-to-search for the member combobox — scoped to a Forum so thousands of members never hit the browser at once. */
 export async function searchForumMemberCandidatesAction(forumId: string, query: string) {
   try {
-    await assertFullAdmin();
+    await assertCanManageMembers(forumId);
   } catch {
     return [];
   }
@@ -159,14 +162,6 @@ export async function addForumMembershipAction(
   _prev: OrgActionState,
   formData: FormData
 ): Promise<OrgActionState> {
-  let userId: string;
-  try {
-    const ctx = await assertFullAdmin();
-    userId = ctx.user.id;
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "Unauthorized" };
-  }
-
   const parsed = addForumMembershipSchema.safeParse({
     forumId: formData.get("forumId"),
     memberId: formData.get("memberId"),
@@ -177,14 +172,26 @@ export async function addForumMembershipAction(
     return { error: f.memberId?.[0] ?? f.designationLevelId?.[0] ?? parsed.error.message };
   }
 
-  await addForumMembership({
+  let userId: string;
+  try {
+    const ctx = await assertCanManageMembers(parsed.data.forumId);
+    userId = ctx.userId;
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Unauthorized" };
+  }
+
+  const result = await addForumMembership({
     forumId: parsed.data.forumId,
     memberId: parsed.data.memberId,
     designationLevelId: parsed.data.designationLevelId,
     addedBy: userId,
   });
+  if (!result.ok) {
+    return { error: result.reason };
+  }
 
   revalidatePath("/portal/admin/forums", "layout");
+  revalidatePath("/portal/reporter/members", "layout");
   return { success: true };
 }
 
@@ -192,14 +199,6 @@ export async function assignReporterAction(
   _prev: OrgActionState,
   formData: FormData
 ): Promise<OrgActionState> {
-  let authorizedBy: string;
-  try {
-    const ctx = await assertFullAdmin();
-    authorizedBy = ctx.user.id;
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "Unauthorized" };
-  }
-
   const parsed = assignReporterSchema.safeParse({
     forumId: formData.get("forumId"),
     memberId: formData.get("memberId"),
@@ -209,20 +208,31 @@ export async function assignReporterAction(
     return { error: parsed.error.message };
   }
 
+  let authorizedBy: string;
+  try {
+    const ctx = await assertCanManageReporters(parsed.data.forumId, parsed.data.reporterType);
+    authorizedBy = ctx.userId;
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Unauthorized" };
+  }
+
   const result = await assignReporter({ ...parsed.data, authorizedBy });
   if (!result.ok) {
     return { error: result.reason };
   }
 
   revalidatePath("/portal/admin/forums", "layout");
+  revalidatePath("/portal/reporter", "layout");
   return { success: true };
 }
 
 export async function revokeReporterAction(assignmentId: string) {
   try {
-    const ctx = await assertFullAdmin();
-    await revokeReporterAssignment(assignmentId, ctx.user.id);
+    const { forumId, reporterType } = await resolveForumIdForReporterAssignment(assignmentId);
+    const ctx = await assertCanManageReporters(forumId, reporterType);
+    await revokeReporterAssignment(assignmentId, ctx.userId);
     revalidatePath("/portal/admin/forums", "layout");
+    revalidatePath("/portal/reporter", "layout");
     return { success: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
@@ -357,7 +367,7 @@ export async function reopenReportAction(
 ): Promise<OrgActionState> {
   let reopenedBy: string;
   try {
-    const ctx = await assertFullAdmin();
+    const ctx = await assertAdminScope("org_portal");
     reopenedBy = ctx.user.id;
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
