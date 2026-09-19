@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { InView } from "@/components/home/InView";
+import { WaveRibbon } from "@/components/home/WaveRibbon";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { SmartBackLink } from "@/components/ui/SmartBackLink";
 import { cn } from "@/components/ui/cn";
@@ -16,20 +18,14 @@ type Props = {
   logoUrl?: string | null;
 };
 
-export function PageHeader({ title, description, breadcrumbs, className, tone = "default", logoUrl }: Props) {
+export function PageHeader({ title, description, breadcrumbs, className, logoUrl }: Props) {
   const breadcrumbFallback =
     breadcrumbs?.length && breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2]?.href : undefined;
   const backFallback = breadcrumbFallback || "/";
 
   return (
-    <div
-      className={cn(
-        "w-full border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] py-10 md:py-14",
-        tone === "pattern" &&
-          "bg-[linear-gradient(125deg,color-mix(in_srgb,var(--color-brand)_7%,var(--color-surface-2))_0%,var(--color-surface-2)_42%,color-mix(in_srgb,var(--color-brand)_6%,var(--color-surface-2))_100%)]",
-        className,
-      )}
-    >
+    <>
+    <div className={cn("w-full bg-[color:var(--color-bg)] pb-4 pt-10 md:pt-14", className)}>
       <MarketingContainer>
         <SmartBackLink
           fallbackHref={backFallback}
@@ -69,5 +65,9 @@ export function PageHeader({ title, description, breadcrumbs, className, tone = 
         )}
       </MarketingContainer>
     </div>
+    <InView variant="ribbon" className="bg-[#0f3b2e]">
+      <WaveRibbon from="#0f3b2e" to="#0f3b2e" />
+    </InView>
+    </>
   );
 }

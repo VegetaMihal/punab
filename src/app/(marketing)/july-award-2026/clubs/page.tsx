@@ -33,12 +33,12 @@ export default function JulyAward2026ClubsPage() {
             <em className="not-italic">and</em> debate—submit twice. Jurists read each file
             on its own merits.
           </p>
-          <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-9 sm:grid-cols-2 xl:grid-cols-3">
             {JULY_AWARD_CLUB_CATEGORIES.map((c, i) => (
               <li key={c.key}>
                 <Reveal staggerIndex={i % 6}>
-                  <Card variant="elevated" className="flex h-full flex-col border border-[color:var(--color-border)] p-6">
-                    <p className="text-small font-semibold uppercase tracking-wide text-[color:var(--brand-green)]">
+                  <Card variant="elevated" className={`wall-sheet wall-text ja-sheet flex h-full flex-col p-6 pt-9 ${i % 2 === 0 ? "-rotate-1" : "rotate-1"}`}>
+                    <p className="text-small font-extrabold uppercase tracking-wide text-[#a5182f]">
                       {String(i + 1).padStart(2, "0")}
                     </p>
                     <h3 className="text-h3 mt-2 text-[color:var(--color-text)]">{c.name}</h3>

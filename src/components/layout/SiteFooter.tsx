@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { InView } from "@/components/home/InView";
+import { WaveRibbon } from "@/components/home/WaveRibbon";
 import { Logo } from "@/components/layout/logo";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { cn } from "@/components/ui/cn";
 
 const footerLink =
-  "rounded-sm text-[color:var(--color-text-muted)] motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)] hover:text-[color:var(--color-brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[color:var(--color-brand)]";
+  "rounded-sm text-[#efeae0] motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)] hover:text-white hover:underline hover:decoration-[#e02a48] hover:decoration-2 hover:underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#efeae0]";
 
 export type FooterContent = {
   blurb: string;
@@ -47,14 +49,26 @@ export function SiteFooter({ content }: { content: FooterContent }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+    <footer className="mt-auto bg-[#0f3b2e] text-[#efeae0]">
+      <div className="footer-wave-crimson bg-[#c41e3a]" aria-hidden>
+        <svg className="block h-12 w-full sm:h-16" viewBox="0 0 1440 200" preserveAspectRatio="none">
+          <path d="M0,114 C 240,34 480,154 720,114 C 960,74 1200,194 1440,114 L1440,200 L0,200 Z" fill="#0f3b2e" />
+        </svg>
+      </div>
+      <div className="footer-wave-line">
+        <InView variant="ribbon" className="bg-[#0f3b2e]">
+          <WaveRibbon from="#0f3b2e" to="#0f3b2e" />
+        </InView>
+      </div>
       <MarketingContainer className="grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
         <div className="lg:col-span-1">
-          <Logo variant="footer" />
-          <p className="mt-3 max-w-sm text-small leading-relaxed text-[color:var(--color-text-muted)]">{content.blurb}</p>
+          <span className="inline-block rounded-sm bg-[color:var(--color-surface)] px-2 py-1.5">
+            <Logo variant="footer" />
+          </span>
+          <p className="mt-3 max-w-sm text-small leading-relaxed text-[#b9b3a6]">{content.blurb}</p>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--color-text-muted)]">Quick links</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#b9b3a6]">Quick links</p>
           <ul className="mt-4 space-y-2.5 text-small">
             <li>
               <Link href="/about" className={footerLink}>
@@ -99,10 +113,10 @@ export function SiteFooter({ content }: { content: FooterContent }) {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--color-text-muted)]">Services</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#b9b3a6]">Services</p>
           <ul className="mt-4 space-y-2.5 text-small">
             <li>
-              <span className="text-[color:var(--color-text-muted)]">BloodHero — coming soon</span>
+              <span className="text-[#b9b3a6]">BloodHero — coming soon</span>
             </li>
             <li>
               <Link href="/join" className={footerLink}>
@@ -117,12 +131,12 @@ export function SiteFooter({ content }: { content: FooterContent }) {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--color-text-muted)]">Contact</p>
-          <p className="mt-4 text-small leading-relaxed text-[color:var(--color-text-muted)]">{content.address}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#b9b3a6]">Contact</p>
+          <p className="mt-4 text-small leading-relaxed text-[#b9b3a6]">{content.address}</p>
           <p className="mt-3 text-small">
             <a
               href={`mailto:${content.email}`}
-              className={cn(footerLink, "font-medium text-[color:var(--accent)] hover:text-[color:var(--color-brand)]")}
+              className={cn(footerLink, "font-medium text-[#efeae0]")}
             >
               {content.email}
             </a>
@@ -130,7 +144,7 @@ export function SiteFooter({ content }: { content: FooterContent }) {
         </div>
       </MarketingContainer>
 
-      <div className="border-t border-[color:var(--color-border)]">
+      <div className="border-t border-white/15">
         <MarketingContainer className="flex flex-col items-center gap-6 py-8 sm:flex-row sm:justify-between sm:py-6">
           <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
             {social.map((s) => (
@@ -140,8 +154,8 @@ export function SiteFooter({ content }: { content: FooterContent }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-[var(--radius-full)] border border-[color:var(--color-border)] text-[color:var(--color-text-muted)] motion-safe:transition-[color,border-color,transform] motion-safe:duration-[var(--transition-fast)] hover:scale-[1.06] hover:border-[color:var(--color-brand)] hover:text-[color:var(--color-brand)]",
-                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[color:var(--color-brand)]",
+                  "flex h-10 w-10 items-center justify-center rounded-sm border border-white/30 text-[#efeae0] motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)] hover:border-[#e02a48] hover:bg-[#c41e3a]",
+                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#efeae0]",
                 )}
                 aria-label={s.label}
               >
@@ -150,11 +164,11 @@ export function SiteFooter({ content }: { content: FooterContent }) {
             ))}
           </div>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
-            <p className="text-center text-xs text-[color:var(--color-text-muted)] sm:text-left">
+            <p className="text-center text-xs text-[#b9b3a6] sm:text-left">
               © {year} PUNAB. All rights reserved.
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-medium uppercase tracking-wide text-[color:var(--color-text-muted)]">
+              <span className="text-[10px] font-medium uppercase tracking-wide text-[#b9b3a6]">
                 Developed by
               </span>
               <a
@@ -162,8 +176,8 @@ export function SiteFooter({ content }: { content: FooterContent }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "inline-flex shrink-0 rounded-sm opacity-90 motion-safe:transition-opacity hover:opacity-100",
-                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[color:var(--color-brand)]",
+                  "inline-flex shrink-0 rounded-sm bg-[color:var(--color-surface)] px-2 py-1 opacity-90 motion-safe:transition-opacity hover:opacity-100",
+                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#efeae0]",
                 )}
                 aria-label="NextGenIT — website by NextGenIT"
               >

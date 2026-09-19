@@ -1,8 +1,6 @@
+import { FormPageShell } from "@/components/ui/FormPageShell";
 import { JulyInjuredStudentRegistrationForm } from "@/components/marketing/JulyInjuredStudentRegistrationForm";
 import { Button } from "@/components/ui/Button";
-import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Section } from "@/components/ui/Section";
 import {
   isJulyInjuredStudentSheetsConfigured,
   JULY_INJURED_STUDENT_DEFAULT_TAB,
@@ -18,19 +16,13 @@ export default function JulyInjuredStudentRegisterPage() {
 
   return (
     <>
-      <PageHeader
-        title="Register as an injured student"
-        description="We will call you on the number you provide to confirm your details. Information is handled carefully and reviewed privately."
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "July Award 2026", href: "/july-award-2026" },
-          { label: "Injured student registration" },
-        ]}
-        tone="pattern"
-      />
 
-      <Section surface="white" divider={false} paddingY="section">
-        <MarketingContainer>
+      <FormPageShell
+        title="Register as an injured student"
+        lead="We will call you on the number you provide to confirm your details. Information is handled carefully and reviewed privately."
+        backHref="/july-award-2026"
+        backLabel="July Award 2026"
+      >
           {!sheetsReady && (
             <div
               className="mb-8 rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-4 py-3 text-small text-[color:var(--color-error)]"
@@ -45,14 +37,7 @@ export default function JulyInjuredStudentRegisterPage() {
           )}
 
           <JulyInjuredStudentRegistrationForm />
-
-          <p className="mt-10 text-center">
-            <Button href="/july-award-2026" variant="ghost" size="md">
-              ← July Award 2026
-            </Button>
-          </p>
-        </MarketingContainer>
-      </Section>
+        </FormPageShell>
     </>
   );
 }

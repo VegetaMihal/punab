@@ -17,7 +17,15 @@ export default async function MarketingLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader user={user} isAdmin={isAdmin} />
-      <main className="flex-1">{children}</main>
+      <main className="wall-site flex-1">
+        <svg aria-hidden width="0" height="0" className="absolute">
+          <filter id="wall-rough">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="5" />
+          </filter>
+        </svg>
+        {children}
+      </main>
       <SiteFooter
         content={{
           blurb: getSetting(settings, "footer.blurb"),

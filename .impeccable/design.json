@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-20T00:00:00Z",
+  "title": "Design System: PUNAB",
+  "extensions": {
+    "colorMeta": {
+      "wall-green": { "role": "primary", "displayName": "Wall Green", "canonical": "#0f3b2e", "tonalRamp": ["#04140f", "#072219", "#0a2c21", "#0f3b2e", "#2c5a4b", "#5c8578", "#94b3a8", "#d3e2dc"] },
+      "crimson": { "role": "primary", "displayName": "Crimson Paint", "canonical": "#c41e3a", "tonalRamp": ["#3a0810", "#5e0d1b", "#8f1629", "#c41e3a", "#d94e64", "#e77f90", "#f2b1bb", "#fbe3e7"] },
+      "chalk": { "role": "neutral", "displayName": "Chalk", "canonical": "#efeae0", "tonalRamp": ["#3a3830", "#57544a", "#78746a", "#9c988c", "#b9b3a6", "#d2cdc0", "#efeae0", "#faf8f3"] },
+      "paper": { "role": "neutral", "displayName": "Taped Paper", "canonical": "#e9e6dc", "tonalRamp": ["#1b1a17", "#3a382f", "#6b6859", "#a29e8e", "#d8d2c3", "#e9e6dc", "#f2f0e9", "#faf9f5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Brush Display", "purpose": "Hero Bangla line, one per page." },
+      "headline": { "displayName": "Brush Headline", "purpose": "Section h2s in chalk." },
+      "body": { "displayName": "Wall Text", "purpose": "Body copy, Bangla-first sans." },
+      "label": { "displayName": "Label", "purpose": "Uppercase link and kicker text." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "wall-wipe", "value": "clip-path reveal left to right", "purpose": "Headline entrance." },
+      { "name": "wall-paste", "value": "sheet drops in with tilt", "purpose": "Paper sheet entrance." },
+      { "name": "wave-line-draw", "value": "stroke-dashoffset 1 to 0", "purpose": "Crimson wave line draws left to right; green never moves." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "wall-btn",
+      "description": "Crimson wall button, square corners.",
+      "html": "<button class=\"ds-btn\">Become a Member</button>",
+      "css": ".ds-btn{background:#c41e3a;color:#efeae0;padding:14px 28px;border:0;border-radius:0;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:background .2s}.ds-btn:hover{background:#a5182f}.ds-btn:focus-visible{outline:3px solid #efeae0;outline-offset:3px}"
+    },
+    {
+      "name": "Chalk Button",
+      "kind": "button",
+      "refersTo": "wall-btn-chalk",
+      "description": "Chalk button for crimson band and nav.",
+      "html": "<button class=\"ds-btn-chalk\">Join</button>",
+      "css": ".ds-btn-chalk{background:#efeae0;color:#a5182f;padding:14px 28px;border:0;border-radius:0;font-weight:800;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.ds-btn-chalk:hover{background:#fffaf2}.ds-btn-chalk:focus-visible{outline:3px solid #0f3b2e;outline-offset:3px}"
+    },
+    {
+      "name": "Paper Sheet",
+      "kind": "card",
+      "refersTo": "wall-sheet",
+      "description": "Taped, tilted paper sheet; the only lifted surface.",
+      "html": "<div class=\"ds-sheet\"><span class=\"ds-tape\"></span><h3>Name</h3><p>Role</p></div>",
+      "css": ".ds-sheet{position:relative;background:#e9e6dc;color:#1b1a17;padding:32px 24px 24px;transform:rotate(-1deg);transition:transform .2s}.ds-sheet:hover{transform:translateY(-3px) rotate(0)}.ds-tape{position:absolute;top:-10px;left:50%;width:72px;height:22px;margin-left:-36px;background:rgba(224,42,72,.55);transform:rotate(3deg)}.ds-sheet h3{font-weight:800;margin:0}.ds-sheet p{color:#a5182f;border-bottom:3px solid #c41e3a;display:inline-block;margin:8px 0 0}"
+    },
+    {
+      "name": "Nav Bar",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Crimson bar, chalk labels, active underline.",
+      "html": "<nav class=\"ds-nav\"><a class=\"on\">Home</a><a>Forums</a><a>Events</a></nav>",
+      "css": ".ds-nav{background:#b01c34;display:flex;gap:24px;padding:16px 20px}.ds-nav a{color:#efeae0;font-weight:800;cursor:pointer;padding-bottom:2px}.ds-nav a.on{border-bottom:3px solid #efeae0}.ds-nav a:focus-visible{outline:2px solid #efeae0;outline-offset:3px}"
+    },
+    {
+      "name": "Wave Ribbon",
+      "kind": "custom",
+      "refersTo": "WaveRibbon",
+      "description": "Static green fill, crimson stroke drawn left to right.",
+      "html": "<svg class=\"ds-wave\" viewBox=\"0 0 1440 200\" preserveAspectRatio=\"none\"><path d=\"M0,114 C 240,34 480,154 720,114 C 960,74 1200,194 1440,114 L1440,200 L0,200 Z\" fill=\"#0f3b2e\"/><path class=\"ds-line\" d=\"M0,102 C 240,22 480,142 720,102 C 960,62 1200,182 1440,102\" pathLength=\"1\" fill=\"none\" stroke=\"#c41e3a\" stroke-width=\"24\" stroke-dasharray=\"1\"/></svg>",
+      "css": ".ds-wave{display:block;width:100%;height:80px;background:#0f3b2e}.ds-line{stroke-dashoffset:1;animation:ds-draw 1.4s ease-out forwards}@keyframes ds-draw{to{stroke-dashoffset:0}}@media (prefers-reduced-motion:reduce){.ds-line{animation:none;stroke-dashoffset:0}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "July Wall Writing",
+    "overview": "A student wall in July 2024: painted green, lettered by hand in chalk and crimson, real photos taped up as paper sheets. The site reads as that wall, not a corporate template. Mood: urgent, communal, proud, hand-made. Bangla and English sit side by side and both get brush treatment.",
+    "keyCharacteristics": [
+      "One flat green ground everywhere; sections never change green.",
+      "Chalk-white brush headlines (Atma), dim-chalk body (Anek Bangla).",
+      "Crimson is paint: nav, CTA band, wave lines, underlines, numerals.",
+      "Content on tilted paper sheets with tape, never on cards.",
+      "Red wave dividers whose crimson line draws itself left to right."
+    ],
+    "rules": [
+      { "name": "The One Green Rule", "body": "All section grounds are exactly #0f3b2e. No texture, no gradient, no lighter band.", "section": "colors" },
+      { "name": "The Red Moves Rule", "body": "In wave animations only the crimson line moves; the green fill stays static.", "section": "colors" },
+      { "name": "The No Drips Rule", "body": "Brush lettering is clean. No blood-drip or splatter effects on headlines.", "section": "typography" },
+      { "name": "The Tape Rule", "body": "Anything lifted off the wall is a taped paper sheet. No floating cards.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every section ground #0f3b2e.",
+      "Do put photos on paper sheets, no captions.",
+      "Do animate only the red line in waves; reduced-motion shows all static.",
+      "Do use literal on-brand text colour (#fffaf2) on brand-filled buttons, since tokens remap dark."
+    ],
+    "donts": [
+      "Don't add gradients, textures, glass or rounded cards.",
+      "Don't add drips to headlines.",
+      "Don't animate the green in waves.",
+      "Don't make the whole footer crimson; only its selection.",
+      "Don't restyle admin, dashboard or BloodHero zones with this world (out of scope)."
+    ]
+  }
+}

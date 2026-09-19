@@ -5,6 +5,8 @@ import { PUNAB_LOGO_SRC } from "@/components/layout/logo";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
+import { InView } from "@/components/home/InView";
+import { WaveRibbon } from "@/components/home/WaveRibbon";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { JULY_AWARD_CLUB_CATEGORIES } from "@/lib/july-award-2026-clubs";
@@ -19,6 +21,8 @@ import {
   julyAward2026VenueMapOpenUrl,
 } from "@/lib/july-award-2026-event";
 
+const G = "#0f3b2e";
+const SHEET = "wall-sheet wall-text ja-sheet";
 const JULY_AWARD_HERO_IMAGE_SRC = "/images/marketing/july-uprising-memorial-hero.png";
 
 /** Post-hero partners: infinite marquee strip only (BGMEA + NextGen IT + ADUST). */
@@ -161,7 +165,7 @@ function JulyScoreRulesCard({
       : "bg-[linear-gradient(90deg,var(--color-brand)_0%,var(--brand-green)_100%)]";
 
   return (
-    <article className="relative overflow-hidden rounded-[var(--radius-xl)] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] ring-1 ring-[color:color-mix(in_srgb,var(--color-text)_6%,var(--color-border))] md:p-7">
+    <article className={`${SHEET} relative p-6 pt-9 md:p-7 md:pt-10`}>
       <span aria-hidden className={`pointer-events-none absolute inset-y-5 left-0 w-1 rounded-full ${stripeClass}`} />
       <div className="relative pl-5 md:pl-6">
         <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.26em] text-[color:var(--brand-green)]">{kicker}</p>
@@ -232,16 +236,16 @@ function JulySectionHead({
     <Reveal staggerIndex={staggerIndex}>
       <header className="grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] md:items-start md:gap-10 lg:gap-14">
         <div className="flex md:flex-col md:items-start md:gap-3">
-          <span className="inline-flex items-center rounded-md border border-[color:color-mix(in_srgb,var(--color-text)_12%,var(--color-border))] bg-[color:var(--color-surface-2)] px-2.5 py-1 font-mono text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[color:var(--color-text-muted)]">
+          <span className="inline-flex items-center bg-[#c41e3a] px-2.5 py-1 font-mono text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#fffaf2]">
             {step}
           </span>
           <span
             aria-hidden
-            className="mt-3 hidden h-16 w-px shrink-0 bg-[linear-gradient(180deg,var(--color-brand)_0%,var(--brand-green)_55%,transparent_100%)] md:mt-0 md:block"
+            className="mt-3 hidden h-16 w-px shrink-0 bg-[#c41e3a] md:mt-0 md:block"
           />
         </div>
         <div className="min-w-0 space-y-3">
-          <p className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--brand-green)]">{eyebrow}</p>
+          <p className="text-small font-extrabold uppercase tracking-[0.18em] text-[#b9b3a6]">{eyebrow}</p>
           <h2 className="text-h2 text-[color:var(--color-text)]">{title}</h2>
           {description ? (
             <p className="max-w-2xl text-[1.0625rem] leading-relaxed text-[color:var(--color-text-muted)]">{description}</p>
@@ -272,13 +276,13 @@ export default function JulyAward2026Page() {
   const d = JULY_AWARD_2026.eventDetails;
 
   return (
-    <>
+    <div className="ja-wall">
       <section
-        className="relative flex min-h-[min(76dvh,40rem)] flex-col overflow-hidden md:min-h-[min(84dvh,44rem)]"
+        className="ja-hero relative flex min-h-[min(76dvh,40rem)] flex-col overflow-hidden md:min-h-[min(84dvh,44rem)]"
         aria-labelledby="july-award-hero-title"
       >
         <div
-          className="absolute inset-x-0 top-0 z-[2] h-[3px] bg-[linear-gradient(90deg,#047857_0%,#c41e3a_50%,#047857_100%)]"
+          className="absolute inset-x-0 top-0 z-[2] h-[3px] bg-[#c41e3a]"
           aria-hidden
         />
         <Image
@@ -303,7 +307,7 @@ export default function JulyAward2026Page() {
         <MarketingContainer className="relative z-[1] flex flex-1 flex-col justify-between pb-10 pt-5 md:pb-14 md:pt-8">
           <nav
             aria-label="Breadcrumb"
-            className="text-small inline-flex w-fit flex-wrap items-center gap-x-2 gap-y-1 rounded-[var(--radius-full)] bg-[color:color-mix(in_srgb,var(--color-surface)_94%,transparent)] px-3.5 py-2 text-[color:var(--color-text)] shadow-[var(--shadow-sm)] ring-1 ring-[color:color-mix(in_srgb,var(--color-text)_12%,transparent)] backdrop-blur-sm dark:bg-[color:color-mix(in_srgb,var(--color-surface)_88%,transparent)]"
+            className="text-small inline-flex w-fit flex-wrap items-center gap-x-2 gap-y-1 bg-[#0f3b2e] px-3.5 py-2 text-[#efeae0]"
           >
             <Link href="/" className="hover:text-[color:var(--color-brand)] motion-safe:transition-colors">
               Home
@@ -323,7 +327,7 @@ export default function JulyAward2026Page() {
                 id="july-award-hero-title"
                 className="mt-3 text-balance font-bold leading-[1.06] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.45)] text-[clamp(1.65rem,4vw+0.6rem,2.35rem)]"
               >
-                <span className="bg-[linear-gradient(90deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.78)_100%)] bg-clip-text text-transparent">
+                <span>
                   July Uprising Memorial Award
                 </span>{" "}
                 <span className="whitespace-nowrap text-white/95">2026</span>
@@ -336,17 +340,13 @@ export default function JulyAward2026Page() {
               </p>
             </div>
             <div className="flex shrink-0 justify-end lg:self-end">
-              <div className="relative rounded-[var(--radius-lg)] bg-[color:color-mix(in_srgb,var(--color-surface)_92%,transparent)] p-4 shadow-[var(--shadow-lg)] ring-1 ring-white/35 backdrop-blur-md dark:bg-[color:color-mix(in_srgb,var(--color-surface)_78%,transparent)] dark:ring-white/20">
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute -right-1 -top-1 h-14 w-14 rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--color-brand)_35%,transparent)_0%,transparent_72%)]"
-                />
+              <div className="wall-sheet rotate-2 p-3 pt-5">
                 <Image
                   src={PUNAB_LOGO_SRC}
                   alt="PUNAB"
                   width={140}
                   height={140}
-                  className="relative h-[6.25rem] w-[6.25rem] object-contain sm:h-[7rem] sm:w-[7rem]"
+                  className="relative h-[6.25rem] w-[6.25rem] bg-white object-contain p-1 sm:h-[7rem] sm:w-[7rem]"
                 />
               </div>
             </div>
@@ -361,9 +361,10 @@ export default function JulyAward2026Page() {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              className="fill-(--color-surface)"
+              fill="#0f3b2e"
               d="M0,84 C 180,20 360,144 540,84 C 720,24 900,144 1080,84 C 1260,24 1360,58 1440,34 L1440,160 L0,160 Z"
             />
+            <path fill="none" stroke="#c41e3a" strokeWidth={10} d="M0,72 C 180,8 360,132 540,72 C 720,12 900,132 1080,72 C 1260,12 1360,46 1440,22" />
           </svg>
         </div>
       </section>
@@ -376,7 +377,7 @@ export default function JulyAward2026Page() {
       >
         <MarketingContainer>
           <Reveal>
-            <div className="flex flex-col items-start gap-4 rounded-[var(--radius-xl)] border border-[color:color-mix(in_srgb,var(--brand-green)_25%,var(--color-border))] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] md:flex-row md:items-center md:justify-between md:p-7">
+            <div className={`${SHEET} flex flex-col items-start gap-4 p-6 pt-9 md:flex-row md:items-center md:justify-between md:p-7 md:pt-9`}>
               <div>
                 <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[color:var(--brand-green)]">
                   Results are in
@@ -395,6 +396,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section surface="white" divider paddingY="section" className="relative overflow-hidden">
         <div
           aria-hidden
@@ -408,7 +412,7 @@ export default function JulyAward2026Page() {
             description="Partners who help carry the hall, the story"
           />
           <div
-            className="july-partners-marquee mt-8"
+            className="july-partners-marquee mt-8 !border-0 !bg-[#e9e6dc] py-2 [--brand-green:#0f3b2e] [--color-text:#1b1a17]"
             aria-label="Partner logos: Bronze supporters BGMEA and ADUST; IT partner NextGen IT — infinite scroll."
           >
             <div className="july-partners-marquee__track">
@@ -476,10 +480,13 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section surface="white" divider paddingY="section">
         <MarketingContainer>
           <Reveal>
-            <div className="relative overflow-hidden rounded-[var(--radius-xl)] border border-[color:color-mix(in_srgb,var(--brand-green)_28%,var(--color-border))] bg-[color:var(--color-surface)] shadow-[var(--shadow-md)] ring-1 ring-[color:color-mix(in_srgb,var(--color-brand)_10%,transparent)]">
+            <div className={`${SHEET} relative pt-4`}>
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-[linear-gradient(180deg,var(--color-brand)_0%,var(--brand-green)_55%,var(--color-brand)_100%)]"
@@ -611,6 +618,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section surface="white" divider paddingY="section" className="relative overflow-hidden">
         <div
           aria-hidden
@@ -633,7 +643,7 @@ export default function JulyAward2026Page() {
                   <Reveal staggerIndex={0} className="h-full">
                     <Card
                       variant="elevated"
-                      className="relative flex h-full min-h-92 flex-col overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] ring-1 ring-[color:color-mix(in_srgb,var(--color-text)_6%,transparent)]"
+                      className={`${SHEET} relative flex h-full min-h-92 flex-col p-6 pt-9`}
                     >
                       <span aria-hidden className={`pointer-events-none absolute inset-y-0 left-0 w-1 ${accentClass}`} />
                       <span className="inline-flex w-fit rounded-[var(--radius-full)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-1 text-small font-semibold text-[color:var(--color-brand)]">
@@ -653,7 +663,7 @@ export default function JulyAward2026Page() {
               <Reveal staggerIndex={1} className="h-full">
                 <Card
                   variant="elevated"
-                  className="relative flex h-full min-h-92 flex-col overflow-hidden border border-[color:color-mix(in_srgb,var(--brand-green)_22%,var(--color-border))] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] ring-1 ring-[color:color-mix(in_srgb,var(--brand-green)_12%,transparent)]"
+                  className={`${SHEET} relative flex h-full min-h-92 flex-col p-6 pt-9`}
                 >
                   <span
                     aria-hidden
@@ -685,7 +695,7 @@ export default function JulyAward2026Page() {
                   <Reveal staggerIndex={i + 2} className="h-full">
                     <Card
                       variant="elevated"
-                      className={`relative flex h-full min-h-92 flex-col overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-md)] ring-1 ring-[color:color-mix(in_srgb,var(--color-text)_6%,transparent)]`}
+                      className={`${SHEET} relative flex h-full min-h-92 flex-col p-6 pt-9`}
                     >
                       <span aria-hidden className={`pointer-events-none absolute inset-y-0 left-0 w-1 ${accentClass}`} />
                       <span className="inline-flex w-fit rounded-[var(--radius-full)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-1 text-small font-semibold text-[color:var(--color-brand)]">
@@ -705,6 +715,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section surface="white" divider paddingY="section">
         <MarketingContainer>
           <JulySectionHead
@@ -733,6 +746,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section
         surface="muted"
         divider
@@ -747,7 +763,7 @@ export default function JulyAward2026Page() {
             title="How the four hours move"
             description={julyAward2026ProgramScheduleIntro()}
           />
-          <div className="relative mt-10 rounded-[var(--radius-lg)] border border-[color:color-mix(in_srgb,var(--color-text)_8%,var(--color-border))] bg-[color:var(--color-surface)] p-4 shadow-[var(--shadow-sm)] md:p-6">
+          <div className={`${SHEET} relative mt-10 p-4 pt-8 md:p-6 md:pt-9`}>
             {/** Time column 11rem + gap-8 (2rem): line sits on column boundary so it never crosses clock badges. */}
             <div
               aria-hidden
@@ -775,6 +791,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section surface="white" divider paddingY="section">
         <MarketingContainer className="space-y-12">
           <JulySectionHead
@@ -784,7 +803,7 @@ export default function JulyAward2026Page() {
             description="Five clusters of honour anchor the afternoon; club prizes stretch across ten lanes—thirty named clubs in all."
           />
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-2">
             {[
               {
                 title: "Shaheed families",
@@ -809,7 +828,7 @@ export default function JulyAward2026Page() {
             ].map((item, i) => (
               <div
                 key={item.title}
-                className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-[color:var(--color-surface)] p-5 shadow-[var(--shadow-sm)] ring-1 ring-[color:color-mix(in_srgb,var(--brand-green)_20%,var(--color-border))] transition-[box-shadow,transform] motion-safe:md:hover:-translate-y-0.5 motion-safe:md:hover:shadow-[var(--shadow-md)]"
+                className={`${SHEET} group relative p-5 pt-8 ${i % 2 === 0 ? "-rotate-1" : "rotate-1"}`}
               >
                 <span
                   aria-hidden
@@ -824,23 +843,23 @@ export default function JulyAward2026Page() {
             ))}
           </div>
 
-          <div className="rounded-[var(--radius-xl)] border border-[color:color-mix(in_srgb,var(--color-border)_70%,transparent)] bg-[color:color-mix(in_srgb,var(--brand-green-muted)_28%,var(--color-surface))] p-6 md:p-8">
+          <div className="pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-8">
               <div>
-                <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.28em] text-[color:var(--brand-green)]">
+                <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.28em] text-[#b9b3a6]">
                   Club lanes
                 </p>
-                <h3 className="text-h3 mt-2 text-[color:var(--color-text)]">Ten lanes for student clubs</h3>
+                <h3 className="text-h3 mt-2 text-[#efeae0]">Ten lanes for student clubs</h3>
               </div>
-              <p className="max-w-xl text-[1.0625rem] leading-relaxed text-[color:var(--color-text-muted)] md:text-right">
+              <p className="max-w-xl text-[1.0625rem] leading-relaxed text-[#b9b3a6] md:text-right">
                 Each lane crowns three clubs—thirty slots nationwide. Apply where your receipts actually live.
               </p>
             </div>
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {JULY_AWARD_CLUB_CATEGORIES.map((c, i) => (
                 <li key={c.key}>
                   <Reveal staggerIndex={i % 6}>
-                    <Card className="group h-full border-[color:color-mix(in_srgb,var(--color-text)_6%,var(--color-border))] bg-[color:var(--color-surface)] p-4 transition-[box-shadow,border-color] motion-safe:hover:border-[color:color-mix(in_srgb,var(--brand-green)_35%,var(--color-border))] motion-safe:hover:shadow-[var(--shadow-md)]">
+                    <Card className={`${SHEET} group h-full p-4 pt-7 ${i % 2 === 0 ? "-rotate-1" : "rotate-1"}`}>
                       <div className="flex items-baseline justify-between gap-2">
                         <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.24em] text-[color:var(--color-brand)]">
                           Lane {String(i + 1).padStart(2, "0")}
@@ -858,6 +877,9 @@ export default function JulyAward2026Page() {
         </MarketingContainer>
       </Section>
 
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
       <Section
         surface="muted"
         divider
@@ -891,7 +913,7 @@ export default function JulyAward2026Page() {
             />
           </div>
 
-          <Card className="p-5">
+          <Card className={`${SHEET} -rotate-1 p-5 pt-8`}>
             <h3 className="text-h3 text-[color:var(--color-text)]">Injured students</h3>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-[color:var(--color-text-muted)]">
               If July left you physically harmed, you belong in this chapter of the programme—not as a statistic, but by name. Use{" "}
@@ -900,7 +922,7 @@ export default function JulyAward2026Page() {
             </p>
           </Card>
 
-          <Card variant="flat" className="border-[color:color-mix(in_srgb,var(--color-brand)_25%,var(--color-border))] p-5">
+          <Card variant="flat" className={`${SHEET} rotate-1 p-5 pt-8`}>
             <h3 className="text-h3 text-[color:var(--color-text)]">How files become finalists</h3>
             <ol className="mt-4 list-decimal space-y-3 pl-5 text-[1.02rem] leading-relaxed text-[color:var(--color-text-muted)]">
               <li>Windows open; submissions pour in by category and nomination type.</li>
@@ -912,6 +934,6 @@ export default function JulyAward2026Page() {
           </Card>
         </MarketingContainer>
       </Section>
-    </>
+    </div>
   );
 }

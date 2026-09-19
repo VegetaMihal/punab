@@ -68,13 +68,9 @@ function SignatureJulyAwardFeatured() {
   return (
     <section aria-labelledby="signature-july-award-heading">
       <Reveal>
-        <article className="relative overflow-hidden rounded-[var(--radius-xl)] border border-[color:color-mix(in_srgb,var(--brand-green)_22%,var(--color-border))] shadow-[var(--shadow-lg)] ring-1 ring-[color:color-mix(in_srgb,var(--color-brand)_12%,transparent)]">
-          <div
-            className="absolute inset-x-0 top-0 z-[2] h-[3px] bg-[linear-gradient(90deg,#047857_0%,#c41e3a_50%,#047857_100%)]"
-            aria-hidden
-          />
+        <article className="wall-sheet relative p-2 pt-5 -rotate-1">
           <Link href={s.href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand)] focus-visible:ring-offset-2">
-            <div className="relative min-h-[min(52vh,28rem)] w-full md:min-h-[min(48vh,26rem)] lg:min-h-[min(46vh,24rem)]">
+            <div className="relative min-h-[min(52vh,28rem)] w-full overflow-hidden md:min-h-[min(48vh,26rem)] lg:min-h-[min(46vh,24rem)]">
               <Image
                 src={s.imageSrc}
                 alt={s.imageAlt}
@@ -91,7 +87,7 @@ function SignatureJulyAwardFeatured() {
               />
               <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:p-12">
                 <div className="max-w-3xl">
-                  <p className="inline-flex rounded-[var(--radius-full)] border border-white/35 bg-black/30 px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-[0.28em] text-white/95 backdrop-blur-sm">
+                  <p className="inline-flex bg-[#c41e3a] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-[0.28em] text-[#fffaf2]">
                     {s.kicker}
                   </p>
                   <h2
@@ -159,8 +155,8 @@ export default async function EventsPage() {
               for formal letters and updates.
             </p>
           ) : (
-            <section aria-label="More upcoming events" className="border-t border-[color:var(--color-border)] pt-10 md:pt-12">
-              <h2 className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--brand-green)]">
+            <section aria-label="More upcoming events" className="pt-4 md:pt-6">
+              <h2 className="wall-brush text-3xl normal-case tracking-normal text-[color:var(--wall-chalk,#efeae0)]">
                 More upcoming events
               </h2>
               <ul className="mt-6 grid gap-6 md:grid-cols-2">
@@ -185,7 +181,7 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
     <li>
       <Reveal staggerIndex={staggerIndex}>
         <article
-          className={`group overflow-hidden rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] shadow-[var(--shadow-sm)] motion-safe:transition-[transform,box-shadow] motion-safe:duration-[var(--transition-base)] motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[var(--shadow-md)] ${
+          className={`wall-sheet wall-text group p-2 pt-5 ${staggerIndex % 2 === 0 ? "-rotate-1" : "rotate-1"} ${
             muted ? "opacity-75" : ""
           }`}
         >
@@ -216,21 +212,21 @@ function EventCard({ ev, muted, staggerIndex }: { ev: EventRow; muted: boolean; 
               ) : (
                 <div className="absolute inset-0 punab-hero-sheen opacity-60" aria-hidden />
               )}
-              <div className="absolute left-3 top-3 rounded-[var(--radius-md)] bg-[color:var(--color-brand)] px-3 py-2 text-center text-[color:var(--color-surface)] shadow-[var(--shadow-sm)]">
+              <div className="absolute left-3 top-3 bg-[#c41e3a] px-3 py-2 text-center text-[#fffaf2]">
                 <p className="text-lg font-bold leading-none">{badge.day}</p>
                 <p className="text-[10px] font-semibold uppercase tracking-wide opacity-90">{badge.mon}</p>
               </div>
             </div>
-            <div className="p-5">
-              <h3 className="text-h3 text-[color:var(--color-text)] group-hover:text-[color:var(--color-brand)] motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)]">
+            <div className="px-3 pb-4 pt-5">
+              <h3 className="text-h3 text-[#1b1a17] group-hover:text-[#a5182f] motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)]">
                 {ev.title}
               </h3>
-              <p className="text-small mt-2 text-[color:var(--color-text-muted)]">{formatRange(ev.start_at, ev.end_at)}</p>
-              {ev.location && <p className="text-small mt-1 text-[color:var(--color-text-2)]">{ev.location}</p>}
+              <p className="text-small mt-2 font-semibold text-[#3a382f]">{formatRange(ev.start_at, ev.end_at)}</p>
+              {ev.location && <p className="text-small mt-1 text-[#3a382f]">{ev.location}</p>}
               {ev.description && (
-                <p className="text-small mt-2 line-clamp-3 text-[color:var(--color-text-muted)]">{ev.description}</p>
+                <p className="text-small mt-2 line-clamp-3 text-[#3a382f]">{ev.description}</p>
               )}
-              <span className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--radius-full)] bg-[color:var(--color-brand)] px-4 py-2 text-small font-bold text-white motion-safe:transition-[transform,box-shadow] motion-safe:duration-[var(--transition-fast)] group-hover:scale-[1.03] group-hover:shadow-[var(--shadow-sm)]">
+              <span className="mt-4 inline-flex items-center gap-1.5 border-b-[3px] border-[#c41e3a] pb-0.5 text-small font-extrabold uppercase tracking-wide text-[#a5182f]">
                 View Event
                 <span aria-hidden className="motion-safe:transition-transform motion-safe:duration-[var(--transition-base)] group-hover:translate-x-1">
                   →

@@ -1,8 +1,6 @@
+import { FormPageShell } from "@/components/ui/FormPageShell";
 import { JulyParticipantRegistrationForm } from "@/components/marketing/JulyParticipantRegistrationForm";
 import { Button } from "@/components/ui/Button";
-import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Section } from "@/components/ui/Section";
 import {
   isJulyParticipantSheetsConfigured,
   JULY_PARTICIPANT_DEFAULT_TAB,
@@ -65,19 +63,13 @@ export default async function JulyParticipantRegisterPage({
 
   return (
     <>
-      <PageHeader
-        title="Register as a participant"
-        description="Reserve your seat at the July Uprising Memorial Award programme."
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "July Award 2026", href: "/july-award-2026" },
-          { label: "Participant registration" },
-        ]}
-        tone="pattern"
-      />
 
-      <Section surface="white" divider={false} paddingY="section">
-        <MarketingContainer>
+      <FormPageShell
+        title="Register as a participant"
+        lead="Reserve your seat at the July Uprising Memorial Award programme."
+        backHref="/july-award-2026"
+        backLabel="July Award 2026"
+      >
           {!sheetsReady && (
             <div
               className="mb-8 rounded-(--radius-md) border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-4 py-3 text-small text-(--color-error)"
@@ -112,16 +104,7 @@ export default async function JulyParticipantRegisterPage({
           ) : (
             <JulyParticipantRegistrationForm />
           )}
-
-          {!alreadyRegistered && (
-            <p className="mt-10 text-center">
-              <Button href="/july-award-2026" variant="ghost" size="md">
-                ← July Award 2026
-              </Button>
-            </p>
-          )}
-        </MarketingContainer>
-      </Section>
+        </FormPageShell>
     </>
   );
 }

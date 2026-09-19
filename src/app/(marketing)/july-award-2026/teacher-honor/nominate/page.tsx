@@ -1,8 +1,6 @@
+import { FormPageShell } from "@/components/ui/FormPageShell";
 import { JulyTeacherHonorNominationForm } from "@/components/marketing/JulyTeacherHonorNominationForm";
 import { Button } from "@/components/ui/Button";
-import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Section } from "@/components/ui/Section";
 import {
   isJulyTeacherHonorSheetsConfigured,
   JULY_TEACHER_HONOR_DEFAULT_TAB,
@@ -19,19 +17,13 @@ export default function JulyTeacherHonorNominatePage() {
 
   return (
     <>
-      <PageHeader
-        title="July Uprising Teacher Honor Nomination 2026"
-        description="Recognize educators who stood with students during the July Uprising — through protection, guidance, courage, and humanity. Submissions go to a dedicated spreadsheet (separate from club applications)."
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "July Award 2026", href: "/july-award-2026" },
-          { label: "Teacher honor nomination" },
-        ]}
-        tone="pattern"
-      />
 
-      <Section surface="white" divider={false} paddingY="section">
-        <MarketingContainer>
+      <FormPageShell
+        title="July Uprising Teacher Honor Nomination 2026"
+        lead="Recognize educators who stood with students during the July Uprising — through protection, guidance, courage, and humanity. Submissions go to a dedicated spreadsheet (separate from club applications)."
+        backHref="/july-award-2026"
+        backLabel="July Award 2026"
+      >
           {!sheetsReady && (
             <div
               className="mb-8 rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-4 py-3 text-small text-[color:var(--color-error)]"
@@ -61,14 +53,7 @@ export default function JulyTeacherHonorNominatePage() {
           </div>
 
           <JulyTeacherHonorNominationForm />
-
-          <p className="mt-10 text-center">
-            <Button href="/july-award-2026" variant="ghost" size="md">
-              ← July Award 2026
-            </Button>
-          </p>
-        </MarketingContainer>
-      </Section>
+        </FormPageShell>
     </>
   );
 }

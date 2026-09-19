@@ -1,9 +1,7 @@
+import { FormPageShell } from "@/components/ui/FormPageShell";
 import Image from "next/image";
 import { BabbfRegistrationForm } from "@/components/marketing/BabbfRegistrationForm";
 import { EmojiCursorTrail } from "@/components/marketing/EmojiCursorTrail";
-import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Section } from "@/components/ui/Section";
 import { isBabbfGoogleConfigured } from "@/lib/babbf-registration-google";
 
 export const metadata = {
@@ -21,16 +19,14 @@ export default function BabbfRegisterPage() {
   return (
     <>
       <EmojiCursorTrail emoji="💪" />
-      <PageHeader
-        title="BABBF Inter-University Armwrestler & Fitness Championship 2026"
-        description="Register to compete in the championship."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "BABBF Championship 2026 registration" }]}
-        tone="pattern"
-      />
 
-      <Section surface="white" divider={false} paddingY="section">
-        <MarketingContainer maxWidth="3xl">
-          <div className="relative mx-auto mb-10 max-w-3xl overflow-hidden rounded-2xl border border-[color:var(--color-border)]">
+      <FormPageShell
+        title="BABBF Inter-University Armwrestler & Fitness Championship 2026"
+        lead="Register to compete in the championship."
+        backHref="/"
+        backLabel="Back"
+      >
+          <div className="wall-sheet ja-sheet relative mb-10 p-2 pt-5">
             <Image
               src="/images/events/babbf-championship-2026.jpg"
               alt="BABBF Inter-University Armwrestler & Fitness Championship 2026"
@@ -42,7 +38,7 @@ export default function BabbfRegisterPage() {
             />
           </div>
 
-          <div className="mx-auto mb-10 max-w-3xl rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-6 sm:p-8">
+          <div className="wall-sheet wall-text ja-sheet mb-10 p-6 pt-9 sm:p-8 sm:pt-10">
             <h2 className="text-h4 font-semibold text-[color:var(--color-text)]">Event details</h2>
             <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -80,8 +76,7 @@ export default function BabbfRegisterPage() {
           )}
 
           <BabbfRegistrationForm />
-        </MarketingContainer>
-      </Section>
+        </FormPageShell>
     </>
   );
 }

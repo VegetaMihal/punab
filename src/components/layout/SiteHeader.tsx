@@ -102,24 +102,22 @@ function archivePathsActive(pathname: string) {
 }
 
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-brand)]";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#efeae0]";
 
 const navDesktopBase =
-  "relative whitespace-nowrap rounded-[var(--radius-full)] px-3 py-2 text-[0.9rem] font-semibold motion-safe:transition-[background-color,color,box-shadow] " +
+  "relative whitespace-nowrap rounded-sm px-3 py-2 font-[family-name:var(--font-wall-text)] text-[0.95rem] font-bold motion-safe:transition-[background-color,color] " +
   focusRing;
-const navDesktopIdle =
-  "text-[color:color-mix(in_srgb,var(--color-surface)_88%,transparent)] hover:bg-[color:var(--color-surface)] hover:text-[color:var(--color-text)] hover:shadow-[0_10px_24px_color-mix(in_srgb,black_18%,transparent)]";
+const navDesktopIdle = "text-[#efeae0] hover:bg-white/10 hover:text-white";
 const navDesktopActive =
-  "bg-[color:var(--color-surface)] text-[color:var(--color-brand)] shadow-[0_10px_24px_color-mix(in_srgb,black_18%,transparent)] after:absolute after:left-1/2 after:top-full after:h-1 after:w-8 after:-translate-x-1/2 after:rounded-[var(--radius-full)] after:bg-[color:var(--brand-green)]";
+  "text-white after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-sm after:bg-[#efeae0]";
 
 const navMobileItem =
   "block min-h-11 rounded-md px-3 py-2.5 text-sm font-medium motion-safe:transition-colors " + focusRing;
 
 const dropdownLinkBase =
-  "block px-3 py-2 text-sm font-semibold text-[color:var(--color-text-2)] motion-safe:transition-colors hover:bg-[color:color-mix(in_srgb,var(--color-brand)_8%,var(--color-surface))] hover:text-[color:var(--color-brand)] " +
+  "block px-3 py-2 font-[family-name:var(--font-wall-text)] text-sm font-semibold text-[#efeae0] motion-safe:transition-colors hover:bg-white/10 hover:text-white " +
   focusRing;
-const dropdownLinkActive =
-  "bg-[color:color-mix(in_srgb,var(--color-brand)_10%,var(--color-surface))] text-[color:var(--color-brand)]";
+const dropdownLinkActive = "bg-white/10 text-white";
 
 type Props = {
   user: User | null;
@@ -151,14 +149,10 @@ export function SiteHeader({ user, isAdmin }: Props) {
   }, [mobileNavOpen]);
 
   return (
-    <header className="sticky top-0 z-[100] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-brand)_86%,black)_0%,color-mix(in_srgb,var(--color-brand)_72%,var(--brand-green))_100%)] shadow-[0_12px_40px_color-mix(in_srgb,var(--color-brand)_24%,transparent)]">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(58%_120%_at_18%_120%,color-mix(in_srgb,var(--brand-green)_42%,transparent)_0%,transparent_58%),linear-gradient(115deg,transparent_0%,color-mix(in_srgb,var(--color-surface)_12%,transparent)_48%,transparent_68%)]"
-        aria-hidden
-      />
+    <header className="sticky top-0 z-[100] border-b border-black/20 bg-[#b01c34] shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
       <MarketingContainer className="relative z-[1] flex min-h-20 items-center gap-5 py-2">
         <Link href="/" className={cn("group flex min-w-0 shrink-0 items-center rounded-sm", focusRing)}>
-          <span className="rounded-[var(--radius-md)] bg-[color:color-mix(in_srgb,var(--color-surface)_92%,transparent)] px-2 py-1 shadow-[var(--shadow-sm)]">
+          <span className="rounded-sm bg-[color:var(--color-surface)] px-2 py-1">
             <Logo variant="navbar" />
           </span>
         </Link>
@@ -199,14 +193,14 @@ export function SiteHeader({ user, isAdmin }: Props) {
                     </svg>
                   </summary>
                   <div className="absolute left-0 top-full z-[110] min-w-48 pt-1">
-                    <div className="ds-dropdown-panel rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] py-1 shadow-[var(--shadow-md)]">
+                    <div className="ds-dropdown-panel rounded-sm border border-white/15 bg-[#8f1629] py-1 shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
                       {item.items.map((sub) =>
                         isDisabledNavSubItem(sub) ? (
                           <div key={sub.label} className="px-3 py-2">
-                            <p className="cursor-default text-sm font-medium text-[color:var(--color-text-muted)]">
+                            <p className="cursor-default text-sm font-medium text-[#b9b3a6]">
                               {sub.label}
                             </p>
-                            <p className="mt-1 text-xs leading-snug text-[color:var(--color-text-muted)]">{sub.note}</p>
+                            <p className="mt-1 text-xs leading-snug text-[#b9b3a6]">{sub.note}</p>
                           </div>
                         ) : (
                           <Link
@@ -247,7 +241,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
                 <Link
                   href="/admin"
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-sm font-medium text-brand-green hover:bg-brand-green-muted motion-safe:transition-colors dark:hover:bg-stone-900",
+                    "rounded-md px-2.5 py-1.5 text-sm font-medium text-[#efeae0] hover:bg-white/10 motion-safe:transition-colors",
                     focusRing,
                   )}
                 >
@@ -264,7 +258,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
                 <button
                   type="submit"
                   className={cn(
-                    "rounded-md border border-stone-300 px-2.5 py-1.5 text-sm font-medium text-stone-700 motion-safe:transition-colors hover:bg-stone-50 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-900",
+                    "rounded-md border border-white/30 px-2.5 py-1.5 text-sm font-medium text-[#efeae0] motion-safe:transition-colors hover:bg-white/10",
                     focusRing,
                   )}
                 >
@@ -278,7 +272,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
             <Link
               href="/register"
               className={cn(
-                "hidden min-h-11 items-center justify-center rounded-[var(--radius-full)] bg-[color:var(--color-surface)] px-5 text-sm font-bold text-[color:var(--color-brand)] shadow-[0_14px_34px_color-mix(in_srgb,black_24%,transparent)] motion-safe:transition-[transform,background-color,box-shadow] motion-safe:hover:-translate-y-0.5 motion-safe:hover:bg-[color:color-mix(in_srgb,var(--color-surface)_92%,var(--brand-green-muted))] xl:inline-flex",
+                "hidden min-h-11 items-center justify-center rounded-sm bg-[#efeae0] px-5 font-[family-name:var(--font-wall-text)] text-sm font-extrabold text-[#8f1629] motion-safe:transition-colors hover:bg-white xl:inline-flex",
                 focusRing,
               )}
             >
@@ -289,7 +283,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
           <button
             type="button"
             className={cn(
-              "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-surface)_34%,transparent)] bg-[color:color-mix(in_srgb,var(--color-surface)_14%,transparent)] p-2 text-[color:var(--color-surface)] motion-safe:transition-colors hover:bg-[color:color-mix(in_srgb,var(--color-surface)_22%,transparent)] xl:hidden",
+              "inline-flex items-center justify-center rounded-sm border border-white/30 bg-white/5 p-2 text-[color:var(--color-surface)] motion-safe:transition-colors hover:bg-[color:color-mix(in_srgb,var(--color-surface)_22%,transparent)] xl:hidden",
               focusRing,
             )}
             aria-expanded={mobileNavOpen}
@@ -327,23 +321,23 @@ export function SiteHeader({ user, isAdmin }: Props) {
         <div
           id="site-mobile-nav"
           className={cn(
-            "absolute bottom-0 left-0 right-0 flex max-h-[88svh] flex-col rounded-t-2xl bg-[color:var(--color-surface)] shadow-[0_-8px_40px_rgba(0,0,0,0.18)] motion-safe:transition-transform duration-300 ease-out",
+            "absolute bottom-0 left-0 right-0 flex max-h-[88svh] flex-col rounded-t-2xl bg-[#8f1629] text-[#efeae0] shadow-[0_-8px_40px_rgba(0,0,0,0.5)] motion-safe:transition-transform duration-300 ease-out",
             mobileNavOpen ? "translate-y-0" : "translate-y-full",
           )}
         >
           {/* Drag handle */}
           <div className="flex shrink-0 justify-center pb-2 pt-3" aria-hidden>
-            <div className="h-1 w-10 rounded-full bg-stone-300 dark:bg-stone-600" />
+            <div className="h-1 w-10 rounded-full bg-white/30" />
           </div>
 
           {/* Sheet header */}
           <div className="flex shrink-0 items-center justify-between px-5 pb-3">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[color:var(--color-text-muted)]">Navigation</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#b9b3a6]">Navigation</span>
             <button
               type="button"
               aria-label="Close menu"
               onClick={() => setMobileNavOpen(false)}
-              className={cn("rounded-full p-1.5 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] motion-safe:transition-colors", focusRing)}
+              className={cn("rounded-full p-1.5 text-[#b9b3a6] hover:bg-white/10 motion-safe:transition-colors", focusRing)}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -357,16 +351,16 @@ export function SiteHeader({ user, isAdmin }: Props) {
               {nav.map((item) =>
                 isDropdown(item) ? (
                   <div key={item.label}>
-                    <p className="px-3 pb-1 pt-4 text-[0.68rem] font-bold uppercase tracking-widest text-[color:var(--color-text-muted)]">
+                    <p className="px-3 pb-1 pt-4 text-[0.68rem] font-bold uppercase tracking-widest text-[#b9b3a6]">
                       {item.label}
                     </p>
                     <div className="flex flex-col gap-0.5">
                       {item.items.map((sub) =>
                         isDisabledNavSubItem(sub) ? (
-                          <div key={sub.label} className="flex items-center gap-3 rounded-xl px-4 py-3 opacity-40">
+                          <div key={sub.label} className="flex items-center gap-3 rounded-sm px-4 py-3 opacity-40">
                             <div className="min-w-0">
-                              <p className="text-[0.9rem] font-medium text-[color:var(--color-text)]">{sub.label}</p>
-                              <p className="mt-0.5 text-xs text-[color:var(--color-text-muted)]">{sub.note}</p>
+                              <p className="text-[0.9rem] font-medium text-[#efeae0]">{sub.label}</p>
+                              <p className="mt-0.5 text-xs text-[#b9b3a6]">{sub.note}</p>
                             </div>
                           </div>
                         ) : (
@@ -375,11 +369,11 @@ export function SiteHeader({ user, isAdmin }: Props) {
                             href={sub.href}
                             onClick={() => setMobileNavOpen(false)}
                             className={cn(
-                              "flex min-h-12 items-center justify-between rounded-xl px-4 py-3 text-[0.9rem] font-medium motion-safe:transition-colors",
+                              "flex min-h-12 items-center justify-between rounded-sm px-4 py-3 text-[0.9rem] font-medium motion-safe:transition-colors",
                               focusRing,
                               navSubLinkActive(pathname, sub.href)
-                                ? "bg-[color:color-mix(in_srgb,var(--color-brand)_10%,var(--color-surface))] font-semibold text-[color:var(--color-brand)]"
-                                : "text-[color:var(--color-text)] hover:bg-[color:var(--color-surface-2)]",
+                                ? "bg-white/10 font-semibold text-white"
+                                : "text-[#efeae0] hover:bg-white/10",
                             )}
                           >
                             {sub.label}
@@ -397,11 +391,11 @@ export function SiteHeader({ user, isAdmin }: Props) {
                     href={item.href}
                     onClick={() => setMobileNavOpen(false)}
                     className={cn(
-                      "flex min-h-12 items-center justify-between rounded-xl px-4 py-3 text-[0.9rem] font-medium motion-safe:transition-colors",
+                      "flex min-h-12 items-center justify-between rounded-sm px-4 py-3 text-[0.9rem] font-medium motion-safe:transition-colors",
                       focusRing,
                       (item.href === "/archive" ? archivePathsActive(pathname) : pathname === item.href)
-                        ? "bg-[color:color-mix(in_srgb,var(--color-brand)_10%,var(--color-surface))] font-semibold text-[color:var(--color-brand)]"
-                        : "text-[color:var(--color-text)] hover:bg-[color:var(--color-surface-2)]",
+                        ? "bg-white/10 font-semibold text-white"
+                        : "text-[#efeae0] hover:bg-white/10",
                     )}
                   >
                     {item.label}
@@ -415,14 +409,14 @@ export function SiteHeader({ user, isAdmin }: Props) {
           </nav>
 
           {/* Footer: auth + CTA */}
-          <div className="shrink-0 border-t border-[color:var(--color-border)] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+          <div className="shrink-0 border-t border-white/10 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
             {user ? (
               <div className="flex flex-col gap-1.5">
                 {isAdmin && (
                   <Link
                     href="/admin"
                     onClick={() => setMobileNavOpen(false)}
-                    className={cn("flex min-h-11 items-center rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-green hover:bg-brand-green-muted motion-safe:transition-colors", focusRing)}
+                    className={cn("flex min-h-11 items-center rounded-sm px-4 py-2.5 text-sm font-semibold text-[#efeae0] hover:bg-white/10 motion-safe:transition-colors", focusRing)}
                   >
                     Admin panel
                   </Link>
@@ -430,14 +424,14 @@ export function SiteHeader({ user, isAdmin }: Props) {
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileNavOpen(false)}
-                  className={cn("flex min-h-11 items-center rounded-xl px-4 py-2.5 text-sm font-medium text-[color:var(--color-text-2)] hover:bg-[color:var(--color-surface-2)] motion-safe:transition-colors", focusRing)}
+                  className={cn("flex min-h-11 items-center rounded-sm px-4 py-2.5 text-sm font-medium text-[#efeae0] hover:bg-white/10 motion-safe:transition-colors", focusRing)}
                 >
                   Dashboard
                 </Link>
                 <form action={signOut}>
                   <button
                     type="submit"
-                    className={cn("w-full min-h-11 rounded-xl border border-[color:var(--color-border)] px-4 py-2.5 text-left text-sm font-medium text-[color:var(--color-text-2)] hover:bg-[color:var(--color-surface-2)] motion-safe:transition-colors", focusRing)}
+                    className={cn("w-full min-h-11 rounded-sm border border-white/20 px-4 py-2.5 text-left text-sm font-medium text-[#efeae0] hover:bg-white/10 motion-safe:transition-colors", focusRing)}
                   >
                     Sign out
                   </button>
@@ -447,7 +441,7 @@ export function SiteHeader({ user, isAdmin }: Props) {
               <Link
                 href="/register"
                 onClick={() => setMobileNavOpen(false)}
-                className={cn("flex min-h-12 w-full items-center justify-center rounded-[var(--radius-full)] bg-[color:var(--color-brand)] px-5 text-sm font-bold text-white shadow-md motion-safe:transition-[transform,box-shadow] motion-safe:active:scale-95", focusRing)}
+                className={cn("flex min-h-12 w-full items-center justify-center rounded-sm bg-[#efeae0] px-5 font-[family-name:var(--font-wall-text)] text-sm font-extrabold text-[#8f1629] motion-safe:transition-colors hover:bg-white", focusRing)}
               >
                 Join PUNAB
               </Link>

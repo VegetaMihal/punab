@@ -68,9 +68,9 @@ export default async function EventDetailPage({ params }: Props) {
   const isBabbfChampionship = /babbf|armwrestl/i.test(ev.title);
 
   const badgeToneClass = {
-    brand: "bg-[color:var(--color-brand)] text-white",
-    live: "bg-[color:var(--color-success,#16a34a)] text-white",
-    muted: "bg-[color:var(--color-surface-3)] text-[color:var(--color-text-muted)]",
+    brand: "bg-[#c41e3a] text-[#fffaf2]",
+    live: "bg-[#1f8a5b] text-white",
+    muted: "bg-[#d8d2c3] text-[#3a382f]",
   }[badge.tone];
 
   return (
@@ -79,12 +79,12 @@ export default async function EventDetailPage({ params }: Props) {
 
       <MarketingContainer maxWidth="3xl" className="py-10">
         <Reveal>
-          <div className="relative -mt-2 mb-8">
+          <div className="wall-sheet relative mb-10 -mt-2 -rotate-1 p-2 pt-5">
             <div
               className={
                 banner
-                  ? "relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-[color:var(--color-border)] shadow-[var(--shadow-md)]"
-                  : "relative flex aspect-[21/9] w-full items-center overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[linear-gradient(135deg,var(--color-brand)_0%,color-mix(in_srgb,var(--color-brand)_55%,black)_100%)] shadow-[var(--shadow-md)]"
+                  ? "relative aspect-[21/9] w-full overflow-hidden"
+                  : "relative flex aspect-[21/9] w-full items-center overflow-hidden bg-[#a5182f]"
               }
             >
               {banner ? (
@@ -101,22 +101,22 @@ export default async function EventDetailPage({ params }: Props) {
               )}
             </div>
             <span
-              className={`absolute top-4 left-4 rounded-full px-3 py-1 text-small font-bold shadow-[var(--shadow-sm)] ${badgeToneClass}`}
+              className={`absolute top-6 left-5 px-3 py-1 text-small font-extrabold uppercase tracking-wide ${badgeToneClass}`}
             >
               {badge.label}
             </span>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <Reveal staggerIndex={0}>
-            <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-4 motion-safe:transition-[transform,box-shadow] motion-safe:duration-[var(--transition-base)] hover:-translate-y-1 hover:shadow-[var(--shadow-md)]">
-              <span className="mt-0.5 text-[color:var(--color-brand)]">
+            <div className="wall-sheet wall-text flex items-start gap-3 p-5 pt-7">
+              <span className="mt-0.5 text-[#c41e3a]">
                 <CalendarIcon />
               </span>
               <div>
-                <p className="text-small font-semibold text-[color:var(--color-text)]">{fmtDate(start)}</p>
-                <p className="mt-0.5 flex items-center gap-1.5 text-small text-[color:var(--color-text-muted)]">
+                <p className="text-small font-extrabold text-[#1b1a17]">{fmtDate(start)}</p>
+                <p className="mt-0.5 flex items-center gap-1.5 text-small text-[#3a382f]">
                   <ClockIcon />
                   {fmtTime(start)}
                   {end ? ` – ${end.toDateString() !== start.toDateString() ? fmtDate(end) + " " : ""}${fmtTime(end)}` : ""}
@@ -126,13 +126,13 @@ export default async function EventDetailPage({ params }: Props) {
           </Reveal>
           {ev.location && (
             <Reveal staggerIndex={1}>
-              <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-4 motion-safe:transition-[transform,box-shadow] motion-safe:duration-[var(--transition-base)] hover:-translate-y-1 hover:shadow-[var(--shadow-md)]">
-                <span className="mt-0.5 text-[color:var(--color-brand)]">
+              <div className="wall-sheet wall-text flex items-start gap-3 p-5 pt-7">
+                <span className="mt-0.5 text-[#c41e3a]">
                   <PinIcon />
                 </span>
                 <div>
-                  <p className="text-small font-semibold text-[color:var(--color-text)]">Venue</p>
-                  <p className="mt-0.5 text-small text-[color:var(--color-text-muted)]">{ev.location}</p>
+                  <p className="text-small font-extrabold text-[#1b1a17]">Venue</p>
+                  <p className="mt-0.5 text-small text-[#3a382f]">{ev.location}</p>
                 </div>
               </div>
             </Reveal>
@@ -141,7 +141,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         {paragraphs.length > 0 && (
           <Reveal>
-            <div className="mt-8 space-y-4 text-body leading-relaxed text-[color:var(--color-text-2)]">
+            <div className="mt-8 space-y-4 wall-text text-body leading-relaxed text-[color:var(--wall-chalk,#efeae0)]">
               {paragraphs.map((p, i) => (
                 <p key={i} className="whitespace-pre-wrap">
                   {p}
@@ -152,7 +152,7 @@ export default async function EventDetailPage({ params }: Props) {
         )}
 
         <Reveal>
-          <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-[color:var(--color-border)] pt-8">
+          <div className="mt-10 flex flex-wrap items-center gap-3 pt-4">
             {isBabbfChampionship && (
               <Button variant="primary" size="md" href="/babbf-championship-2026/register">
                 Register Now
@@ -173,7 +173,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         <SmartBackLink
           fallbackHref="/events"
-          className="mt-8 inline-block text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="wall-link mt-8 inline-block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           ← All events
         </SmartBackLink>

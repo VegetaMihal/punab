@@ -10,15 +10,15 @@ const base =
 
 const variantClass: Record<Variant, string> = {
   primary:
-    "bg-[color:var(--color-brand)] text-[color:var(--color-surface)] shadow-[var(--shadow-sm)] hover:scale-[1.02] motion-safe:hover:shadow-[var(--shadow-brand)] hover:bg-[color:var(--color-brand-dark)]",
+    "bg-[color:var(--color-brand)] text-[#fffaf2] shadow-[var(--shadow-sm)] hover:scale-[1.02] motion-safe:hover:shadow-[var(--shadow-brand)] hover:bg-[color:var(--color-brand-dark)]",
   secondary:
     "border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface)] text-[color:var(--color-text-2)] shadow-[var(--shadow-sm)] hover:scale-[1.02] hover:border-[color:var(--color-brand)] hover:text-[color:var(--color-brand)] dark:bg-[color:var(--color-surface-2)]",
   ghost:
     "border border-transparent bg-transparent text-[color:var(--color-text-2)] hover:bg-[color:var(--color-surface-2)] hover:scale-[1.01] underline-offset-4 hover:underline",
   inverse:
-    "bg-[color:var(--color-surface)] text-[color:var(--color-brand)] shadow-[var(--shadow-md)] hover:scale-[1.02] hover:bg-[color:var(--color-surface-2)]",
+    "bg-[#efeae0] text-[#8f1629] shadow-[var(--shadow-md)] hover:scale-[1.02] hover:bg-white",
   inverseOutline:
-    "border border-[color:color-mix(in_srgb,var(--color-surface)_45%,transparent)] text-[color:var(--color-surface)] hover:scale-[1.02] hover:bg-[color:color-mix(in_srgb,var(--color-surface)_12%,transparent)]",
+    "border border-white/45 text-[#fffaf2] hover:scale-[1.02] hover:bg-white/10",
   heroPulseGreen:
     "hero-cta-pulse--green motion-safe:hover:scale-[1.02] motion-safe:hover:brightness-[1.06]",
   heroPulseRed:
