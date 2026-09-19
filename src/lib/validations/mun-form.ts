@@ -91,7 +91,7 @@ export const MUN_STATUSES = [
 ] as const;
 export type MunStatus = (typeof MUN_STATUSES)[number];
 
-export const MUN_REGISTRATION_FEE_BDT = 3500;
+export const MUN_REGISTRATION_FEE_BDT = 3650;
 
 export const MUN_TSHIRT_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 export type MunTshirtSize = (typeof MUN_TSHIRT_SIZES)[number];
