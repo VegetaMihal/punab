@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Anek_Bangla, Atma, Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { ToasterProvider } from "@/components/providers/toaster";
@@ -14,6 +14,21 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const wallBrush = Atma({
+  variable: "--font-wall-brush",
+  subsets: ["latin", "bengali"],
+  weight: "700",
+  display: "swap",
+  preload: false,
+});
+
+const wallText = Anek_Bangla({
+  variable: "--font-wall-text",
+  subsets: ["latin", "bengali"],
+  display: "swap",
+  preload: false,
 });
 
 const supabaseHost = (() => {
@@ -53,7 +68,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-theme="light"
-      className={`light ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`light ${geistSans.variable} ${geistMono.variable} ${wallBrush.variable} ${wallText.variable} h-full antialiased`}
     >
       <head>
         {supabaseHost ? (

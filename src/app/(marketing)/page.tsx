@@ -1,19 +1,19 @@
 export const revalidate = 60;
 
 import Image from "next/image";
-import { CtaBand } from "@/components/home/CtaBand";
-import { FeaturedGallery } from "@/components/home/FeaturedGallery";
+import Link from "next/link";
+import { CountUp } from "@/components/home/CountUp";
 import { Hero } from "@/components/home/Hero";
-import { StatsSection } from "@/components/home/StatsSection";
-import { PUNAB_LOGO_SRC } from "@/components/layout/logo";
+import { InView } from "@/components/home/InView";
+import { WaveRibbon } from "@/components/home/WaveRibbon";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
-import { Reveal } from "@/components/ui/Reveal";
-import { Section } from "@/components/ui/Section";
-import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getFeaturedHomeAlbums, getPublicSettings } from "@/lib/data/site-content";
 import { getHomeStats } from "@/lib/data/public";
 import { prisma } from "@/lib/db/prisma";
 import { getSetting } from "@/lib/site-defaults";
+
+const G = "#0f3b2e";
+const SHEET_TILT = ["-rotate-2", "rotate-1", "rotate-2", "-rotate-1"];
 
 export default async function HomePage() {
   const [settings, stats, successfulEvents, featuredAlbums] = await Promise.all([
@@ -40,135 +40,184 @@ export default async function HomePage() {
         }}
       />
 
-      <Section surface="white" divider paddingY="section">
-        <MarketingContainer className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-          <Reveal variant="left">
-            <p className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--brand-green)]">Who we are</p>
-            <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight tracking-tight text-[color:var(--color-text)] md:text-5xl">
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
+      <div className="wall">
+        <MarketingContainer className="grid items-center gap-14 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:py-24">
+          <InView variant="rise">
+            <h2 className="wall-brush max-w-3xl text-balance text-4xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-5xl">
               {getSetting(settings, "home.who_title")}
             </h2>
-            <div className="mt-6 grid gap-4 text-body text-[color:var(--color-text-muted)]">
+            <div className="wall-text mt-6 grid max-w-[62ch] gap-4 text-lg leading-relaxed text-[color:var(--wall-chalk-dim)]">
               <p>{getSetting(settings, "home.who_body")}</p>
               <p>{getSetting(settings, "home.who_body_2")}</p>
             </div>
-          </Reveal>
-          <Reveal staggerIndex={1} variant="right">
-            <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color:color-mix(in_srgb,var(--color-brand)_20%,var(--color-border))] bg-[color:var(--color-surface)] p-4 shadow-[var(--shadow-lg)] sm:p-5">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,color-mix(in_srgb,var(--brand-green)_22%,transparent),transparent_32%),radial-gradient(circle_at_88%_86%,color-mix(in_srgb,var(--accent)_16%,transparent),transparent_34%)]" aria-hidden />
-              <div className="relative grid gap-4 sm:grid-cols-[0.9fr_1fr]">
-                <div className="flex min-h-[300px] flex-col justify-between rounded-[calc(var(--radius-lg)-0.25rem)] bg-[color:color-mix(in_srgb,var(--color-brand)_92%,black)] p-6 text-[color:var(--color-surface)]">
-                  <div className="grid h-32 w-32 place-items-center rounded-2xl bg-white p-4 shadow-[0_18px_45px_rgba(0,0,0,0.22)]">
-                    <Image src={PUNAB_LOGO_SRC} alt="" width={120} height={120} className="h-full w-full object-contain" />
-                  </div>
-                  <div>
-                    <p className="text-small font-bold uppercase tracking-[0.18em] text-[color:color-mix(in_srgb,var(--brand-green)_62%,white)]">National network</p>
-                    <p className="mt-3 text-3xl font-black leading-none tracking-tight">Private University Network</p>
-                  </div>
-                </div>
-                <div className="grid gap-3">
-                  {["Chapters across campuses", "Events with real reach", "A lifelong member network"].map((item, index) => (
-                    <div key={item} className="border-l-4 border-[color:var(--color-brand)] bg-[color:color-mix(in_srgb,var(--color-surface-2)_82%,white)] p-5 shadow-[var(--shadow-sm)]">
-                      <p className="text-small font-bold uppercase tracking-[0.16em] text-[color:var(--color-brand)]">0{index + 1}</p>
-                      <p className="mt-2 text-xl font-bold leading-snug text-[color:var(--color-text)]">{item}</p>
-                    </div>
-                  ))}
-                </div>
+          </InView>
+          <InView variant="paste" delay={150} className="mx-auto w-full max-w-md">
+          <dl className="wall-sheet wall-text w-full rotate-1 px-7 pb-6 pt-9 sm:px-9">
+            {[
+              { value: stats.chapters, label: "chapters" },
+              { value: stats.events, label: "events on the calendar" },
+              { value: successfulEvents, label: "albums in the archive" },
+            ].map((row, i) => (
+              <div
+                key={row.label}
+                className={`flex items-baseline gap-5 py-4 ${i > 0 ? "border-t-2 border-dashed border-[#1b1a17]/25" : ""}`}
+              >
+                <dd className="wall-brush order-1 w-[4.75rem] shrink-0 text-6xl leading-none text-[color:var(--wall-crimson)] sm:w-[6rem] sm:text-7xl">
+                  <CountUp value={row.value} />
+                </dd>
+                <dt className="order-2 text-lg font-extrabold leading-snug text-[#1b1a17] sm:text-xl">{row.label}</dt>
               </div>
-            </div>
-          </Reveal>
+            ))}
+          </dl>
+          </InView>
         </MarketingContainer>
-      </Section>
-      <WaveDivider from="white" to="muted" />
-
-      <Section surface="muted" divider paddingY="section">
-        <MarketingContainer className="grid gap-12 lg:grid-cols-2">
-          <Reveal variant="scale">
-            <article className="h-full border-t-4 border-[color:var(--color-brand)] bg-[color:var(--color-surface)] p-7 shadow-[var(--shadow-sm)]">
-              <span className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--color-brand)]">
-                Mission
-              </span>
-              <h2 className="mt-4 text-3xl font-black leading-tight text-[color:var(--color-text)]">{getSetting(settings, "home.mission_title")}</h2>
-              <p className="text-body mt-4 text-[color:var(--color-text-muted)]">{getSetting(settings, "home.mission_body")}</p>
-            </article>
-          </Reveal>
-          <Reveal staggerIndex={1} variant="scale">
-            <article className="h-full border-t-4 border-[color:var(--brand-green)] bg-[color:var(--color-surface)] p-7 shadow-[var(--shadow-sm)]">
-              <span className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--brand-green)]">
-                Vision
-              </span>
-              <h2 className="mt-4 text-3xl font-black leading-tight text-[color:var(--color-text)]">{getSetting(settings, "home.vision_title")}</h2>
-              <p className="text-body mt-4 text-[color:var(--color-text-muted)]">{getSetting(settings, "home.vision_body")}</p>
-            </article>
-          </Reveal>
-        </MarketingContainer>
-      </Section>
-      <WaveDivider from="muted" to="white" />
-
-      <StatsSection
-        chapters={stats.chapters}
-        events={stats.events}
-        successfulEvents={successfulEvents}
-      />
-      <WaveDivider from="white" to={featuredGalleryBlocks.length > 0 ? "muted" : "transparent"} />
-
-      {featuredGalleryBlocks.length > 0 && (
-        <div className="flex flex-col bg-[color:var(--color-surface-2)]">
-          {featuredGalleryBlocks.map(({ album, images }, index) => (
-            <FeaturedGallery
-              key={album.id}
-              album={album}
-              images={images}
-              sectionSpacing={index > 0 ? "tight" : "normal"}
-            />
-          ))}
-        </div>
-      )}
-      <div className="bg-[color:var(--color-bg)]">
-        {featuredGalleryBlocks.length > 0 && <WaveDivider from="muted" to="transparent" />}
-
-        <Section surface="transparent" divider={false} paddingY="none" className="py-16 md:py-20">
-          <MarketingContainer>
-            <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-12">
-              <Reveal variant="left">
-                <p className="text-small font-bold uppercase tracking-[0.18em] text-[color:var(--brand-green)]">Network engine</p>
-                <h2 className="mt-3 text-h2 text-[color:var(--color-text)]">{getSetting(settings, "home.coord_title")}</h2>
-                <p className="text-body mt-4 text-[color:var(--color-text-muted)]">{getSetting(settings, "home.coord_body")}</p>
-                <ul className="mt-6 space-y-3 text-small leading-relaxed text-[color:var(--color-text-2)]">
-                  <li className="flex gap-2">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color:var(--color-brand)]" aria-hidden />
-                    {getSetting(settings, "home.coord_bullet_1")}
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color:var(--brand-green)]" aria-hidden />
-                    {getSetting(settings, "home.coord_bullet_2")}
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color:var(--accent)]" aria-hidden />
-                    {getSetting(settings, "home.coord_bullet_3")}
-                  </li>
-                </ul>
-              </Reveal>
-              <Reveal staggerIndex={1} variant="right">
-                <div className="rounded-[var(--radius-lg)] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-[var(--shadow-sm)] motion-safe:transition-[box-shadow,transform] motion-safe:duration-[var(--transition-base)] motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[var(--shadow-md)]">
-                  <p className="text-small font-semibold text-[color:var(--color-brand)]">{getSetting(settings, "home.featured_label")}</p>
-                  <p className="text-h3 mt-2 leading-snug text-[color:var(--color-text)]">{getSetting(settings, "home.featured_title")}</p>
-                  <p className="text-small mt-3 leading-relaxed text-[color:var(--color-text-muted)]">
-                    {getSetting(settings, "home.featured_body")}
-                  </p>
-                </div>
-              </Reveal>
-            </div>
-          </MarketingContainer>
-        </Section>
-        <WaveDivider from="transparent" to="brand" />
       </div>
 
-      <CtaBand
-        content={{
-          title: getSetting(settings, "home.cta_title"),
-          body: getSetting(settings, "home.cta_body"),
-        }}
-      />
+      {featuredGalleryBlocks.length > 0 && (
+        <InView variant="ribbon" className="bg-[#0f3b2e]">
+          <WaveRibbon from={G} to={G} />
+        </InView>
+      )}
+      {featuredGalleryBlocks.map(({ album, images }) => (
+        <div key={album.id} className="wall">
+          <MarketingContainer className="py-16 lg:py-20">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 className="wall-brush text-3xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-4xl">{album.title}</h2>
+              <Link href={`/archive/${album.slug}`} className="wall-link">
+                Open archive
+              </Link>
+            </div>
+            <ul className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+              {images.slice(0, 4).map((img, index) => (
+                <li key={img.id}>
+                  <InView variant="paste" delay={index * 130}>
+                  <Link
+                    href={`/archive/${album.slug}`}
+                    className={`wall-sheet block p-2 ${SHEET_TILT[index % SHEET_TILT.length]}`}
+                  >
+                    <span className="relative block aspect-[4/5] overflow-hidden bg-[color:var(--color-surface-3)]">
+                      <Image
+                        src={img.public_url}
+                        alt={img.alt_text || img.caption || album.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1023px) 45vw, 22vw"
+                      />
+                    </span>
+                  </Link>
+                  </InView>
+                </li>
+              ))}
+            </ul>
+          </MarketingContainer>
+        </div>
+      ))}
+
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
+      <div className="wall">
+        <MarketingContainer className="grid gap-16 py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+          <InView variant="rise">
+          <article>
+            <h2 className="wall-brush text-4xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-5xl">
+              {getSetting(settings, "home.mission_title")}
+            </h2>
+            <p className="wall-text mt-4 max-w-[52ch] text-lg leading-relaxed text-[color:var(--wall-chalk-dim)]">
+              {getSetting(settings, "home.mission_body")}
+            </p>
+          </article>
+          </InView>
+          <InView variant="rise" delay={150} className="lg:mt-24">
+          <article>
+            <h2 className="wall-brush text-4xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-5xl">
+              {getSetting(settings, "home.vision_title")}
+            </h2>
+            <InView variant="grow" delay={500} className="mt-2 h-1.5 w-32 bg-[color:var(--wall-paint)]">
+              {null}
+            </InView>
+            <p className="wall-text mt-4 max-w-[52ch] text-lg leading-relaxed text-[color:var(--wall-chalk-dim)]">
+              {getSetting(settings, "home.vision_body")}
+            </p>
+          </article>
+          </InView>
+        </MarketingContainer>
+      </div>
+
+      <InView variant="ribbon" className="bg-[#0f3b2e]">
+        <WaveRibbon from={G} to={G} />
+      </InView>
+      <div className="wall">
+        <MarketingContainer className="grid items-start gap-14 py-16 lg:grid-cols-2 lg:py-24">
+          <InView variant="rise">
+            <h2 className="wall-brush text-3xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-4xl">
+              {getSetting(settings, "home.coord_title")}
+            </h2>
+            <p className="wall-text mt-4 max-w-[52ch] text-lg leading-relaxed text-[color:var(--wall-chalk-dim)]">
+              {getSetting(settings, "home.coord_body")}
+            </p>
+          </InView>
+          <InView variant="paste" delay={150}>
+          <div className="wall-sheet wall-text rotate-1 p-6 pt-8 sm:p-8 sm:pt-10">
+            <p className="text-sm font-bold uppercase tracking-wide text-[color:var(--wall-crimson)]">
+              {getSetting(settings, "home.featured_label")}
+            </p>
+            <p className="mt-2 text-2xl font-extrabold leading-snug">{getSetting(settings, "home.featured_title")}</p>
+            <p className="mt-3 leading-relaxed text-[#3a382f]">{getSetting(settings, "home.featured_body")}</p>
+            <ul className="mt-6 space-y-2 border-t border-[#1b1a17]/25 pt-5 font-semibold">
+              <li>– {getSetting(settings, "home.coord_bullet_1")}</li>
+              <li>– {getSetting(settings, "home.coord_bullet_2")}</li>
+              <li>– {getSetting(settings, "home.coord_bullet_3")}</li>
+            </ul>
+          </div>
+          </InView>
+        </MarketingContainer>
+      </div>
+
+      <div className="bg-[#0f3b2e]" aria-hidden>
+        <svg className="block h-16 w-full sm:h-24" viewBox="0 0 1440 200" preserveAspectRatio="none">
+          <path d="M0,114 C 240,34 480,154 720,114 C 960,74 1200,194 1440,114 L1440,200 L0,200 Z" fill="#c41e3a" />
+        </svg>
+      </div>
+      <section className="wall home-cta !bg-[color:var(--wall-crimson)] !bg-none">
+        <MarketingContainer className="py-16 lg:py-24">
+          <div className="w-fit max-w-full">
+          <InView variant="wipe">
+          <h2 className="wall-brush max-w-4xl text-balance text-4xl leading-[1.25] text-[color:var(--wall-chalk)] sm:text-6xl">
+            {getSetting(settings, "home.cta_title")}
+          </h2>
+          </InView>
+          <InView variant="ribbon" delay={400} className="mt-3">
+            <svg viewBox="0 0 600 24" preserveAspectRatio="none" className="block h-4 w-full overflow-visible" aria-hidden>
+              <path
+                className="wave-line"
+                d="M3,12 C 110,1 200,23 300,12 S 490,1 597,12"
+                pathLength={1}
+                fill="none"
+                stroke="#2fb26f"
+                strokeWidth={7}
+                strokeLinecap="round"
+                strokeDasharray={1}
+              />
+            </svg>
+          </InView>
+          </div>
+          <p className="wall-text mt-5 max-w-[56ch] text-lg leading-relaxed text-[color:var(--wall-chalk)]">
+            {getSetting(settings, "home.cta_body")}
+          </p>
+          <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+            <Link href="/register" className="wall-btn wall-btn--chalk w-full sm:w-auto">
+              Become a Member
+            </Link>
+            <Link href="/contact" className="wall-link">
+              Contact us
+            </Link>
+          </div>
+        </MarketingContainer>
+      </section>
     </>
   );
 }

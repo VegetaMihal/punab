@@ -33,37 +33,33 @@ export default async function NoticesPage() {
           <EmptyState title="No notices published" description="Official notices will appear here once they are released." />
         )}
         {!error && notices.length > 0 && (
-          <ul className="divide-y divide-[color:var(--color-border)] rounded-[var(--radius-md)] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] shadow-[var(--shadow-sm)]">
+          <ul className="grid gap-9 md:grid-cols-2">
             {notices.map((n, i) => (
-              <li
-                key={n.id}
-                className="motion-safe:transition-colors motion-safe:duration-[var(--transition-fast)] hover:bg-[color:var(--color-surface-2)]"
-              >
+              <li key={n.id}>
                 <Reveal staggerIndex={i % 6}>
-                  <Link href={`/notices/${n.id}`} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:gap-6 sm:p-5">
-                    <div className="flex shrink-0 flex-row items-center gap-3 sm:w-40 sm:flex-col sm:items-start">
-                      {n.published_at ? (
-                        <time
-                          dateTime={n.published_at}
-                          className="text-small font-semibold tabular-nums text-[color:var(--color-text-2)]"
-                        >
+                  <Link
+                    href={`/notices/${n.id}`}
+                    className={`wall-sheet wall-text block h-full p-6 pt-9 ${i % 2 === 0 ? "-rotate-1" : "rotate-1"}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="bg-[#c41e3a] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#fffaf2]">
+                        Notice
+                      </span>
+                      {n.published_at && (
+                        <time dateTime={n.published_at} className="text-small font-semibold tabular-nums text-[#3a382f]">
                           {new Date(n.published_at).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "short",
                             year: "numeric",
                           })}
                         </time>
-                      ) : (
-                        <span className="text-small text-[color:var(--color-text-muted)]">—</span>
                       )}
-                      <span className="inline-flex w-fit rounded-[var(--radius-full)] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-                        Notice
-                      </span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-h3 text-[color:var(--color-text)]">{n.title}</h2>
-                      {n.excerpt && <p className="text-small mt-2 text-[color:var(--color-text-muted)]">{n.excerpt}</p>}
-                    </div>
+                    <h2 className="text-h3 mt-4 text-[#1b1a17]">{n.title}</h2>
+                    {n.excerpt && <p className="text-small mt-3 line-clamp-4 leading-relaxed text-[#3a382f]">{n.excerpt}</p>}
+                    <span className="mt-5 inline-block border-b-[3px] border-[#c41e3a] pb-0.5 text-small font-extrabold uppercase tracking-wide text-[#a5182f]">
+                      Read notice →
+                    </span>
                   </Link>
                 </Reveal>
               </li>

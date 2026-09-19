@@ -4,7 +4,6 @@ import { ForumDirectoryCard } from "@/components/forums/ForumDirectoryCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Reveal } from "@/components/ui/Reveal";
 import { listPublishedForums } from "@/lib/repositories/forums-repository";
 import type { Forum } from "@/types/database";
 
@@ -38,13 +37,11 @@ export default async function ForumsDirectoryPage() {
         )}
         {!error && forums.length > 0 && (
           <>
-            <ul className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {forums.map((f, i) => (
-                <Reveal key={f.id} staggerIndex={i % 5}>
-                  <li className="h-full">
-                    <ForumDirectoryCard forum={f} />
-                  </li>
-                </Reveal>
+                <li key={f.id} className="h-full">
+                  <ForumDirectoryCard forum={f} index={i} />
+                </li>
               ))}
             </ul>
           </>

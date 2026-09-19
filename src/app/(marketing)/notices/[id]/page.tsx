@@ -18,17 +18,17 @@ export default async function NoticeDetailPage({ params }: Props) {
     <>
       <PageHeader title={notice.title} />
       <MarketingContainer maxWidth="3xl" className="py-10">
-        {notice.published_at && (
-          <p className="text-sm text-muted">
-            Published {new Date(notice.published_at).toLocaleDateString("en-GB", { dateStyle: "long" })}
-          </p>
-        )}
-        <div className="mt-6 max-w-none text-stone-700 dark:text-stone-300">
-          <p className="whitespace-pre-wrap">{notice.body}</p>
-        </div>
+        <article className="wall-sheet wall-text -rotate-1 p-6 pt-10 sm:p-10 sm:pt-12">
+          {notice.published_at && (
+            <p className="text-small font-extrabold uppercase tracking-[0.14em] text-[#a5182f]">
+              Published {new Date(notice.published_at).toLocaleDateString("en-GB", { dateStyle: "long" })}
+            </p>
+          )}
+          <p className="mt-5 whitespace-pre-wrap text-[1.0625rem] leading-relaxed text-[#1b1a17]">{notice.body}</p>
+        </article>
         <SmartBackLink
           fallbackHref="/notices"
-          className="mt-8 inline-block text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="wall-link mt-10 inline-block"
         >
           ← All notices
         </SmartBackLink>
