@@ -526,7 +526,7 @@ export function MunApplicationForm() {
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--color-border)] pb-4">
-          <h2 className="text-h4 font-semibold text-[color:var(--color-text)]">Early Bird Registration Fee</h2>
+          <h2 className="text-h4 font-semibold text-[color:var(--color-text)]">Regular Bird Registration Fee</h2>
           <span className="rounded-full bg-[color:var(--color-brand)] px-4 py-1 text-small font-bold text-white">
             BDT {MUN_REGISTRATION_FEE_BDT}
           </span>

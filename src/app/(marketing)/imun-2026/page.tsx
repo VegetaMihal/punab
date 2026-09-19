@@ -128,7 +128,7 @@ export default function ImunLandingPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] bg-white/15 px-3 py-1 font-bold text-white">
                   <SparkIcon />
-                  Early Bird Registration Open
+                  Regular Bird Registration Open
                 </span>
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function ImunLandingPage() {
             <div className="text-center">
               <p className="text-h2 font-black text-white">Ready to represent?</p>
               <p className="mx-auto mt-3 max-w-xl text-body text-white/90">
-                <strong>Early bird registration is now open.</strong> Seats are allocated by the Secretariat based on
+                <strong>Regular bird registration is now open.</strong> Seats are allocated by the Secretariat based on
                 availability and experience.
               </p>
               <div className="mt-8">
