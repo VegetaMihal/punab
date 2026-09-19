@@ -1326,3 +1326,14 @@ main:has(.home-cta) + footer .footer-wave-line {
   box-shadow: none;
 }
 /* f5 */
+
+/* Cursor trail: chalk cream on the wall */
+.brand-cursor-sparkle--dual,
+.brand-cursor-sparkle--red,
+.brand-cursor-sparkle--green {
+  background: #efeae0;
+  box-shadow:
+    0 0 4px 1px rgba(239, 234, 224, 0.7),
+    0 0 12px 2px rgba(239, 234, 224, 0.3);
+}
+/* c1 */
