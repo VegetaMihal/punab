@@ -1,6 +1,8 @@
 import { BloodHeroBloodGroups } from "@/components/bloodhero/BloodHeroBloodGroups";
 import { BloodHeroFigure } from "@/components/bloodhero/BloodHeroFigure";
 import { BloodHeroMainActions } from "@/components/bloodhero/BloodHeroMainActions";
+import { BloodHeroParallax } from "@/components/bloodhero/BloodHeroParallax";
+import { BloodHeroStatStrip } from "@/components/bloodhero/BloodHeroStatStrip";
 import { fetchPublicRequests, fetchPublicStats } from "@/lib/bloodhero/public-board";
 
 function figureMessage(open: number, critical: number): string {
@@ -31,9 +33,19 @@ export async function BloodHeroHeroSection() {
             <div className="mt-6">
               <BloodHeroMainActions />
             </div>
+            <BloodHeroStatStrip
+              active_donors={stats?.active_donors ?? 0}
+              open_requests={stats?.open_requests ?? requests.length}
+              fulfilled_requests={stats?.fulfilled_requests ?? 0}
+            />
           </div>
           <div className="flex justify-center md:justify-end">
-            <BloodHeroFigure message={figureMessage(stats?.open_requests ?? requests.length, critical)} />
+            <BloodHeroParallax range={18}>
+              <BloodHeroFigure
+                message={figureMessage(stats?.open_requests ?? requests.length, critical)}
+                critical={critical > 0}
+              />
+            </BloodHeroParallax>
           </div>
         </div>
       </section>

@@ -2,7 +2,7 @@
  * The BloodHero figure: one ink-line stick person holding a blood drop.
  * Pure SVG + CSS (see bloodhero.css). Decorative; the bubble text carries the meaning.
  */
-export function BloodHeroFigure({ message }: { message: string }) {
+export function BloodHeroFigure({ message, critical = false }: { message: string; critical?: boolean }) {
   return (
     <div className="flex items-end gap-2">
       <svg
@@ -42,7 +42,11 @@ export function BloodHeroFigure({ message }: { message: string }) {
         </g>
       </svg>
       <p
-        className="bh-bubble bh-display mb-16 max-w-[13rem] rounded-2xl rounded-bl-sm border-2 border-(--bh-ink) bg-(--bh-panel) px-4 py-3 text-lg font-bold leading-snug text-(--bh-ink) sm:mb-20 sm:max-w-[15rem] sm:text-xl"
+        className={`bh-bubble bh-display mb-16 max-w-[13rem] rounded-2xl rounded-bl-sm border-2 px-4 py-3 text-lg font-bold leading-snug sm:mb-20 sm:max-w-[15rem] sm:text-xl ${
+          critical
+            ? "bh-bubble-glow border-(--bh-blood) bg-(--bh-panel) text-(--bh-ink)"
+            : "border-(--bh-ink) bg-(--bh-panel) text-(--bh-ink)"
+        }`}
         role="status"
       >
         {message}

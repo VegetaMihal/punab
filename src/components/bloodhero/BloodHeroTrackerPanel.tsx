@@ -23,9 +23,9 @@ const errClass = "mt-1.5 text-sm font-medium text-(--bh-blood-deep) ";
 function statusBadgeClass(status: string) {
   switch (status) {
     case "fulfilled":
-      return "border border-emerald-200/80 bg-emerald-100 text-emerald-950 dark:border-emerald-800/60 dark:bg-emerald-950/50 dark:text-emerald-50";
+      return "border border-(--bh-success-border) bg-(--bh-success-bg) text-(--bh-success-ink)";
     case "matching":
-      return "border border-amber-200/80 bg-amber-100 text-amber-950 dark:border-amber-800/50 dark:bg-amber-950/45 dark:text-amber-50";
+      return "border border-(--bh-warn-border) bg-(--bh-warn-bg) text-(--bh-warn-ink)";
     case "cancelled":
       return "border border-(--bh-line) bg-(--bh-panel) text-(--bh-ink) ";
     default:
@@ -36,9 +36,9 @@ function statusBadgeClass(status: string) {
 function statusAccentClass(status: string) {
   switch (status) {
     case "fulfilled":
-      return "border-emerald-600";
+      return "border-(--bh-success-accent)";
     case "matching":
-      return "border-amber-500";
+      return "border-(--bh-warn-accent)";
     case "cancelled":
       return "border-(--bh-line)";
     default:
@@ -143,21 +143,21 @@ export function BloodHeroTrackerPanel() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-sm font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto sm:min-h-11"
+          className="inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-sm font-semibold text-(--bh-on-blood) transition duration-150 hover:bg-(--bh-blood-deep) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100 motion-reduce:active:scale-100 sm:w-auto sm:min-h-11"
         >
           {pending ? "Looking up…" : "Show request status"}
         </button>
       </form>
 
       {data ? (
-        <div className="space-y-6 border-t border-(--bh-line) pt-8 sm:space-y-8">
+        <div className="bh-rise-in space-y-6 border-t border-(--bh-line) pt-8 sm:space-y-8">
           {!data.request ? (
             <div
-              className="rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3.5 text-sm leading-relaxed text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/25 dark:text-amber-100 sm:px-5 sm:py-4"
+              className="rounded-2xl border border-(--bh-warn-border) bg-(--bh-warn-bg) px-4 py-3.5 text-sm leading-relaxed text-(--bh-warn-ink) sm:px-5 sm:py-4"
               role="status"
             >
-              <span className="font-semibold text-amber-900 dark:text-amber-50">No request found</span>
-              <span className="mt-1 block text-amber-950/90 dark:text-amber-100/90">
+              <span className="font-semibold text-(--bh-warn-ink)">No request found</span>
+              <span className="mt-1 block text-(--bh-warn-body)">
                 for <span className="font-mono font-medium">{data.trackingNumberUsed}</span>. Check the number
                 from your confirmation screen, or submit a new request if needed.
               </span>
@@ -203,7 +203,7 @@ function TrackerRequestCard({
               Current status
             </p>
             <span
-              className={`inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-center text-sm font-bold sm:py-2.5 ${statusBadgeClass(r.status)}`}
+              className={`inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-center text-sm font-bold transition-colors duration-300 sm:py-2.5 ${statusBadgeClass(r.status)}`}
               aria-label={`Request status: ${headline}`}
             >
               {headline}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BloodHeroWardTiles } from "@/components/bloodhero/BloodHeroWardTiles";
+import { BloodHeroLiveBoard } from "@/components/bloodhero/BloodHeroLiveBoard";
 import { BLOOD_GROUPS, CAN_DONATE_TO, type PublicRequest, type PublicStats } from "@/lib/bloodhero/public-board";
 
 /** The ward board: 8 tiles, red only where blood is actually needed. Data comes from the PII-free public view. */
@@ -21,16 +21,9 @@ export function BloodHeroBloodGroups({
             এখনই যে রক্তের প্রয়োজন
           </p>
         </div>
-        {stats ? (
-          <p className="text-sm text-(--bh-ink-soft) tabular-nums">
-            {stats.active_donors} donors ready · {stats.open_requests} open · {stats.fulfilled_requests} fulfilled
-          </p>
-        ) : null}
       </div>
 
-      <div className="mt-5">
-        <BloodHeroWardTiles requests={requests} />
-      </div>
+      <BloodHeroLiveBoard initialRequests={requests} initialStats={stats} />
 
       <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
         <Link

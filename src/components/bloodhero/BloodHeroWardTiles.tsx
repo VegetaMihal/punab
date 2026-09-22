@@ -24,11 +24,14 @@ export function BloodHeroWardTiles({
   requests,
   activeGroup,
   compact = false,
+  ripplingGroups,
 }: {
   requests: PublicRequest[];
   /** When set, this tile is outlined as the current filter and links back to the unfiltered board. */
   activeGroup?: BloodGroup;
   compact?: boolean;
+  /** Groups whose count just changed on a live poll — briefly rings the tile. */
+  ripplingGroups?: Set<BloodGroup>;
 }) {
   const tally = tallyOf(requests);
 
@@ -39,13 +42,14 @@ export function BloodHeroWardTiles({
         const hot = t.critical > 0;
         const needed = t.open > 0;
         const active = activeGroup === g;
+        const rippling = ripplingGroups?.has(g) ?? false;
         return (
           <li key={g}>
             <Link
               href={active ? "/bloodhero/requests" : `/bloodhero/requests?group=${encodeURIComponent(g)}`}
               aria-current={active ? "true" : undefined}
               aria-label={`${g}: ${needed ? `${t.open} units needed${hot ? ", critical" : ""}` : "none needed now"}${active ? " (showing this group, tap to clear)" : ""}`}
-              className={`bh-focus relative flex ${compact ? "min-h-16 p-2 sm:min-h-20" : "min-h-24 p-2.5 sm:min-h-28 sm:p-3.5"} flex-col justify-between rounded-xl border-2 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 ${
+              className={`bh-focus relative flex ${compact ? "min-h-16 p-2 sm:min-h-20" : "min-h-24 p-2.5 sm:min-h-28 sm:p-3.5"} flex-col justify-between rounded-xl border-2 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 ${rippling ? "bh-tile-ripple" : ""} ${
                 active ? "ring-2 ring-(--bh-ink) ring-offset-2 ring-offset-(--bh-bg)" : ""
               } ${
                 hot

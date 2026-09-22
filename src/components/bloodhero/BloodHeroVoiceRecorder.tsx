@@ -11,10 +11,10 @@ const btnBase =
   "inline-flex min-h-12 w-full min-w-0 items-center justify-center rounded-xl border text-base font-semibold transition focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-11 sm:w-auto";
 
 const btnPrimary =
-  `${btnBase} border-(--bh-blood) bg-(--bh-blood-tint) text-(--bh-blood-deep) hover:bg-(--bh-blood-tint) `;
+  `${btnBase} border-(--bh-blood) bg-(--bh-blood-tint) text-(--bh-blood-deep) duration-150 hover:bg-(--bh-blood) hover:text-(--bh-on-blood) active:scale-[0.98] motion-reduce:active:scale-100 `;
 
 const btnStop =
-  `${btnBase} border-(--bh-line) bg-(--bh-ink) text-(--bh-on-blood) hover:bg-(--bh-ink) `;
+  `${btnBase} border-(--bh-line) bg-(--bh-ink) text-(--bh-on-blood) duration-150 hover:bg-(--bh-ink-soft) active:scale-[0.98] motion-reduce:active:scale-100 `;
 
 const errBoxClass =
   "mt-3 rounded-lg border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-3 py-2 text-sm text-(--bh-blood-deep) ";
@@ -332,9 +332,13 @@ export function BloodHeroVoiceRecorder({
               <span className="text-sm font-semibold">Stop</span>
             </button>
             <span
-              className="flex h-12 min-w-0 flex-1 items-center justify-center rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3 font-mono text-sm font-semibold tabular-nums text-(--bh-ink) sm:h-auto sm:min-h-11 sm:min-w-[4.5rem] sm:flex-none "
+              className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3 font-mono text-sm font-semibold tabular-nums text-(--bh-ink) sm:h-auto sm:min-h-11 sm:min-w-[4.5rem] sm:flex-none "
               aria-live="polite"
             >
+              <span className="relative flex size-2.5 shrink-0" aria-hidden>
+                <span className="bh-pulse absolute inline-flex size-full rounded-full bg-(--bh-blood)" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-(--bh-blood)" />
+              </span>
               {formatDuration(seconds)}
             </span>
           </div>
