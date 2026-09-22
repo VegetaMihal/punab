@@ -18,14 +18,21 @@ export function BabbfStatusControls({
   const [pending, startTransition] = useTransition();
   const [note, setNote] = useState(currentNote);
   const [error, setError] = useState<string | null>(null);
+  const [emailNotice, setEmailNotice] = useState<{ ok: boolean; message: string } | null>(null);
 
   function setStatus(status: BabbfStatus) {
     setError(null);
+    setEmailNotice(null);
     startTransition(async () => {
       const res = await updateBabbfRegistrationStatusAction(referenceNumber, status, note);
       if (res.error) {
         setError(res.error);
         return;
+      }
+      if (res.emailSent === true) {
+        setEmailNotice({ ok: true, message: "Confirmation email sent to participant." });
+      } else if (res.emailSent === false) {
+        setEmailNotice({ ok: false, message: `Confirmation email failed to send: ${res.emailError}` });
       }
       router.refresh();
     });
@@ -58,6 +65,12 @@ export function BabbfStatusControls({
         className="w-full rounded-lg border border-stone-300 p-2 text-sm dark:border-stone-700 dark:bg-stone-900"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
+      {emailNotice && (
+        <p className={`text-sm ${emailNotice.ok ? "text-emerald-600" : "text-amber-600"}`}>
+          {emailNotice.ok ? "✓ " : "⚠ "}
+          {emailNotice.message}
+        </p>
+      )}
     </div>
   );
 }

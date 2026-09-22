@@ -22,6 +22,51 @@ function resolveBabbfMailFrom(): string {
   return "BABBF Championship <noreply@punab.com>";
 }
 
+export type BabbfConfirmationInput = {
+  referenceNumber: string;
+  fullName: string;
+  email: string;
+  eventTypeLabel: string;
+};
+
+/** Notify the participant their registration is confirmed. Does not throw. */
+export async function sendBabbfConfirmationEmail(
+  input: BabbfConfirmationInput
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  if (!isResendConfigured()) {
+    return { ok: false, reason: "RESEND_API_KEY is not configured." };
+  }
+  if (!input.email) {
+    return { ok: false, reason: "Registration has no email address on file." };
+  }
+
+  const subject = `You're confirmed — BABBF Championship 2026 (${input.eventTypeLabel})`;
+  const html = `<!doctype html><html><body style="font-family:sans-serif;color:#1a1a1a">
+  <h1 style="margin:0 0 16px;font-size:20px;color:#C8161E">Registration confirmed</h1>
+  <p>Hi ${input.fullName},</p>
+  <p>Your registration for the <strong>${input.eventTypeLabel}</strong> event at the BABBF Inter-University
+  Armwrestler &amp; Fitness Championship 2026 has been <strong>confirmed</strong>.</p>
+  <p>Participant ID: <strong>${input.referenceNumber}</strong></p>
+  <p>Please keep this ID — bring it (or a screenshot) on the day of the event for check-in and weight-in.</p>
+  </body></html>`;
+
+  try {
+    const resend = getResendClient();
+    const { error } = await resend.emails.send({
+      from: resolveBabbfMailFrom(),
+      to: [input.email],
+      subject,
+      html,
+    });
+    if (error) {
+      return { ok: false, reason: error.message || "Resend send failed." };
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : "Email send failed." };
+  }
+}
+
 /** Notify the organizing inbox on a new BABBF registration. Does not throw. */
 export async function sendBabbfRegistrationNotifyEmail(
   input: BabbfNotifyInput

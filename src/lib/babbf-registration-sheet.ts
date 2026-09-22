@@ -5,8 +5,10 @@ import {
   BABBF_COL,
   BABBF_LAST_COL,
   BABBF_SHEET_HEADER_ROW,
+  BABBF_SHEET_TABS,
   quoteBabbfSheetTab,
   sheetColumnLetter,
+  type BabbfSheetEventType,
 } from "@/lib/babbf-registration-google";
 
 export type BabbfRegistrationRow = {
@@ -19,7 +21,8 @@ export type BabbfRegistrationRow = {
   universityName: string;
   department: string;
   gender: string;
-  weightCategory: string;
+  eventType: string;
+  category: string;
   bloodGroup: string;
   photoUrl: string;
   amount: string;
@@ -28,6 +31,11 @@ export type BabbfRegistrationRow = {
   paymentScreenshotUrl: string;
   status: string;
   reviewerNote: string;
+  studentCategory: string;
+  studentIdOrNid: string;
+  rightHandConfirmed: string;
+  declarationAccepted: string;
+  paymentSenderNumber: string;
   cells: string[];
 };
 
@@ -41,8 +49,28 @@ async function getSheetsClient() {
   return { sheets: google.sheets({ version: "v4", auth: jwt }), spreadsheetId };
 }
 
-async function ensureBabbfHeaderRow(sheets: ReturnType<typeof google.sheets>, spreadsheetId: string): Promise<void> {
-  const q = quoteBabbfSheetTab();
+async function ensureBabbfSheetTab(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string,
+  eventType: BabbfSheetEventType
+): Promise<void> {
+  const tabName = BABBF_SHEET_TABS[eventType];
+  const meta = await sheets.spreadsheets.get({ spreadsheetId });
+  const exists = (meta.data.sheets ?? []).some((s) => s.properties?.title === tabName);
+  if (exists) return;
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: { requests: [{ addSheet: { properties: { title: tabName } } }] },
+  });
+}
+
+async function ensureBabbfHeaderRow(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string,
+  eventType: BabbfSheetEventType
+): Promise<void> {
+  await ensureBabbfSheetTab(sheets, spreadsheetId, eventType);
+  const q = quoteBabbfSheetTab(eventType);
   const headerRange = `${q}!A1:${BABBF_LAST_COL}1`;
   const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: headerRange });
   const row = res.data.values?.[0] ?? [];
@@ -60,20 +88,23 @@ async function ensureBabbfHeaderRow(sheets: ReturnType<typeof google.sheets>, sp
   });
 }
 
-function rowErrorHint(raw: string): string {
+function rowErrorHint(raw: string, eventType: BabbfSheetEventType): string {
   return raw.includes("Unable to parse range") || raw.includes("not found")
-    ? ' Create a worksheet tab named "registrations" and share the spreadsheet with the service account.'
+    ? ` Create a worksheet tab named "${BABBF_SHEET_TABS[eventType]}" and share the spreadsheet with the service account.`
     : "";
 }
 
-export async function appendBabbfRegistrationRow(row: string[]): Promise<{ ok: true } | { ok: false; message: string }> {
+export async function appendBabbfRegistrationRow(
+  eventType: BabbfSheetEventType,
+  row: string[]
+): Promise<{ ok: true } | { ok: false; message: string }> {
   if (row.length !== BABBF_SHEET_HEADER_ROW.length) {
     return { ok: false, message: "Internal row length mismatch." };
   }
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
-    await ensureBabbfHeaderRow(sheets, spreadsheetId);
-    const q = quoteBabbfSheetTab();
+    await ensureBabbfHeaderRow(sheets, spreadsheetId, eventType);
+    const q = quoteBabbfSheetTab(eventType);
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${q}!A:${BABBF_LAST_COL}`,
@@ -84,7 +115,7 @@ export async function appendBabbfRegistrationRow(row: string[]): Promise<{ ok: t
     return { ok: true };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
-    return { ok: false, message: `${raw}${rowErrorHint(raw)}` };
+    return { ok: false, message: `${raw}${rowErrorHint(raw, eventType)}` };
   }
 }
 
@@ -100,7 +131,8 @@ function toBabbfRow(rowIndex: number, cells: string[]): BabbfRegistrationRow {
     universityName: c(BABBF_COL.universityName),
     department: c(BABBF_COL.department),
     gender: c(BABBF_COL.gender),
-    weightCategory: c(BABBF_COL.weightCategory),
+    eventType: c(BABBF_COL.eventType),
+    category: c(BABBF_COL.category),
     bloodGroup: c(BABBF_COL.bloodGroup),
     photoUrl: c(BABBF_COL.photoUrl),
     amount: c(BABBF_COL.amount),
@@ -109,17 +141,22 @@ function toBabbfRow(rowIndex: number, cells: string[]): BabbfRegistrationRow {
     paymentScreenshotUrl: c(BABBF_COL.paymentScreenshotUrl),
     status: c(BABBF_COL.status),
     reviewerNote: c(BABBF_COL.reviewerNote),
+    studentCategory: c(BABBF_COL.studentCategory),
+    studentIdOrNid: c(BABBF_COL.studentIdOrNid),
+    rightHandConfirmed: c(BABBF_COL.rightHandConfirmed),
+    declarationAccepted: c(BABBF_COL.declarationAccepted),
+    paymentSenderNumber: c(BABBF_COL.paymentSenderNumber),
     cells,
   };
 }
 
-export async function listBabbfRegistrations(): Promise<
-  { ok: true; rows: BabbfRegistrationRow[] } | { ok: false; message: string }
-> {
+export async function listBabbfRegistrations(
+  eventType: BabbfSheetEventType
+): Promise<{ ok: true; rows: BabbfRegistrationRow[] } | { ok: false; message: string }> {
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
-    await ensureBabbfHeaderRow(sheets, spreadsheetId);
-    const q = quoteBabbfSheetTab();
+    await ensureBabbfHeaderRow(sheets, spreadsheetId, eventType);
+    const q = quoteBabbfSheetTab(eventType);
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: `${q}!A2:${BABBF_LAST_COL}`,
@@ -135,23 +172,34 @@ export async function listBabbfRegistrations(): Promise<
     return { ok: true, rows };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
-    return { ok: false, message: `${raw}${rowErrorHint(raw)}` };
+    return { ok: false, message: `${raw}${rowErrorHint(raw, eventType)}` };
   }
 }
 
+const ALL_EVENT_TYPES = Object.keys(BABBF_SHEET_TABS) as BabbfSheetEventType[];
+
 export async function findBabbfRegistrationByReference(
   referenceNumber: string
-): Promise<{ ok: true; row: BabbfRegistrationRow | null } | { ok: false; message: string }> {
-  const list = await listBabbfRegistrations();
-  if (!list.ok) return list;
-  const row = list.rows.find((r) => r.referenceNumber === referenceNumber) ?? null;
-  return { ok: true, row };
+): Promise<
+  { ok: true; row: (BabbfRegistrationRow & { eventType: string }) | null; sheetEventType: BabbfSheetEventType | null }
+  | { ok: false; message: string }
+> {
+  for (const eventType of ALL_EVENT_TYPES) {
+    const list = await listBabbfRegistrations(eventType);
+    if (!list.ok) return list;
+    const row = list.rows.find((r) => r.referenceNumber === referenceNumber);
+    if (row) {
+      return { ok: true, row, sheetEventType: eventType };
+    }
+  }
+  return { ok: true, row: null, sheetEventType: null };
 }
 
 export async function findBabbfRegistrationByEmail(
+  eventType: BabbfSheetEventType,
   email: string
 ): Promise<{ ok: true; row: BabbfRegistrationRow | null } | { ok: false; message: string }> {
-  const list = await listBabbfRegistrations();
+  const list = await listBabbfRegistrations(eventType);
   if (!list.ok) return list;
   const target = email.trim().toLowerCase();
   const row = list.rows.find((r) => r.email.trim().toLowerCase() === target) ?? null;
@@ -161,14 +209,16 @@ export async function findBabbfRegistrationByEmail(
 export async function updateBabbfRegistrationStatus(
   referenceNumber: string,
   update: { status: string; reviewerNote?: string }
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<
+  { ok: true; row: BabbfRegistrationRow; sheetEventType: BabbfSheetEventType } | { ok: false; message: string }
+> {
   try {
     const found = await findBabbfRegistrationByReference(referenceNumber);
     if (!found.ok) return found;
-    if (!found.row) return { ok: false, message: "Registration not found." };
+    if (!found.row || !found.sheetEventType) return { ok: false, message: "Registration not found." };
 
     const { sheets, spreadsheetId } = await getSheetsClient();
-    const q = quoteBabbfSheetTab();
+    const q = quoteBabbfSheetTab(found.sheetEventType);
     const sheetRow = found.row.rowIndex + 1; // +1 for header row
 
     const writes: { col: number; value: string }[] = [{ col: BABBF_COL.status, value: update.status }];
@@ -184,7 +234,7 @@ export async function updateBabbfRegistrationStatus(
       });
     }
 
-    return { ok: true };
+    return { ok: true, row: found.row, sheetEventType: found.sheetEventType };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
     return { ok: false, message: raw };

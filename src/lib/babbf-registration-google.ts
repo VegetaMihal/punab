@@ -1,16 +1,12 @@
 import { JWT } from "google-auth-library";
 
-function getJwtClient(scopes: string[]): JWT | null {
-  const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL;
-  const private_key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
+export function getBabbfSheetsJwtClient(): JWT | null {
+  const client_email = process.env.BABBF_GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL;
+  const private_key = process.env.BABBF_GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, "\n");
   if (!client_email || !private_key) {
     return null;
   }
-  return new JWT({ email: client_email, key: private_key, scopes });
-}
-
-export function getBabbfSheetsJwtClient(): JWT | null {
-  return getJwtClient(["https://www.googleapis.com/auth/spreadsheets"]);
+  return new JWT({ email: client_email, key: private_key, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
 }
 
 export function getBabbfSheetId(): string | null {
@@ -22,7 +18,11 @@ export function isBabbfGoogleConfigured(): boolean {
   return Boolean(getBabbfSheetsJwtClient() && getBabbfSheetId());
 }
 
-export const BABBF_SHEET_TAB = "registrations";
+export const BABBF_SHEET_TABS = {
+  armwrestling: "armwrestling_registrations",
+  bodybuilding: "bodybuilding_registrations",
+} as const;
+export type BabbfSheetEventType = keyof typeof BABBF_SHEET_TABS;
 
 export const BABBF_SHEET_HEADER_ROW: string[] = [
   "Reference Number",
@@ -33,7 +33,8 @@ export const BABBF_SHEET_HEADER_ROW: string[] = [
   "University Name",
   "Department",
   "Gender",
-  "Weight Category",
+  "Event Type",
+  "Category",
   "Blood Group",
   "Photo URL",
   "Amount",
@@ -42,6 +43,11 @@ export const BABBF_SHEET_HEADER_ROW: string[] = [
   "Payment Screenshot URL",
   "Status",
   "Reviewer Note",
+  "Student Category",
+  "Student ID / NID",
+  "Right Hand Confirmed",
+  "Declaration Accepted",
+  "Payment Sender Number",
 ];
 
 export const BABBF_COL = {
@@ -53,15 +59,21 @@ export const BABBF_COL = {
   universityName: 5,
   department: 6,
   gender: 7,
-  weightCategory: 8,
-  bloodGroup: 9,
-  photoUrl: 10,
-  amount: 11,
-  paymentMethod: 12,
-  transactionId: 13,
-  paymentScreenshotUrl: 14,
-  status: 15,
-  reviewerNote: 16,
+  eventType: 8,
+  category: 9,
+  bloodGroup: 10,
+  photoUrl: 11,
+  amount: 12,
+  paymentMethod: 13,
+  transactionId: 14,
+  paymentScreenshotUrl: 15,
+  status: 16,
+  reviewerNote: 17,
+  studentCategory: 18,
+  studentIdOrNid: 19,
+  rightHandConfirmed: 20,
+  declarationAccepted: 21,
+  paymentSenderNumber: 22,
 } as const;
 
 export function sheetColumnLetter(zeroBasedIndex: number): string {
@@ -77,6 +89,6 @@ export function sheetColumnLetter(zeroBasedIndex: number): string {
 
 export const BABBF_LAST_COL = sheetColumnLetter(BABBF_SHEET_HEADER_ROW.length - 1);
 
-export function quoteBabbfSheetTab(): string {
-  return `'${BABBF_SHEET_TAB.replace(/'/g, "''")}'`;
+export function quoteBabbfSheetTab(eventType: BabbfSheetEventType): string {
+  return `'${BABBF_SHEET_TABS[eventType].replace(/'/g, "''")}'`;
 }

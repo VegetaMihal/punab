@@ -2,6 +2,7 @@ import Link from "next/link";
 import { assertAdminScope } from "@/lib/auth/require-admin";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { listBabbfRegistrations, type BabbfRegistrationRow } from "@/lib/babbf-registration-sheet";
+import { BABBF_EVENT_TYPE_LABEL, BABBF_EVENT_TYPES } from "@/lib/validations/babbf-registration";
 
 export const metadata = { title: "BABBF Championship 2026 registrations" };
 
@@ -17,14 +18,17 @@ const STATUS_BADGE: Record<string, string> = {
 export default async function AdminBabbfRegistrationsPage() {
   await assertAdminScope("babbf_registrations");
 
-  let rows: BabbfRegistrationRow[] = [];
-  let error: string | null = null;
-  const result = await listBabbfRegistrations();
-  if (!result.ok) {
-    error = result.message;
-  } else {
-    rows = result.rows;
+  let rows: (BabbfRegistrationRow & { tabEventType: string })[] = [];
+  const errors: string[] = [];
+  for (const eventType of BABBF_EVENT_TYPES) {
+    const result = await listBabbfRegistrations(eventType);
+    if (!result.ok) {
+      errors.push(`${BABBF_EVENT_TYPE_LABEL[eventType]}: ${result.message}`);
+      continue;
+    }
+    rows = rows.concat(result.rows.map((r) => ({ ...r, tabEventType: eventType })));
   }
+  const error = errors.length > 0 ? errors.join(" · ") : null;
 
   const sorted = [...rows].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
 
@@ -46,27 +50,27 @@ export default async function AdminBabbfRegistrationsPage() {
       </div>
       <div className="mt-8 space-y-3">
         {error && <EmptyState title="Error" description={error} />}
-        {!error && sorted.length === 0 && (
+        {sorted.length === 0 && !error && (
           <EmptyState title="No registrations" description="No participant registrations have been submitted yet." />
         )}
-        {!error &&
-          sorted.map((r) => (
-            <Link
-              key={r.referenceNumber}
-              href={`/admin/babbf-registrations/${r.referenceNumber}`}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-4 hover:border-brand-red/40 dark:border-stone-800 dark:bg-stone-900"
-            >
-              <div>
-                <p className="font-medium text-stone-900 dark:text-stone-50">{r.fullName}</p>
-                <p className="text-xs text-muted">
-                  {r.referenceNumber} · {r.universityName} · {new Date(r.submittedAt).toLocaleDateString("en-GB")}
-                </p>
-              </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[r.status] ?? STATUS_BADGE.New}`}>
-                {r.status || "New"}
-              </span>
-            </Link>
-          ))}
+        {sorted.map((r) => (
+          <Link
+            key={`${r.tabEventType}-${r.referenceNumber}`}
+            href={`/admin/babbf-registrations/${r.referenceNumber}`}
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-4 hover:border-brand-red/40 dark:border-stone-800 dark:bg-stone-900"
+          >
+            <div>
+              <p className="font-medium text-stone-900 dark:text-stone-50">{r.fullName}</p>
+              <p className="text-xs text-muted">
+                {r.referenceNumber} · {BABBF_EVENT_TYPE_LABEL[r.tabEventType as keyof typeof BABBF_EVENT_TYPE_LABEL]} ·{" "}
+                {r.universityName} · {new Date(r.submittedAt).toLocaleDateString("en-GB")}
+              </p>
+            </div>
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[r.status] ?? STATUS_BADGE.New}`}>
+              {r.status || "New"}
+            </span>
+          </Link>
+        ))}
       </div>
     </div>
   );

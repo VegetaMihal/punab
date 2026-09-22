@@ -66,14 +66,20 @@ export default async function AdminBabbfRegistrationDetailPage({ params }: { par
           <Field label={labelFor("universityName")} value={c("universityName")} />
           <Field label={labelFor("department")} value={c("department")} />
           <Field label={labelFor("gender")} value={c("gender")} />
-          <Field label={labelFor("weightCategory")} value={c("weightCategory")} />
+          <Field label={labelFor("eventType")} value={c("eventType")} />
+          <Field label={labelFor("studentCategory")} value={c("studentCategory")} />
+          <Field label={labelFor("studentIdOrNid")} value={c("studentIdOrNid")} />
+          <Field label={labelFor("category")} value={c("category")} />
           <Field label={labelFor("bloodGroup")} value={c("bloodGroup")} />
+          <Field label={labelFor("rightHandConfirmed")} value={c("rightHandConfirmed")} />
+          <Field label={labelFor("declarationAccepted")} value={c("declarationAccepted")} />
         </dl>
 
         <SectionHeading>Payment verification</SectionHeading>
         <dl className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label={labelFor("amount")} value={c("amount")} />
           <Field label={labelFor("paymentMethod")} value={r.paymentMethod} />
+          <Field label={labelFor("paymentSenderNumber")} value={c("paymentSenderNumber")} />
           <Field label={labelFor("transactionId")} value={r.transactionId} />
         </dl>
       </div>

@@ -7,12 +7,17 @@ import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { BLOOD_HERO_BLOOD_GROUPS } from "@/lib/validations/bloodhero-shared";
 import {
+  babbfWeightCategoriesFor,
+  BABBF_BODYBUILDING_CATEGORIES,
   BABBF_GENDERS,
   BABBF_GENDER_LABEL,
   BABBF_PAYMENT_METHODS,
   BABBF_PAYMENT_METHOD_LABEL,
   BABBF_REGISTRATION_FEE_BDT,
-  BABBF_WEIGHT_CATEGORIES,
+  BABBF_STUDENT_CATEGORIES,
+  BABBF_STUDENT_CATEGORY_LABEL,
+  type BabbfEventType,
+  type BabbfStudentCategory,
 } from "@/lib/validations/babbf-registration";
 
 const initial: SubmitBabbfRegistrationState = {};
@@ -108,22 +113,33 @@ function DocumentField({
   label,
   required,
   error,
+  uploadedUrl,
 }: {
   name: string;
   label: string;
   required?: boolean;
   error?: string;
+  uploadedUrl?: string;
 }) {
+  // A staged upload from a previous submit attempt already lives server-side — don't force the
+  // browser to demand a fresh file pick, or a validation error on another field would strand it.
+  const isRequired = required && !uploadedUrl;
   return (
     <div>
       <label htmlFor={name} className="ds-label">
-        {label} {required && req}
+        {label} {isRequired && req}
       </label>
+      {uploadedUrl && (
+        <p className="mb-1.5 text-small font-medium text-emerald-600">
+          ✓ Uploaded — pick a new file only if you want to replace it.
+        </p>
+      )}
       <input
         id={name}
         name={name}
         type="file"
         accept="image/*"
+        required={isRequired}
         className="ds-input cursor-pointer file:mr-3 file:cursor-pointer file:rounded-[var(--radius-md)] file:border-0 file:bg-[color:var(--color-brand)] file:px-3 file:py-1.5 file:text-small file:font-semibold file:text-white hover:file:opacity-90"
         aria-describedby={error ? `${name}-err` : undefined}
       />
@@ -132,10 +148,17 @@ function DocumentField({
   );
 }
 
-export function BabbfRegistrationForm() {
+export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType }) {
   const [state, formAction, pending] = useActionState(submitBabbfRegistration, initial);
+  const isArmwrestling = eventType === "armwrestling";
   const fv = state?.fieldValues ?? {};
   const fe = state?.fieldErrors ?? {};
+
+  const staged = state?.stagedDocumentUrls ?? {};
+
+  const [studentCategory, setStudentCategory] = useState<string>(fv.studentCategory ?? "university");
+  const categoryOptions = isArmwrestling ? babbfWeightCategoriesFor(studentCategory) : BABBF_BODYBUILDING_CATEGORIES;
+  const categoryLabel = isArmwrestling ? "Weight Category" : "Category";
 
   const [paymentMethod, setPaymentMethod] = useState(fv.paymentMethod ?? "");
   const [referenceHint] = useState(() => `BABBF-2026-DRAFT-${Math.random().toString(36).slice(2, 10).toUpperCase()}`);
@@ -187,6 +210,7 @@ export function BabbfRegistrationForm() {
 
       <input type="hidden" name="stagedDocumentUrls" value={JSON.stringify(state?.stagedDocumentUrls ?? {})} />
       <input type="hidden" name="referenceHint" value={referenceHint} />
+      <input type="hidden" name="eventType" value={eventType} />
 
       <Card>
         <SectionHeading letter="A">Participant Information</SectionHeading>
@@ -194,8 +218,19 @@ export function BabbfRegistrationForm() {
           <TextField name="fullName" label="Full Name" required defaultValue={fv.fullName} error={fe.fullName} />
           <TextField name="phone" label="Phone Number" required defaultValue={fv.phone} error={fe.phone} />
           <TextField name="email" label="Email Address" type="email" required defaultValue={fv.email} error={fe.email} />
-          <TextField name="universityName" label="University Name" required defaultValue={fv.universityName} error={fe.universityName} />
-          <TextField name="department" label="Department" required defaultValue={fv.department} error={fe.department} />
+          <TextField name="universityName" label="Institution Name" required defaultValue={fv.universityName} error={fe.universityName} />
+          {!isArmwrestling && (
+            <TextField name="department" label="Department" required defaultValue={fv.department} error={fe.department} />
+          )}
+          {isArmwrestling && (
+            <TextField
+              name="studentIdOrNid"
+              label="Student ID / Student Status / NID"
+              required
+              defaultValue={fv.studentIdOrNid}
+              error={fe.studentIdOrNid}
+            />
+          )}
           <div>
             <label htmlFor="gender" className="ds-label">
               Gender {req}
@@ -210,19 +245,41 @@ export function BabbfRegistrationForm() {
             </select>
             <FieldError id="gender-err" message={fe.gender} />
           </div>
+          {isArmwrestling && (
+            <div>
+              <label htmlFor="studentCategory" className="ds-label">
+                Student Category {req}
+              </label>
+              <select
+                id="studentCategory"
+                name="studentCategory"
+                required
+                className="ds-input"
+                value={studentCategory}
+                onChange={(e) => setStudentCategory(e.target.value)}
+              >
+                {BABBF_STUDENT_CATEGORIES.map((sc) => (
+                  <option key={sc} value={sc}>
+                    {BABBF_STUDENT_CATEGORY_LABEL[sc as BabbfStudentCategory]}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="studentCategory-err" message={fe.studentCategory} />
+            </div>
+          )}
           <div>
-            <label htmlFor="weightCategory" className="ds-label">
-              Weight Category {req}
+            <label htmlFor="category" className="ds-label">
+              {categoryLabel} {req}
             </label>
-            <select id="weightCategory" name="weightCategory" required className="ds-input" defaultValue={fv.weightCategory ?? ""}>
+            <select id="category" name="category" required className="ds-input" defaultValue={fv.category ?? ""}>
               <option value="">Select</option>
-              {BABBF_WEIGHT_CATEGORIES.map((w) => (
+              {categoryOptions.map((w) => (
                 <option key={w} value={w}>
                   {w}
                 </option>
               ))}
             </select>
-            <FieldError id="weightCategory-err" message={fe.weightCategory} />
+            <FieldError id="category-err" message={fe.category} />
           </div>
           <div>
             <label htmlFor="bloodGroup" className="ds-label">
@@ -239,12 +296,48 @@ export function BabbfRegistrationForm() {
             <FieldError id="bloodGroup-err" message={fe.bloodGroup} />
           </div>
         </div>
+
+        {isArmwrestling && (
+          <div className="space-y-3 border-t border-[color:var(--color-border)] pt-5">
+            <label className="flex items-start gap-2 text-small text-[color:var(--color-text)]">
+              <input
+                type="checkbox"
+                name="rightHandConfirmed"
+                value="true"
+                required
+                defaultChecked={fv.rightHandConfirmed === "true"}
+                className="mt-0.5"
+              />
+              I confirm I will compete using my right hand. {req}
+            </label>
+            <FieldError id="rightHandConfirmed-err" message={fe.rightHandConfirmed} />
+            <label className="flex items-start gap-2 text-small text-[color:var(--color-text)]">
+              <input
+                type="checkbox"
+                name="declarationAccepted"
+                value="true"
+                required
+                defaultChecked={fv.declarationAccepted === "true"}
+                className="mt-0.5"
+              />
+              I declare that the information provided above is accurate and I agree to the competition rules and
+              terms of participation. {req}
+            </label>
+            <FieldError id="declarationAccepted-err" message={fe.declarationAccepted} />
+          </div>
+        )}
       </Card>
 
       <Card>
         <SectionHeading letter="B">Participant Photo</SectionHeading>
         <Hint>A recent, clear photograph of the participant. Required for the participant ID card.</Hint>
-        <DocumentField name="photoFile" label="Participant Photograph" required error={fe.photoFile} />
+        <DocumentField
+          name="photoFile"
+          label="Participant Photograph"
+          required
+          error={fe.photoFile}
+          uploadedUrl={staged.photoUrl}
+        />
       </Card>
 
       <Card>
@@ -255,8 +348,9 @@ export function BabbfRegistrationForm() {
           </span>
         </div>
         <Hint>
-          Pay the registration fee via bKash or Nagad, then enter the transaction ID and upload a screenshot of the
-          payment below.
+          Pay the registration fee via bKash or Nagad to PUNAB&apos;s number{" "}
+          <strong className="text-[color:var(--color-text)]">01701062850</strong>, then enter the transaction ID and
+          upload a screenshot of the payment below.
         </Hint>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -283,9 +377,22 @@ export function BabbfRegistrationForm() {
             </select>
             <FieldError id="paymentMethod-err" message={fe.paymentMethod} />
           </div>
+          <TextField
+            name="paymentSenderNumber"
+            label="Sender's bKash/Nagad Number"
+            required
+            defaultValue={fv.paymentSenderNumber}
+            error={fe.paymentSenderNumber}
+          />
           <TextField name="transactionId" label="Transaction ID" required defaultValue={fv.transactionId} error={fe.transactionId} />
         </div>
-        <DocumentField name="paymentProofFile" label="Payment Screenshot" required error={fe.paymentProofFile} />
+        <DocumentField
+          name="paymentProofFile"
+          label="Payment Screenshot"
+          required
+          error={fe.paymentProofFile}
+          uploadedUrl={staged.paymentScreenshotUrl}
+        />
       </Card>
 
       <Button type="submit" variant="primary" loading={pending} className="w-full sm:w-auto">
