@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/bloodhero/run-escalation",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }
