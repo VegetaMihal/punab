@@ -36,14 +36,8 @@ export function babbfWeightCategoriesFor(studentCategory: string): readonly stri
   return studentCategory === "school_college" ? BABBF_SCHOOL_COLLEGE_WEIGHT_CATEGORIES : BABBF_UNIVERSITY_WEIGHT_CATEGORIES;
 }
 
-// assumed: standard bodybuilding classes — confirm with user before publishing
-export const BABBF_BODYBUILDING_CATEGORIES = [
-  "Men's Physique",
-  "Classic Physique",
-  "Bodybuilding",
-  "Women's Physique",
-] as const;
-export type BabbfBodybuildingCategory = (typeof BABBF_BODYBUILDING_CATEGORIES)[number];
+export const BABBF_BODYBUILDING_WEIGHT_CLASSES = ["60kg", "65kg", "70kg", "70kg+"] as const;
+export const BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES = ["166cm", "166cm+"] as const;
 
 export const BABBF_STATUSES = [
   "New",
@@ -85,7 +79,10 @@ export const babbfRegistrationSchema = z.object({
   eventType: z.enum(BABBF_EVENT_TYPES, { error: () => ({ message: "Select an event." }) }),
   studentCategory: optionalTrimmed,
   studentIdOrNid: optionalTrimmed,
-  category: req("Select a category"),
+  category: optionalTrimmed,
+  bodybuildingClass: optionalTrimmed,
+  physiqueClass: optionalTrimmed,
+  denimJeansOptIn: z.enum(["true", "false"]).default("false"),
   rightHandConfirmed: z.enum(["true", "false"]).default("false"),
   declarationAccepted: z.enum(["true", "false"]).default("false"),
   // Optional per mirrored bloodhero-donor pattern — not everyone knows/wants to share their blood group.
@@ -108,7 +105,7 @@ export const babbfRegistrationSchema = z.object({
       ctx.addIssue({ code: "custom", path: ["studentCategory"], message: "Select a student category." });
     }
     const valid = babbfWeightCategoriesFor(d.studentCategory);
-    if (!valid.includes(d.category)) {
+    if (!d.category || !valid.includes(d.category)) {
       ctx.addIssue({ code: "custom", path: ["category"], message: "Select a weight category." });
     }
     if (!d.studentIdOrNid) {
@@ -121,8 +118,14 @@ export const babbfRegistrationSchema = z.object({
       ctx.addIssue({ code: "custom", path: ["declarationAccepted"], message: "You must accept the declaration." });
     }
   } else {
-    if (!BABBF_BODYBUILDING_CATEGORIES.includes(d.category as (typeof BABBF_BODYBUILDING_CATEGORIES)[number])) {
-      ctx.addIssue({ code: "custom", path: ["category"], message: "Select a bodybuilding category." });
+    if (!d.bodybuildingClass && !d.physiqueClass && d.denimJeansOptIn !== "true") {
+      ctx.addIssue({ code: "custom", path: ["bodybuildingClass"], message: "Select at least one category to enter." });
+    }
+    if (d.bodybuildingClass && !(BABBF_BODYBUILDING_WEIGHT_CLASSES as readonly string[]).includes(d.bodybuildingClass)) {
+      ctx.addIssue({ code: "custom", path: ["bodybuildingClass"], message: "Select a valid weight class." });
+    }
+    if (d.physiqueClass && !(BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES as readonly string[]).includes(d.physiqueClass)) {
+      ctx.addIssue({ code: "custom", path: ["physiqueClass"], message: "Select a valid height class." });
     }
     if (!d.department) {
       ctx.addIssue({ code: "custom", path: ["department"], message: "Department is required." });
