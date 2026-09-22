@@ -155,11 +155,11 @@ export default async function EventDetailPage({ params }: Props) {
           <div className="mt-10 flex flex-wrap items-center gap-3 pt-4">
             {isBabbfChampionship && (
               <>
-                <Button variant="primary" size="md" href="/babbf-championship-2026/register?event=armwrestling">
-                  Register — Armwrestling
-                </Button>
                 <Button variant="primary" size="md" href="/babbf-championship-2026/register?event=bodybuilding">
                   Register — Bodybuilding
+                </Button>
+                <Button variant="primary" size="md" href="/babbf-championship-2026/register?event=armwrestling">
+                  Register — Armwrestling
                 </Button>
               </>
             )}
