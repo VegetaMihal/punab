@@ -42,21 +42,21 @@ export default async function BloodHeroRespondPage({
       />
       <BloodHeroPageSection>
         <div className="mx-auto max-w-lg">
-          <div className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 sm:p-6">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="rounded-2xl border border-(--bh-line) bg-(--bh-panel) p-5 sm:p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               You selected
             </p>
-            <p className="mt-2 text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-50 sm:text-lg">
+            <p className="mt-2 text-base font-semibold leading-snug text-(--bh-ink) sm:text-lg">
               {label}
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="mt-3 text-sm leading-relaxed text-(--bh-ink-soft) ">
               After you confirm, we will save this once. If you opened the wrong link from the email, go back and choose a different option there.
             </p>
             <form action={confirmBloodHeroDonorResponse} className="mt-8">
               <input type="hidden" name="token" value={t} />
               <button
                 type="submit"
-                className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-red-600 px-5 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 active:bg-red-800 dark:bg-red-500 dark:hover:bg-red-600 dark:focus-visible:ring-offset-zinc-950 sm:min-h-11 sm:text-sm"
+                className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-5 text-base font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:bg-(--bh-blood-deep) sm:min-h-11 sm:text-sm"
               >
                 Confirm and save
               </button>

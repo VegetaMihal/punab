@@ -1,5 +1,8 @@
 const EARTH_RADIUS_KM = 6371;
 
+/** Max donor-to-request distance for matching. Keep in sync with 027_bloodhero_matching_radius.sql. */
+export const BLOODHERO_MAX_MATCH_RADIUS_KM = 25;
+
 function degToRad(v: number): number {
   return (v * Math.PI) / 180;
 }

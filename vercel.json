@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/bloodhero/run-escalation",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}

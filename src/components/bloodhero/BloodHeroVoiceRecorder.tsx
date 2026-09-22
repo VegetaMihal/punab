@@ -8,16 +8,16 @@ type RecorderPhase = "idle" | "recording" | "processing";
 export type BloodHeroTranscriptionLanguage = "en" | "bn";
 
 const btnBase =
-  "inline-flex min-h-12 w-full min-w-0 items-center justify-center rounded-xl border text-base font-semibold shadow-sm transition focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950 sm:min-h-11 sm:w-auto";
+  "inline-flex min-h-12 w-full min-w-0 items-center justify-center rounded-xl border text-base font-semibold transition focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-11 sm:w-auto";
 
 const btnPrimary =
-  `${btnBase} border-red-300 bg-red-50 text-red-800 hover:bg-red-100 dark:border-red-800/60 dark:bg-red-950/50 dark:text-red-100 dark:hover:bg-red-900/40`;
+  `${btnBase} border-(--bh-blood) bg-(--bh-blood-tint) text-(--bh-blood-deep) hover:bg-(--bh-blood-tint) `;
 
 const btnStop =
-  `${btnBase} border-zinc-400 bg-zinc-900 text-white hover:bg-zinc-800 dark:border-zinc-500 dark:bg-zinc-800 dark:hover:bg-zinc-700`;
+  `${btnBase} border-(--bh-line) bg-(--bh-ink) text-(--bh-on-blood) hover:bg-(--bh-ink) `;
 
 const errBoxClass =
-  "mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-100";
+  "mt-3 rounded-lg border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-3 py-2 text-sm text-(--bh-blood-deep) ";
 
 function pickMimeType(): string | undefined {
   if (typeof MediaRecorder === "undefined") return undefined;
@@ -87,13 +87,13 @@ export type BloodHeroVoiceRecorderProps = {
 };
 
 const langToggleBase =
-  "min-h-12 flex-1 rounded-xl border px-3 text-sm font-semibold transition focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950 sm:min-h-11";
+  "min-h-12 flex-1 rounded-xl border px-3 text-sm font-semibold transition focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-11";
 
 const langToggleOff =
-  `${langToggleBase} border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800`;
+  `${langToggleBase} border-(--bh-line) bg-(--bh-panel) text-(--bh-ink-soft) hover:bg-(--bh-panel) `;
 
 const langToggleOn =
-  `${langToggleBase} border-red-500 bg-red-50 text-red-900 dark:border-red-500 dark:bg-red-950/60 dark:text-red-50`;
+  `${langToggleBase} border-(--bh-blood) bg-(--bh-blood-tint) text-(--bh-blood-deep) `;
 
 export function BloodHeroVoiceRecorder({
   onTranscript,
@@ -293,12 +293,12 @@ export function BloodHeroVoiceRecorder({
       <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {phase === "processing" ? (
           <div
-            className="inline-flex min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-4 text-sm font-medium text-zinc-800 sm:w-auto dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+            className="inline-flex min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-(--bh-line) bg-(--bh-panel) px-4 text-sm font-medium text-(--bh-ink) sm:w-auto "
             role="status"
             aria-live="polite"
           >
             <span
-              className="size-5 shrink-0 rounded-full border-2 border-red-600 border-t-transparent animate-spin dark:border-red-400"
+              className="size-5 shrink-0 rounded-full border-2 border-(--bh-blood) border-t-transparent animate-spin "
               aria-hidden
             />
             Transcribing…
@@ -332,7 +332,7 @@ export function BloodHeroVoiceRecorder({
               <span className="text-sm font-semibold">Stop</span>
             </button>
             <span
-              className="flex h-12 min-w-0 flex-1 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-3 font-mono text-sm font-semibold tabular-nums text-zinc-800 sm:h-auto sm:min-h-11 sm:min-w-[4.5rem] sm:flex-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+              className="flex h-12 min-w-0 flex-1 items-center justify-center rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3 font-mono text-sm font-semibold tabular-nums text-(--bh-ink) sm:h-auto sm:min-h-11 sm:min-w-[4.5rem] sm:flex-none "
               aria-live="polite"
             >
               {formatDuration(seconds)}

@@ -304,6 +304,37 @@ async function fallbackRegisterDonorWithoutRpc(row: DonorInsertRow): Promise<{
   }
 }
 
+async function saveDonorLocation(
+  donorId: string,
+  d: { center_point_address: string; district_or_area?: string | null },
+  formData: FormData
+): Promise<void> {
+  const centerPointAddress = d.center_point_address.trim();
+  const mapLat = Number.parseFloat(formData.get("center_point_lat")?.toString() ?? "");
+  const mapLng = Number.parseFloat(formData.get("center_point_lng")?.toString() ?? "");
+  const centerPoint =
+    Number.isFinite(mapLat) && Number.isFinite(mapLng)
+      ? { lat: mapLat, lng: mapLng }
+      : await geocodeBloodHeroAddress(centerPointAddress);
+  try {
+    const service = createServiceRoleSupabase();
+    await service
+      .from("bloodhero_donors")
+      .update({
+        center_point_address: centerPointAddress,
+        center_point_lat: centerPoint?.lat ?? null,
+        center_point_lng: centerPoint?.lng ?? null,
+        district_or_area: d.district_or_area?.trim() || null,
+      })
+      .eq("id", donorId);
+  } catch (e) {
+    console.warn("[BloodHero] donor location enrichment failed", {
+      donorId,
+      message: e instanceof Error ? e.message : String(e),
+    });
+  }
+}
+
 export async function registerBloodHeroDonor(
   _prev: BloodHeroDonorActionState,
   formData: FormData
@@ -387,6 +418,7 @@ export async function registerBloodHeroDonor(
         // Fallback succeeded; keep registration flow non-blocking for email outcome.
         revalidatePath("/bloodhero/donor");
         if (inserted) {
+          await saveDonorLocation(inserted.donor_id, d, formData);
           let eventWriter: SupabaseClient | undefined;
           try {
             eventWriter = createServiceRoleSupabase();
@@ -413,30 +445,7 @@ export async function registerBloodHeroDonor(
   }
 
   if (inserted) {
-    const centerPointAddress = d.center_point_address.trim();
-    const mapLat = Number.parseFloat(formData.get("center_point_lat")?.toString() ?? "");
-    const mapLng = Number.parseFloat(formData.get("center_point_lng")?.toString() ?? "");
-    const centerPoint =
-      Number.isFinite(mapLat) && Number.isFinite(mapLng)
-        ? { lat: mapLat, lng: mapLng }
-        : await geocodeBloodHeroAddress(centerPointAddress);
-    try {
-      const service = createServiceRoleSupabase();
-      await service
-        .from("bloodhero_donors")
-        .update({
-          center_point_address: centerPointAddress,
-          center_point_lat: centerPoint?.lat ?? null,
-          center_point_lng: centerPoint?.lng ?? null,
-          district_or_area: d.district_or_area?.trim() || null,
-        })
-        .eq("id", inserted.donor_id);
-    } catch (e) {
-      console.warn("[BloodHero] donor location enrichment failed", {
-        donorId: inserted.donor_id,
-        message: e instanceof Error ? e.message : String(e),
-      });
-    }
+    await saveDonorLocation(inserted.donor_id, d, formData);
 
     let eventWriter: SupabaseClient | undefined;
     try {

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { getBloodHeroRequestDetailForAdmin } from "@/actions/bloodhero-admin-requests";
+import {
+  getBloodHeroRequestDetailForAdmin,
+  listBloodHeroAcceptedNotificationsForRequest,
+} from "@/actions/bloodhero-admin-requests";
 import { BloodHeroAdminRequestDetailContent } from "@/components/bloodhero/admin/BloodHeroAdminRequestDetailContent";
 import { bloodHeroAdminUrls } from "@/lib/bloodhero/admin-paths";
 
@@ -15,6 +18,7 @@ export default async function BloodHeroAdminRequestDetailPage({
 }) {
   const { requestId } = await params;
   const { request, events, error, eventsError } = await getBloodHeroRequestDetailForAdmin(requestId);
+  const { notifications: accepted } = await listBloodHeroAcceptedNotificationsForRequest(requestId);
 
   return (
     <BloodHeroAdminRequestDetailContent
@@ -23,6 +27,7 @@ export default async function BloodHeroAdminRequestDetailPage({
       events={events}
       error={error}
       eventsError={eventsError}
+      accepted={accepted}
     />
   );
 }

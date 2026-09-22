@@ -1,12 +1,14 @@
 import {
   BloodHeroBenefits,
-  BloodHeroBloodGroups,
   BloodHeroCtaStrip,
   BloodHeroHeroSection,
   BloodHeroHowItWorks,
   BloodHeroPostHeroUtility,
   BloodHeroWhyMatters,
 } from "@/components/bloodhero";
+
+/** Live blood-need strip is cached for 60s. */
+export const revalidate = 60;
 
 /**
  * BloodHero landing — standalone module (no PUNAB marketing chrome).
@@ -20,7 +22,6 @@ export default function BloodHeroPage() {
       <BloodHeroHowItWorks />
       <BloodHeroWhyMatters />
       <BloodHeroBenefits />
-      <BloodHeroBloodGroups />
       <BloodHeroCtaStrip />
     </>
   );

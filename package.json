@@ -17,6 +17,7 @@
     "db:host": "node scripts/safe-db-host.mjs",
     "certificates:readiness": "node scripts/check-certificate-readiness.mjs",
     "test:certificates": "tsx --test tests/certificates/*.test.ts",
+    "test:bloodhero": "tsx --test tests/bloodhero/*.test.ts",
     "july-award:setup-sheets": "dotenv -e .env.local -- tsx scripts/setup-july-award-sheets.ts",
     "july-teacher-honor:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-teacher-honor-sheet.ts",
     "july-injured-student:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-injured-student-sheet.ts",

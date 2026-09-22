@@ -22,23 +22,23 @@ import { BloodHeroLocationPicker } from "@/components/bloodhero/BloodHeroLocatio
 const initial: BloodHeroDonorActionState = {};
 
 const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400";
+  "text-[11px] font-semibold uppercase tracking-[0.14em] text-(--bh-ink-soft) ";
 
-const labelClass = "block text-sm font-semibold text-zinc-800 dark:text-zinc-100";
+const labelClass = "block text-sm font-semibold text-(--bh-ink) ";
 
 const req = (
-  <span className="text-red-600 dark:text-red-400" aria-hidden>
+  <span className="text-(--bh-blood-deep) " aria-hidden>
     *
   </span>
 );
 
 /** Shared control styles — comfortable tap targets on small screens */
 const controlClass =
-  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-base text-zinc-900 shadow-sm placeholder:text-zinc-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 sm:min-h-0 sm:text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500";
+  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3.5 py-2.5 text-base text-(--bh-ink) placeholder:text-(--bh-ink-soft) focus:border-(--bh-blood) focus:outline-none focus:ring-2 focus:ring-(--bh-blood) sm:min-h-0 sm:text-sm ";
 
-const hintClass = "mt-1.5 text-xs leading-snug text-zinc-500 dark:text-zinc-400";
+const hintClass = "mt-1.5 text-xs leading-snug text-(--bh-ink-soft) ";
 
-const errClass = "mt-1.5 text-sm font-medium text-red-600 dark:text-red-400";
+const errClass = "mt-1.5 text-sm font-medium text-(--bh-blood-deep) ";
 
 function mergeFieldErrors(
   server: Record<string, string> | undefined,
@@ -101,14 +101,14 @@ export function BloodHeroDonorForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10" noValidate>
-      <p className="rounded-xl border border-red-100/80 bg-red-50/40 px-4 py-3 text-sm leading-snug text-zinc-700 dark:border-red-950/30 dark:bg-red-950/15 dark:text-zinc-300">
+      <p className="rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3 text-sm leading-snug text-(--bh-ink-soft) ">
         Takes about two minutes. Your information is used only for BloodHero coordination and admin
         review.
       </p>
 
       {state.error ? (
         <div
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm leading-snug text-red-900 dark:border-red-900/60 dark:bg-red-950/45 dark:text-red-100"
+          className="rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3.5 text-sm leading-snug text-(--bh-blood-deep) "
           role="alert"
           aria-live="assertive"
         >
@@ -197,7 +197,7 @@ export function BloodHeroDonorForm() {
         </div>
       </section>
 
-      <div className="h-px bg-zinc-200/90 dark:bg-zinc-800" aria-hidden />
+      <div className="h-px bg-(--bh-panel) " aria-hidden />
 
       {/* Blood & location */}
       <section className="space-y-5" aria-labelledby="donor-h-clinical">
@@ -246,7 +246,7 @@ export function BloodHeroDonorForm() {
           />
           <div>
             <label htmlFor="district_or_area" className={labelClass}>
-              District / area label <span className="font-normal text-zinc-500">(optional)</span>
+              District / area label <span className="font-normal text-(--bh-ink-soft)">(optional)</span>
             </label>
             <input
               id="district_or_area"
@@ -261,19 +261,19 @@ export function BloodHeroDonorForm() {
         </div>
       </section>
 
-      <div className="h-px bg-zinc-200/90 dark:bg-zinc-800" aria-hidden />
+      <div className="h-px bg-(--bh-panel) " aria-hidden />
 
       {/* Availability */}
       <fieldset
-        className="space-y-4 rounded-2xl border border-zinc-200/90 bg-zinc-50/60 p-5 sm:p-6 dark:border-zinc-700 dark:bg-zinc-900/35"
+        className="space-y-4 rounded-2xl border border-(--bh-line) bg-(--bh-panel) p-5 sm:p-6 "
         aria-labelledby="donor-avail-title"
       >
         <legend className="sr-only">Availability — at least one option required</legend>
         <div id="donor-avail-title">
-          <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+          <p className="text-sm font-semibold text-(--bh-ink) ">
             Availability {req}
           </p>
-          <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-(--bh-ink-soft) ">
             Pick at least one: available now, or your last donation date.
           </p>
         </div>
@@ -283,22 +283,22 @@ export function BloodHeroDonorForm() {
           </p>
         ) : null}
         <div className="space-y-5 pt-1">
-          <label className="flex cursor-pointer gap-3.5 rounded-xl border border-transparent px-1 py-1 transition-colors hover:border-zinc-200/80 hover:bg-white/60 dark:hover:border-zinc-600 dark:hover:bg-zinc-950/40">
+          <label className="flex cursor-pointer gap-3.5 rounded-xl border border-transparent px-1 py-1 transition-colors hover:border-(--bh-line) hover:bg-(--bh-panel) ">
             <input
               type="checkbox"
               name="available_now"
-              className="mt-0.5 h-[1.125rem] w-[1.125rem] shrink-0 rounded border-zinc-300 text-red-600 focus:ring-2 focus:ring-red-500/30 dark:border-zinc-600"
+              className="mt-0.5 h-[1.125rem] w-[1.125rem] shrink-0 rounded border-(--bh-line) text-(--bh-blood-deep) focus:ring-2 focus:ring-(--bh-blood) "
             />
             <span className="min-w-0">
-              <span className="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              <span className="block text-sm font-medium text-(--bh-ink) ">
                 I&apos;m available to donate now
               </span>
-              <span className="mt-0.5 block text-xs leading-snug text-zinc-500 dark:text-zinc-400">
+              <span className="mt-0.5 block text-xs leading-snug text-(--bh-ink-soft) ">
                 Eligible and able to respond to urgent calls nearby.
               </span>
             </span>
           </label>
-          <div className="border-t border-zinc-200/80 pt-5 dark:border-zinc-700/80">
+          <div className="border-t border-(--bh-line) pt-5 ">
             <label htmlFor="last_donated_date" className={labelClass}>
               Last donation date
             </label>
@@ -325,11 +325,11 @@ export function BloodHeroDonorForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-red-600 px-6 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 active:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm dark:bg-red-500 dark:hover:bg-red-600 dark:focus-visible:ring-offset-zinc-950"
+          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm "
         >
           {pending ? "Submitting…" : "Submit registration"}
         </button>
-        <p className="text-center text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <p className="text-center text-xs leading-relaxed text-(--bh-ink-soft) ">
           By submitting, you confirm your details are accurate. Review is required before matching.
         </p>
       </div>

@@ -1,8 +1,14 @@
 import Link from "next/link";
-import type { BloodHeroAdminRequestRow, BloodHeroRequestEventRow } from "@/actions/bloodhero-admin-requests";
+import type {
+  BloodHeroAcceptedNotificationRow,
+  BloodHeroAdminRequestRow,
+  BloodHeroRequestEventRow,
+} from "@/actions/bloodhero-admin-requests";
 import { BloodHeroAdminRequestConditionEditor } from "@/components/bloodhero/BloodHeroAdminRequestConditionEditor";
 import { BloodHeroAdminRerunMatchingAction } from "@/components/bloodhero/BloodHeroAdminRerunMatchingAction";
 import { BloodHeroAdminRequestStatusActions } from "@/components/bloodhero/BloodHeroAdminRequestStatusActions";
+import { BloodHeroAdminRequestEscalationControls } from "@/components/bloodhero/BloodHeroAdminRequestEscalationControls";
+import { BloodHeroAdminMatchConfirm } from "@/components/bloodhero/BloodHeroAdminMatchConfirm";
 import type { BloodHeroAdminUrls } from "@/lib/bloodhero/admin-paths";
 
 function formatDateTime(iso: string): string {
@@ -66,12 +72,14 @@ export function BloodHeroAdminRequestDetailContent({
   events,
   error,
   eventsError,
+  accepted,
 }: {
   paths: BloodHeroAdminUrls;
   request: BloodHeroAdminRequestRow | null;
   events: BloodHeroRequestEventRow[];
   error?: string;
   eventsError?: string;
+  accepted: BloodHeroAcceptedNotificationRow[];
 }) {
   const matchingSummary = extractMatchingSummary(events);
 
@@ -126,6 +134,15 @@ export function BloodHeroAdminRequestDetailContent({
               {request.status === "cancelled" ? "closed" : request.status}
             </p>
             <p>
+              <span className="font-semibold">Criticality:</span> {request.criticality}{" "}
+              <span className="text-xs text-zinc-500">({request.criticality_source})</span>
+            </p>
+            <p>
+              <span className="font-semibold">Escalation:</span> round {request.escalation_count}
+              {request.escalation_paused ? " · paused" : ""}
+              {request.last_escalation_at ? ` · last ${formatDateTime(request.last_escalation_at)}` : ""}
+            </p>
+            <p>
               <span className="font-semibold">Requester:</span> {request.requester_name}
             </p>
             <p>
@@ -167,6 +184,12 @@ export function BloodHeroAdminRequestDetailContent({
           <div>
             <BloodHeroAdminRequestStatusActions requestId={request.id} currentStatus={request.status} />
             <BloodHeroAdminRerunMatchingAction requestId={request.id} />
+            <BloodHeroAdminRequestEscalationControls
+              requestId={request.id}
+              criticality={request.criticality}
+              paused={request.escalation_paused}
+              isPublic={request.is_public}
+            />
           </div>
         </div>
 
@@ -192,6 +215,15 @@ export function BloodHeroAdminRequestDetailContent({
             />
           </div>
         </div>
+
+        <BloodHeroAdminMatchConfirm
+          requestId={request.id}
+          status={request.status}
+          matchedNotificationId={request.matched_notification_id}
+          matchedAt={request.matched_at}
+          donationConfirmedAt={request.donation_confirmed_at}
+          accepted={accepted}
+        />
       </div>
 
       <section className="mt-6">

@@ -18,6 +18,9 @@ import { sendBloodHeroDonorNotificationsForRequest } from "@/lib/bloodhero/send-
 import { runBloodHeroMatchingForRequest } from "@/lib/bloodhero/matching";
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import { geocodeBloodHeroAddress } from "@/lib/bloodhero/geocode";
+import { classifyCriticality } from "@/lib/bloodhero/classify-criticality";
+import { upgradeCriticalityWithAi } from "@/lib/bloodhero/classify-criticality-ai";
+import { summarizeCondition } from "@/lib/bloodhero/summarize-condition";
 
 export type BloodHeroRequestActionState = {
   success?: boolean;
@@ -168,6 +171,32 @@ export async function submitBloodHeroRequest(
               .eq("id", requestId);
           } catch (e) {
             console.warn("[BloodHero] request location enrichment failed", {
+              requestId,
+              message: e instanceof Error ? e.message : String(e),
+            });
+          }
+
+          try {
+            const condition = d.patient_condition?.trim() ?? "";
+            const voiceTranscript = formData.get("condition_voice_transcript")?.toString().trim() ?? "";
+            const rules = classifyCriticality({
+              condition,
+              plannedDonationAt: plannedIso,
+              quantity: d.request_quantity,
+            });
+            const { criticality, source } = await upgradeCriticalityWithAi(rules, condition);
+            await createServiceRoleSupabase()
+              .from("bloodhero_requests")
+              .update({
+                criticality,
+                criticality_source: source,
+                condition_summary: summarizeCondition(condition),
+                condition_voice_transcript: voiceTranscript || null,
+                condition_input_type: voiceTranscript ? "voice" : "text",
+              })
+              .eq("id", requestId);
+          } catch (e) {
+            console.warn("[BloodHero] criticality save failed", {
               requestId,
               message: e instanceof Error ? e.message : String(e),
             });

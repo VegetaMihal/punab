@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { BloodHeroComingSoon, BloodHeroPageHero, BloodHeroPageSection } from "@/components/bloodhero";
+import { BloodHeroPageHero, BloodHeroPageSection } from "@/components/bloodhero";
+import { BloodHeroCertificateVerify } from "@/components/bloodhero/BloodHeroCertificateVerify";
 
 export const metadata: Metadata = {
   title: "Certificates",
-  description:
-    "Download or verify BloodHero participation certificates for donors and partners when issuance is available.",
+  description: "Verify a BloodHero donation certificate by its certificate number.",
 };
 
 export default function BloodHeroCertificatesPage() {
@@ -12,15 +12,11 @@ export default function BloodHeroCertificatesPage() {
     <>
       <BloodHeroPageHero
         title="Certificates"
-        description="Recognize donors and partners with clear, verifiable certificates. This area will list eligible certificates and safe download or verification paths."
+        description="Enter a certificate number to verify a BloodHero donation. Certificates are issued once a confirmed match's donation is recorded."
       />
       <BloodHeroPageSection>
-        <div className="space-y-5 text-zinc-700 dark:text-zinc-300">
-          <p className="leading-relaxed">
-            Implementation will tie into completed donations or approved programs—design and policy are still
-            being aligned with PUNAB and medical partners.
-          </p>
-          <BloodHeroComingSoon />
+        <div className="space-y-5">
+          <BloodHeroCertificateVerify />
         </div>
       </BloodHeroPageSection>
     </>

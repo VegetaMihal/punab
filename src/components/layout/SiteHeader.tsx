@@ -48,11 +48,7 @@ const nav: NavItem[] = [
   {
     label: "Services",
     items: [
-      {
-        label: "BloodHero",
-        disabled: true,
-        note: "Coming soon — we're working hard on this",
-      },
+      { href: "/bloodhero", label: "BloodHero" },
     ],
   },
   { href: "/notices", label: "Notices" },
@@ -182,7 +178,8 @@ export function SiteHeader({ user, isAdmin }: Props) {
                       navDesktopBase,
                       (item.label === "Leadership" && leadershipPathsActive(pathname)) ||
                       (item.label === "Wings" && wingsPathsActive(pathname)) ||
-                      (item.label === "July Corner" && julyAwardPathsActive(pathname))
+                      (item.label === "July Corner" && julyAwardPathsActive(pathname)) ||
+                      (item.label === "Services" && pathname.startsWith("/bloodhero"))
                         ? navDesktopActive
                         : navDesktopIdle,
                     )}
