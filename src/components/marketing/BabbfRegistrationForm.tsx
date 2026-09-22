@@ -8,7 +8,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { BLOOD_HERO_BLOOD_GROUPS } from "@/lib/validations/bloodhero-shared";
 import {
   babbfWeightCategoriesFor,
-  BABBF_BODYBUILDING_CATEGORIES,
+  BABBF_BODYBUILDING_WEIGHT_CLASSES,
+  BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES,
   BABBF_GENDERS,
   BABBF_GENDER_LABEL,
   BABBF_PAYMENT_METHODS,
@@ -157,8 +158,7 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
   const staged = state?.stagedDocumentUrls ?? {};
 
   const [studentCategory, setStudentCategory] = useState<string>(fv.studentCategory ?? "university");
-  const categoryOptions = isArmwrestling ? babbfWeightCategoriesFor(studentCategory) : BABBF_BODYBUILDING_CATEGORIES;
-  const categoryLabel = isArmwrestling ? "Weight Category" : "Category";
+  const categoryOptions = babbfWeightCategoriesFor(studentCategory);
 
   const [paymentMethod, setPaymentMethod] = useState(fv.paymentMethod ?? "");
   const [referenceHint] = useState(() => `BABBF-2026-DRAFT-${Math.random().toString(36).slice(2, 10).toUpperCase()}`);
@@ -267,20 +267,22 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
               <FieldError id="studentCategory-err" message={fe.studentCategory} />
             </div>
           )}
-          <div>
-            <label htmlFor="category" className="ds-label">
-              {categoryLabel} {req}
-            </label>
-            <select id="category" name="category" required className="ds-input" defaultValue={fv.category ?? ""}>
-              <option value="">Select</option>
-              {categoryOptions.map((w) => (
-                <option key={w} value={w}>
-                  {w}
-                </option>
-              ))}
-            </select>
-            <FieldError id="category-err" message={fe.category} />
-          </div>
+          {isArmwrestling && (
+            <div>
+              <label htmlFor="category" className="ds-label">
+                Weight Category {req}
+              </label>
+              <select id="category" name="category" required className="ds-input" defaultValue={fv.category ?? ""}>
+                <option value="">Select</option>
+                {categoryOptions.map((w) => (
+                  <option key={w} value={w}>
+                    {w}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="category-err" message={fe.category} />
+            </div>
+          )}
           <div>
             <label htmlFor="bloodGroup" className="ds-label">
               Blood Group
@@ -296,6 +298,60 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
             <FieldError id="bloodGroup-err" message={fe.bloodGroup} />
           </div>
         </div>
+
+        {!isArmwrestling && (
+          <div className="grid grid-cols-1 gap-4 border-t border-[color:var(--color-border)] pt-5 sm:grid-cols-2">
+            <div>
+              <label htmlFor="bodybuildingClass" className="ds-label">
+                Bodybuilding
+              </label>
+              <select
+                id="bodybuildingClass"
+                name="bodybuildingClass"
+                className="ds-input"
+                defaultValue={fv.bodybuildingClass ?? ""}
+              >
+                <option value="">Not entering</option>
+                {BABBF_BODYBUILDING_WEIGHT_CLASSES.map((w) => (
+                  <option key={w} value={w}>
+                    {w}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="bodybuildingClass-err" message={fe.bodybuildingClass} />
+            </div>
+
+            <div>
+              <label htmlFor="physiqueClass" className="ds-label">
+                Men&apos;s Physique
+              </label>
+              <select
+                id="physiqueClass"
+                name="physiqueClass"
+                className="ds-input"
+                defaultValue={fv.physiqueClass ?? ""}
+              >
+                <option value="">Not entering</option>
+                {BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="physiqueClass-err" message={fe.physiqueClass} />
+            </div>
+
+            <label className="flex items-center gap-2 text-small text-[color:var(--color-text)] sm:col-span-2">
+              <input
+                type="checkbox"
+                name="denimJeansOptIn"
+                value="true"
+                defaultChecked={fv.denimJeansOptIn === "true"}
+              />
+              Also enter Denim Jeans Model Fitness (optional)
+            </label>
+          </div>
+        )}
 
         {isArmwrestling && (
           <div className="space-y-3 border-t border-[color:var(--color-border)] pt-5">
@@ -326,6 +382,7 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
             <FieldError id="declarationAccepted-err" message={fe.declarationAccepted} />
           </div>
         )}
+
       </Card>
 
       <Card>

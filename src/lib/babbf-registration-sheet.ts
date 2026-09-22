@@ -38,6 +38,9 @@ export type BabbfRegistrationRow = {
   paymentSenderNumber: string;
   checkedInAt: string;
   checkedInVia: string;
+  bodybuildingClass: string;
+  denimJeansOptIn: string;
+  physiqueClass: string;
   cells: string[];
 };
 
@@ -165,6 +168,9 @@ function toBabbfRow(rowIndex: number, cells: string[]): BabbfRegistrationRow {
     paymentSenderNumber: c(BABBF_COL.paymentSenderNumber),
     checkedInAt: c(BABBF_COL.checkedInAt),
     checkedInVia: c(BABBF_COL.checkedInVia),
+    bodybuildingClass: c(BABBF_COL.bodybuildingClass),
+    denimJeansOptIn: c(BABBF_COL.denimJeansOptIn),
+    physiqueClass: c(BABBF_COL.physiqueClass),
     cells,
   };
 }

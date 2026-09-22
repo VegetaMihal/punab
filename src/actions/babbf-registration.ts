@@ -59,6 +59,9 @@ const TEXT_FIELD_KEYS = [
   "studentCategory",
   "studentIdOrNid",
   "category",
+  "bodybuildingClass",
+  "physiqueClass",
+  "denimJeansOptIn",
   "rightHandConfirmed",
   "declarationAccepted",
   "bloodGroup",
@@ -153,6 +156,9 @@ export async function submitBabbfRegistration(
     studentCategory: fdStr(formData, "studentCategory"),
     studentIdOrNid: fdStr(formData, "studentIdOrNid"),
     category: fdStr(formData, "category"),
+    bodybuildingClass: fdStr(formData, "bodybuildingClass"),
+    physiqueClass: fdStr(formData, "physiqueClass"),
+    denimJeansOptIn: fdStr(formData, "denimJeansOptIn") === "true" ? "true" : "false",
     rightHandConfirmed: fdStr(formData, "rightHandConfirmed") === "true" ? "true" : "false",
     declarationAccepted: fdStr(formData, "declarationAccepted") === "true" ? "true" : "false",
     bloodGroup: fdStr(formData, "bloodGroup"),
@@ -205,6 +211,9 @@ export async function submitBabbfRegistration(
     d.paymentSenderNumber,
     "",
     "",
+    d.bodybuildingClass,
+    d.denimJeansOptIn,
+    d.physiqueClass,
   ];
 
   const sheet = await appendBabbfRegistrationRow(d.eventType as BabbfSheetEventType, row);
