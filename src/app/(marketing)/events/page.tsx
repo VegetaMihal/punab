@@ -6,27 +6,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { MarketingContainer } from "@/components/ui/MarketingContainer";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
-import {
-  julyAward2026EventsSignatureDateLine,
-  julyAward2026EventsSignatureLocationLine,
-} from "@/lib/july-award-2026-event";
 import { listPublishedEvents } from "@/lib/repositories/events-repository";
 import { ensureSupabasePublicObjectUrl } from "@/lib/storage";
 import type { EventRow } from "@/types/database";
-
-/** Fixed flagship listing — not from CMS; links to marketing route. */
-const SIGNATURE_JULY_AWARD_2026 = {
-  href: "/july-award-2026",
-  title: "July Uprising Memorial Award 2026",
-  kicker: "Signature national programme",
-  summary:
-    "PUNAB’s flagship gathering: memorial, honours for families, injured students, and steadfast teachers, plus club excellence across ten lanes.",
-  dateLabel: julyAward2026EventsSignatureDateLine(),
-  locationLabel: julyAward2026EventsSignatureLocationLine(),
-  imageSrc: "/images/marketing/july-uprising-memorial-hero.png",
-  imageAlt:
-    "Demonstrators during Bangladesh's 2024 quota reform movement—students in national colours; placards include Bengali messaging on quota and merit.",
-} as const;
 
 export const metadata = {
   title: "Upcoming Events",
@@ -63,65 +45,6 @@ function isJulyAwardSignatureDuplicate(ev: EventRow): boolean {
   );
 }
 
-function SignatureJulyAwardFeatured() {
-  const s = SIGNATURE_JULY_AWARD_2026;
-  return (
-    <section aria-labelledby="signature-july-award-heading">
-      <Reveal>
-        <article className="wall-sheet relative p-2 pt-5 -rotate-1">
-          <Link href={s.href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand)] focus-visible:ring-offset-2">
-            <div className="relative min-h-[min(52vh,28rem)] w-full overflow-hidden md:min-h-[min(48vh,26rem)] lg:min-h-[min(46vh,24rem)]">
-              <Image
-                src={s.imageSrc}
-                alt={s.imageAlt}
-                fill
-                className="object-cover object-[46%_34%] motion-safe:transition-transform motion-safe:duration-[var(--transition-slow)] motion-safe:group-hover:scale-[1.02]"
-                sizes="100vw"
-                priority
-                quality={88}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-black/28 dark:bg-black/35" aria-hidden />
-              <div
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45)_0%,transparent_38%,transparent_52%,rgba(0,0,0,0.72)_100%)]"
-                aria-hidden
-              />
-              <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:p-12">
-                <div className="max-w-3xl">
-                  <p className="inline-flex bg-[#c41e3a] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-[0.28em] text-[#fffaf2]">
-                    {s.kicker}
-                  </p>
-                  <h2
-                    id="signature-july-award-heading"
-                    className="mt-4 text-balance text-[clamp(1.75rem,4vw+0.75rem,3rem)] font-bold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)]"
-                  >
-                    {s.title}
-                  </h2>
-                  <p className="mt-4 max-w-2xl text-[1.02rem] leading-relaxed text-white/90 drop-shadow-[0_1px_12px_rgba(0,0,0,0.35)] md:text-[1.0625rem]">
-                    {s.summary}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-white/85">
-                    <span>{s.dateLabel}</span>
-                    <span aria-hidden className="hidden text-white/40 sm:inline">
-                      ·
-                    </span>
-                    <span>{s.locationLabel}</span>
-                  </div>
-                  <p className="mt-6 inline-flex items-center gap-2 text-small font-bold uppercase tracking-[0.14em] text-white underline-offset-4 group-hover:underline">
-                    View full programme
-                    <span aria-hidden className="motion-safe:transition-transform motion-safe:duration-[var(--transition-base)] motion-safe:group-hover:translate-x-1">
-                      →
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </article>
-      </Reveal>
-    </section>
-  );
-}
-
 export default async function EventsPage() {
   let events: Awaited<ReturnType<typeof listPublishedEvents>> = [];
   let error: string | null = null;
@@ -142,10 +65,8 @@ export default async function EventsPage() {
       />
       <MarketingContainer className="py-12 md:py-16">
         <div className="space-y-12 md:space-y-16">
-          <SignatureJulyAwardFeatured />
-
           {error ? (
-            <EmptyState title="Unable to load other events" description={error} />
+            <EmptyState title="Unable to load events" description={error} />
           ) : otherEvents.length === 0 ? (
             <p className="mx-auto max-w-xl text-center text-[1.02rem] leading-relaxed text-[color:var(--color-text-muted)]">
               Further chapter dates and programmes will be published here when confirmed. Check{" "}
@@ -155,16 +76,11 @@ export default async function EventsPage() {
               for formal letters and updates.
             </p>
           ) : (
-            <section aria-label="More upcoming events" className="pt-4 md:pt-6">
-              <h2 className="wall-brush text-3xl normal-case tracking-normal text-[color:var(--wall-chalk,#efeae0)]">
-                More upcoming events
-              </h2>
-              <ul className="mt-6 grid gap-6 md:grid-cols-2">
-                {otherEvents.map((ev, i) => (
-                  <EventCard key={ev.id} ev={ev} muted={false} staggerIndex={i % 4} />
-                ))}
-              </ul>
-            </section>
+            <ul className="grid gap-6 md:grid-cols-2">
+              {otherEvents.map((ev, i) => (
+                <EventCard key={ev.id} ev={ev} muted={false} staggerIndex={i % 4} />
+              ))}
+            </ul>
           )}
         </div>
       </MarketingContainer>
