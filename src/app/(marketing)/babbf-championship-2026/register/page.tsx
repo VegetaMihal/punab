@@ -3,6 +3,7 @@ import Image from "next/image";
 import { BabbfRegistrationForm } from "@/components/marketing/BabbfRegistrationForm";
 import { EmojiCursorTrail } from "@/components/marketing/EmojiCursorTrail";
 import { isBabbfGoogleConfigured } from "@/lib/babbf-registration-google";
+import { BABBF_EVENT_TYPE_LABEL, type BabbfEventType } from "@/lib/validations/babbf-registration";
 
 export const metadata = {
   title: "Register · BABBF Inter-University Armwrestler & Fitness Championship 2026",
@@ -13,15 +14,19 @@ export const metadata = {
 // same generous timeout the other Sheets-backed registration routes use.
 export const maxDuration = 60;
 
-export default function BabbfRegisterPage() {
+type Props = { searchParams: Promise<{ event?: string }> };
+
+export default async function BabbfRegisterPage({ searchParams }: Props) {
   const sheetsReady = isBabbfGoogleConfigured();
+  const { event } = await searchParams;
+  const eventType: BabbfEventType = event === "bodybuilding" ? "bodybuilding" : "armwrestling";
 
   return (
     <>
       <EmojiCursorTrail emoji="💪" />
 
       <FormPageShell
-        title="BABBF Inter-University Armwrestler & Fitness Championship 2026"
+        title={`BABBF Inter-University Armwrestler & Fitness Championship 2026 — ${BABBF_EVENT_TYPE_LABEL[eventType]}`}
         lead="Register to compete in the championship."
         backHref="/"
         backLabel="Back"
@@ -51,16 +56,26 @@ export default function BabbfRegisterPage() {
                   KIB Convention Hall, Farmgate, Dhaka-1215
                 </dd>
               </div>
-              <div>
-                <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-                  Weight-in
-                </dt>
-                <dd className="mt-1 text-small text-[color:var(--color-text)]">
-                  26 September 2026
-                  <br />
-                  The Workout Club, Bashundhara
-                </dd>
-              </div>
+              {eventType === "armwrestling" && (
+                <>
+                  <div>
+                    <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                      Registration Deadline
+                    </dt>
+                    <dd className="mt-1 text-small text-[color:var(--color-text)]">26 September 2026</dd>
+                  </div>
+                  <div>
+                    <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                      Weight-in
+                    </dt>
+                    <dd className="mt-1 text-small text-[color:var(--color-text)]">
+                      26 September 2026
+                      <br />
+                      The Workout Club, Bashundhara
+                    </dd>
+                  </div>
+                </>
+              )}
             </dl>
           </div>
 
@@ -70,12 +85,16 @@ export default function BabbfRegisterPage() {
               className="mb-8 rounded-(--radius-md) border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-4 py-3 text-small text-(--color-error)"
               role="status"
             >
-              Set <code className="rounded bg-(--color-surface-2) px-1">BABBF_REGISTRATION_SHEET_ID</code>. Uses the
-              same Google service account as the other registration forms; share the sheet as Editor.
+              Set <code className="rounded bg-(--color-surface-2) px-1">BABBF_REGISTRATION_SHEET_ID</code>,{" "}
+              <code className="rounded bg-(--color-surface-2) px-1">BABBF_GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL</code>,
+              and{" "}
+              <code className="rounded bg-(--color-surface-2) px-1">BABBF_GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY</code>.
+              Uses its own dedicated Google service account (separate from the other registration forms); share the
+              sheet as Editor with that account&apos;s email.
             </div>
           )}
 
-          <BabbfRegistrationForm />
+          <BabbfRegistrationForm eventType={eventType} />
         </FormPageShell>
     </>
   );

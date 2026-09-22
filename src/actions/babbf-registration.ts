@@ -5,7 +5,7 @@ import type { ZodError } from "zod";
 import { assertAdminScope } from "@/lib/auth/require-admin";
 import { uploadBabbfDocumentFile } from "@/lib/babbf-registration-storage";
 import { isBabbfGoogleConfigured } from "@/lib/babbf-registration-google";
-import { sendBabbfRegistrationNotifyEmail } from "@/lib/babbf-registration-notify-email";
+import { sendBabbfConfirmationEmail, sendBabbfRegistrationNotifyEmail } from "@/lib/babbf-registration-notify-email";
 import {
   appendBabbfRegistrationRow,
   findBabbfRegistrationByEmail,
@@ -14,10 +14,12 @@ import {
 } from "@/lib/babbf-registration-sheet";
 import {
   babbfRegistrationSchema,
+  BABBF_EVENT_TYPE_LABEL,
   BABBF_REGISTRATION_FEE_BDT,
   BABBF_STATUSES,
   type BabbfStatus,
 } from "@/lib/validations/babbf-registration";
+import type { BabbfSheetEventType } from "@/lib/babbf-registration-google";
 
 export type SubmitBabbfRegistrationState = {
   success?: boolean;
@@ -50,9 +52,15 @@ const TEXT_FIELD_KEYS = [
   "universityName",
   "department",
   "gender",
-  "weightCategory",
+  "eventType",
+  "studentCategory",
+  "studentIdOrNid",
+  "category",
+  "rightHandConfirmed",
+  "declarationAccepted",
   "bloodGroup",
   "paymentMethod",
+  "paymentSenderNumber",
   "transactionId",
 ] as const;
 
@@ -90,17 +98,19 @@ export async function submitBabbfRegistration(
   if (!isBabbfGoogleConfigured()) {
     return {
       error:
-        "BABBF registration form is not configured. Set BABBF_REGISTRATION_SHEET_ID, GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL, and GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.",
+        "BABBF registration form is not configured. Set BABBF_REGISTRATION_SHEET_ID, BABBF_GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL, and BABBF_GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.",
       fieldValues: echo(),
     };
   }
 
+  const rawEventType: BabbfSheetEventType = fdStr(formData, "eventType") === "bodybuilding" ? "bodybuilding" : "armwrestling";
+
   const email = fdStr(formData, "email").trim();
   if (email) {
-    const dup = await findBabbfRegistrationByEmail(email);
+    const dup = await findBabbfRegistrationByEmail(rawEventType, email);
     if (dup.ok && dup.row) {
       return {
-        error: "This email address has already been registered for the championship.",
+        error: "This email address has already been registered for this event.",
         fieldValues: echo(),
       };
     }
@@ -136,9 +146,15 @@ export async function submitBabbfRegistration(
     universityName: fdStr(formData, "universityName"),
     department: fdStr(formData, "department"),
     gender: fdStr(formData, "gender"),
-    weightCategory: fdStr(formData, "weightCategory"),
+    eventType: fdStr(formData, "eventType"),
+    studentCategory: fdStr(formData, "studentCategory"),
+    studentIdOrNid: fdStr(formData, "studentIdOrNid"),
+    category: fdStr(formData, "category"),
+    rightHandConfirmed: fdStr(formData, "rightHandConfirmed") === "true" ? "true" : "false",
+    declarationAccepted: fdStr(formData, "declarationAccepted") === "true" ? "true" : "false",
     bloodGroup: fdStr(formData, "bloodGroup"),
     paymentMethod: fdStr(formData, "paymentMethod"),
+    paymentSenderNumber: fdStr(formData, "paymentSenderNumber"),
     transactionId: fdStr(formData, "transactionId"),
   });
 
@@ -169,7 +185,8 @@ export async function submitBabbfRegistration(
     d.universityName,
     d.department,
     d.gender,
-    d.weightCategory,
+    d.eventType,
+    d.category,
     d.bloodGroup,
     docUrls.photoUrl ?? "",
     String(BABBF_REGISTRATION_FEE_BDT),
@@ -178,9 +195,14 @@ export async function submitBabbfRegistration(
     docUrls.paymentScreenshotUrl ?? "",
     "Payment Pending",
     "",
+    d.studentCategory,
+    d.studentIdOrNid,
+    d.rightHandConfirmed,
+    d.declarationAccepted,
+    d.paymentSenderNumber,
   ];
 
-  const sheet = await appendBabbfRegistrationRow(row);
+  const sheet = await appendBabbfRegistrationRow(d.eventType as BabbfSheetEventType, row);
   if (!sheet.ok) {
     return { error: sheet.message, fieldValues: echo(), stagedDocumentUrls: docUrls };
   }
@@ -196,7 +218,12 @@ export async function submitBabbfRegistration(
   return { success: true, referenceNumber };
 }
 
-export type UpdateBabbfStatusState = { success?: boolean; error?: string };
+export type UpdateBabbfStatusState = {
+  success?: boolean;
+  error?: string;
+  emailSent?: boolean;
+  emailError?: string;
+};
 
 export async function updateBabbfRegistrationStatusAction(
   referenceNumber: string,
@@ -213,5 +240,19 @@ export async function updateBabbfRegistrationStatusAction(
   if (!res.ok) {
     return { error: res.message };
   }
-  return { success: true };
+
+  if (status !== "Confirmed") {
+    return { success: true };
+  }
+
+  const mail = await sendBabbfConfirmationEmail({
+    referenceNumber: res.row.referenceNumber,
+    fullName: res.row.fullName,
+    email: res.row.email,
+    eventTypeLabel: BABBF_EVENT_TYPE_LABEL[res.sheetEventType],
+  });
+  if (!mail.ok) {
+    return { success: true, emailSent: false, emailError: mail.reason };
+  }
+  return { success: true, emailSent: true };
 }

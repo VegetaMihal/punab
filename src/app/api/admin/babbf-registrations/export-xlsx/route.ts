@@ -2,26 +2,30 @@ import * as XLSX from "xlsx";
 import { assertAdminScope } from "@/lib/auth/require-admin";
 import { listBabbfRegistrations } from "@/lib/babbf-registration-sheet";
 import { BABBF_SHEET_HEADER_ROW } from "@/lib/babbf-registration-google";
+import { BABBF_EVENT_TYPE_LABEL, BABBF_EVENT_TYPES } from "@/lib/validations/babbf-registration";
 
 export async function GET() {
   try {
     await assertAdminScope("babbf_registrations");
 
-    const result = await listBabbfRegistrations();
-    if (!result.ok) {
-      return new Response(JSON.stringify({ error: result.message }), {
-        status: 500,
-        headers: { "content-type": "application/json" },
-      });
-    }
-
-    const data = result.rows.map((r) =>
-      Object.fromEntries(BABBF_SHEET_HEADER_ROW.map((label, i) => [label, r.cells[i] ?? ""]))
-    );
-
     const workbook = XLSX.utils.book_new();
-    const sheet = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(workbook, sheet, "BABBF registrations");
+
+    for (const eventType of BABBF_EVENT_TYPES) {
+      const result = await listBabbfRegistrations(eventType);
+      if (!result.ok) {
+        return new Response(JSON.stringify({ error: `${BABBF_EVENT_TYPE_LABEL[eventType]}: ${result.message}` }), {
+          status: 500,
+          headers: { "content-type": "application/json" },
+        });
+      }
+
+      const data = result.rows.map((r) =>
+        Object.fromEntries(BABBF_SHEET_HEADER_ROW.map((label, i) => [label, r.cells[i] ?? ""]))
+      );
+
+      const sheet = XLSX.utils.json_to_sheet(data);
+      XLSX.utils.book_append_sheet(workbook, sheet, BABBF_EVENT_TYPE_LABEL[eventType]);
+    }
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }) as Buffer;
 
