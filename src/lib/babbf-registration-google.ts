@@ -48,6 +48,8 @@ export const BABBF_SHEET_HEADER_ROW: string[] = [
   "Right Hand Confirmed",
   "Declaration Accepted",
   "Payment Sender Number",
+  "Checked In At",
+  "Checked In Via",
 ];
 
 export const BABBF_COL = {
@@ -74,6 +76,8 @@ export const BABBF_COL = {
   rightHandConfirmed: 20,
   declarationAccepted: 21,
   paymentSenderNumber: 22,
+  checkedInAt: 23,
+  checkedInVia: 24,
 } as const;
 
 export function sheetColumnLetter(zeroBasedIndex: number): string {
