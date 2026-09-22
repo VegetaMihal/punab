@@ -40,40 +40,40 @@ export function BloodHeroCertificateVerify() {
         <button
           type="submit"
           disabled={pending || value.trim().length < 3}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-(--bh-blood) px-5 text-sm font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-(--bh-blood) px-5 text-sm font-semibold text-(--bh-on-blood) transition duration-150 hover:bg-(--bh-blood-deep) active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 motion-reduce:active:scale-100"
         >
           {pending ? "Verifying..." : "Verify"}
         </button>
       </form>
 
       {result && !result.found && (
-        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200">
+        <p className="bh-rise-in mt-4 rounded-xl border border-(--bh-warn-border) bg-(--bh-warn-bg) px-4 py-3 text-sm text-(--bh-warn-ink)">
           {result.error ?? "No certificate found with that number."}
         </p>
       )}
 
       {result?.found && (
-        <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-950 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-50">
+        <div className="bh-rise-in mt-4 rounded-xl border border-(--bh-success-border) bg-(--bh-success-bg) px-4 py-4 text-sm text-(--bh-success-ink)">
           <p className="font-semibold">Certificate verified</p>
           <dl className="mt-2 space-y-1">
             <div className="flex justify-between gap-4">
-              <dt className="text-emerald-900/80 dark:text-emerald-200/80">Certificate</dt>
+              <dt className="text-(--bh-success-body)">Certificate</dt>
               <dd className="font-mono">{result.certificateNumber}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-emerald-900/80 dark:text-emerald-200/80">Donor</dt>
+              <dt className="text-(--bh-success-body)">Donor</dt>
               <dd>{result.donorFirstName ?? "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-emerald-900/80 dark:text-emerald-200/80">Blood group</dt>
+              <dt className="text-(--bh-success-body)">Blood group</dt>
               <dd>{result.bloodGroup ?? "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-emerald-900/80 dark:text-emerald-200/80">District</dt>
+              <dt className="text-(--bh-success-body)">District</dt>
               <dd>{result.district ?? "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-emerald-900/80 dark:text-emerald-200/80">Issued</dt>
+              <dt className="text-(--bh-success-body)">Issued</dt>
               <dd>{formatDate(result.issuedAt)}</dd>
             </div>
           </dl>

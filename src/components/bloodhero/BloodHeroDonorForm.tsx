@@ -81,18 +81,18 @@ export function BloodHeroDonorForm() {
   if (state.success) {
     return (
       <div
-        className="rounded-2xl border border-emerald-200/90 bg-emerald-50/95 px-5 py-8 text-center sm:px-8 dark:border-emerald-900/45 dark:bg-emerald-950/40"
+        className="bh-rise-in rounded-2xl border border-(--bh-success-border) bg-(--bh-success-bg) px-5 py-8 text-center sm:px-8"
         role="status"
       >
-        <p className="text-lg font-semibold tracking-tight text-emerald-950 dark:text-emerald-50">
+        <p className="text-lg font-semibold tracking-tight text-(--bh-success-ink)">
           Thank you — we received your details
         </p>
-        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-emerald-900/90 dark:text-emerald-100/90">
+        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-(--bh-success-body)">
           Your registration is <strong>pending review</strong>. We&apos;ll verify your information
           before matching you to requests, and we&apos;ll only use the email or phone you gave for
           coordination.
         </p>
-        <p className="mx-auto mt-5 max-w-sm text-xs leading-relaxed text-emerald-800/85 dark:text-emerald-200/75">
+        <p className="mx-auto mt-5 max-w-sm text-xs leading-relaxed text-(--bh-success-body)">
           No account needed. To update details later, reach out via the main PUNAB site.
         </p>
       </div>
@@ -325,7 +325,7 @@ export function BloodHeroDonorForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm "
+          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition duration-150 hover:bg-(--bh-blood-deep) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:scale-[0.98] active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 motion-reduce:active:scale-100 sm:min-h-12 sm:text-sm "
         >
           {pending ? "Submitting…" : "Submit registration"}
         </button>

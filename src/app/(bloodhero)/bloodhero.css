@@ -9,6 +9,18 @@
   --bh-blood-deep: #a8132b;
   --bh-blood-tint: #fde8eb;
   --bh-on-blood: #ffffff;
+  --bh-success-bg: #ecfdf5;
+  --bh-success-border: #a7f3d0;
+  --bh-success-ink: #022c22;
+  --bh-success-body: #065f46;
+  --bh-success-accent: #047857;
+  --bh-success-accent-deep: #065f46;
+  --bh-success-on-accent: #ffffff;
+  --bh-warn-bg: #fffbeb;
+  --bh-warn-border: #fde68a;
+  --bh-warn-ink: #451a03;
+  --bh-warn-body: #92400e;
+  --bh-warn-accent: #d97706;
   font-family: var(--font-wall-text), var(--font-geist-sans), sans-serif;
 }
 :where(.dark) .bh {
@@ -21,6 +33,18 @@
   --bh-blood-deep: #ff7a8c;
   --bh-blood-tint: #3a1620;
   --bh-on-blood: #0a1420;
+  --bh-success-bg: #052e21;
+  --bh-success-border: #0d4a37;
+  --bh-success-ink: #ecfdf5;
+  --bh-success-body: #6ee7b7;
+  --bh-success-accent: #10b981;
+  --bh-success-accent-deep: #34d399;
+  --bh-success-on-accent: #052e21;
+  --bh-warn-bg: #2a1a04;
+  --bh-warn-border: #5c3a0b;
+  --bh-warn-ink: #fffbeb;
+  --bh-warn-body: #fcd34d;
+  --bh-warn-accent: #f59e0b;
 }
 
 .bh ::selection {
@@ -74,6 +98,46 @@
   .bh-pulse {
     animation: bh-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
+  .bh-bubble-glow {
+    animation: bh-glow 2.4s ease-in-out 1.9s infinite;
+  }
+  .bh-rise-in {
+    animation: bh-rise-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .bh-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .bh-tile-ripple::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid var(--bh-blood);
+    pointer-events: none;
+    animation: bh-ripple-ring 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bh-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in srgb, var(--bh-on-blood) 35%, transparent) 45%,
+      color-mix(in srgb, var(--bh-on-blood) 35%, transparent) 55%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: bh-shimmer-sweep 3.2s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bh-rise-in {
+    animation: bh-fade-in 0.25s ease-out backwards;
+  }
 }
 
 @keyframes bh-fall {
@@ -101,4 +165,22 @@
 }
 @keyframes bh-ping {
   75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes bh-rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+@keyframes bh-fade-in {
+  from { opacity: 0; }
+}
+@keyframes bh-shimmer-sweep {
+  0% { background-position: 150% 0; }
+  55%, 100% { background-position: -50% 0; }
+}
+@keyframes bh-ripple-ring {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(1.18); opacity: 0; }
+}
+@keyframes bh-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--bh-blood) 35%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--bh-blood) 0%, transparent); }
 }

@@ -62,7 +62,7 @@ export function BloodHeroRequestTimeline({
         const isCurrent = item.variant === "current";
         const ring =
           isDone
-            ? "border-emerald-500 bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.2)]"
+            ? "border-(--bh-success-accent) bg-(--bh-success-accent) shadow-[0_0_0_3px_rgba(16,185,129,0.2)]"
             : isCurrent
               ? "border-(--bh-blood) bg-(--bh-blood) "
               : "border-(--bh-line) bg-(--bh-panel) ";

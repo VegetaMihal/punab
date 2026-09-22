@@ -111,7 +111,7 @@ function CopyTrackingButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={copy}
-      className="mt-4 inline-flex min-h-[2.75rem] w-full max-w-xs items-center justify-center rounded-xl border border-emerald-700/25 bg-(--bh-panel) px-4 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100/80 dark:border-emerald-400/30 dark:bg-emerald-950/40 dark:text-emerald-50 dark:hover:bg-emerald-900/50 sm:w-auto"
+      className="mt-4 inline-flex min-h-[2.75rem] w-full max-w-xs items-center justify-center rounded-xl border border-(--bh-success-accent) bg-(--bh-panel) px-4 text-sm font-semibold text-(--bh-success-accent) transition duration-150 hover:bg-(--bh-success-bg) active:scale-[0.98] motion-reduce:active:scale-100 sm:w-auto"
     >
       {copied ? "Copied to clipboard" : "Copy tracking number"}
     </button>
@@ -148,54 +148,39 @@ export function BloodHeroRequestForm() {
     const code = state.trackingNumber;
     return (
       <div
-        className="rounded-2xl border border-emerald-200/90 bg-emerald-50/95 px-5 py-8 text-center sm:px-8 dark:border-emerald-900/45 dark:bg-emerald-950/40"
+        className="bh-rise-in rounded-2xl border border-(--bh-success-border) bg-(--bh-success-bg) px-5 py-8 text-center sm:px-8"
         role="status"
       >
-        <p className="text-lg font-semibold tracking-tight text-emerald-950 dark:text-emerald-50">
+        <p className="text-lg font-semibold tracking-tight text-(--bh-success-ink)">
           Your request is recorded
         </p>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-emerald-900/90 dark:text-emerald-100/90">
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-(--bh-success-body)">
           <strong>Save your tracking number.</strong> It is the only thing you need to check progress on the
           Track Request page. You can write it down, take a screenshot, or copy it below.
         </p>
-        <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-300/90">
+        <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-(--bh-success-body)">
           Your tracking number
         </p>
         <p
-          className="mx-auto mt-2 max-w-full break-all font-mono text-2xl font-bold tracking-tight text-emerald-950 dark:text-emerald-50 sm:text-3xl"
+          className="mx-auto mt-2 max-w-full break-all font-mono text-2xl font-bold tracking-tight text-(--bh-success-ink) sm:text-3xl"
           aria-live="polite"
         >
           {code}
         </p>
         <CopyTrackingButton text={code} />
-        <p className="mx-auto mt-6 max-w-md text-xs leading-relaxed text-emerald-800/90 dark:text-emerald-200/80">
+        <p className="mx-auto mt-6 max-w-md text-xs leading-relaxed text-(--bh-success-body)">
           Later, we can email this code to the address you provided. For now, please keep it somewhere safe.
         </p>
         <p className="mt-6">
           <Link
             href="/bloodhero/track"
-            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-(--bh-success-accent) px-5 text-sm font-semibold text-(--bh-success-on-accent) transition hover:bg-(--bh-success-accent-deep)"
           >
             Track this request
           </Link>
         </p>
-        <p className="mx-auto mt-5 max-w-sm text-xs leading-relaxed text-emerald-800/85 dark:text-emerald-200/75">
+        <p className="mx-auto mt-5 max-w-sm text-xs leading-relaxed text-(--bh-success-body)">
           If anything changes, reach the team through the main PUNAB site so the request can be updated.
-        </p>
-      </div>
-    );
-  }
-
-  if (state.success && !state.trackingNumber) {
-    return (
-      <div
-        className="rounded-2xl border border-amber-200/90 bg-amber-50/95 px-5 py-8 text-center sm:px-8 dark:border-amber-900/45 dark:bg-amber-950/35"
-        role="status"
-      >
-        <p className="text-lg font-semibold text-amber-950 dark:text-amber-50">Request may have been saved</p>
-        <p className="mx-auto mt-3 max-w-md text-sm text-amber-900/90 dark:text-amber-100/90">
-          We could not show a tracking number. Please contact BloodHero with your details so they can find
-          your request.
         </p>
       </div>
     );
@@ -213,7 +198,7 @@ export function BloodHeroRequestForm() {
 
       {state.error ? (
         <div
-          className="rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3.5 text-sm leading-snug text-(--bh-blood-deep) "
+          className="bh-rise-in rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3.5 text-sm leading-snug text-(--bh-blood-deep) "
           role="alert"
           aria-live="assertive"
         >
@@ -528,7 +513,7 @@ export function BloodHeroRequestForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm "
+          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition duration-150 hover:bg-(--bh-blood-deep) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:scale-[0.98] active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 motion-reduce:active:scale-100 sm:min-h-12 sm:text-sm "
         >
           {pending ? "Submitting…" : "Submit request"}
         </button>
