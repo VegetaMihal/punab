@@ -9,7 +9,7 @@
  * Requires `SUPABASE_SERVICE_ROLE_KEY` (server env only — never expose to the client).
  */
 import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
-import { haversineDistanceKm } from "@/lib/bloodhero/distance";
+import { BLOODHERO_MAX_MATCH_RADIUS_KM, haversineDistanceKm } from "@/lib/bloodhero/distance";
 
 export type BloodHeroMatchingRunResult =
   | {
@@ -33,88 +33,11 @@ type RequestRow = {
 type DonorRow = {
   id: string;
   district: string | null;
+  block_until: string | null;
   center_point_lat: number | null;
   center_point_lng: number | null;
   created_at: string;
 };
-
-// TEMP DIAGNOSTICS (local/dev): remove after matching rollout is stable.
-const BLOODHERO_MATCHING_DIAGNOSTICS = true;
-
-async function logMatchingDiagnostics(
-  supabase: ReturnType<typeof createServiceRoleSupabase>,
-  requestId: string,
-  selected: number
-): Promise<void> {
-  if (!BLOODHERO_MATCHING_DIAGNOSTICS || process.env.NODE_ENV !== "development") return;
-
-  const { data: req, error: reqErr } = await supabase
-    .from("bloodhero_requests")
-    .select("blood_group, district, donation_location_lat, donation_location_lng")
-    .eq("id", requestId)
-    .maybeSingle();
-  if (reqErr || !req) {
-    console.warn("[BloodHero:matching:diag] request lookup failed", {
-      requestId,
-      message: reqErr?.message,
-    });
-    return;
-  }
-
-  const district = String(req.district ?? "").trim().toLowerCase();
-  const bloodGroup = String(req.blood_group ?? "");
-  const hasRequestCoords =
-    typeof req.donation_location_lat === "number" && typeof req.donation_location_lng === "number";
-  const nowIso = new Date().toISOString();
-
-  const [
-    allDonorsRes,
-    wrongBloodRes,
-    blockedRes,
-    alreadyRes,
-    eligibleRes,
-  ] = await Promise.all([
-    supabase.from("bloodhero_donors").select("id", { count: "exact", head: true }),
-    supabase
-      .from("bloodhero_donors")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["active", "approved"])
-      .neq("blood_group", bloodGroup),
-    supabase
-      .from("bloodhero_donors")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["active", "approved"])
-      .eq("blood_group", bloodGroup)
-      .or(`block_until.gt.${nowIso}`),
-    supabase
-      .from("bloodhero_request_notifications")
-      .select("donor_id", { count: "exact", head: true })
-      .eq("request_id", requestId),
-    supabase
-      .from("bloodhero_donors")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["active", "approved"])
-      .eq("blood_group", bloodGroup)
-      .not("center_point_lat", "is", null)
-      .not("center_point_lng", "is", null)
-      .or(`block_until.is.null,block_until.lte.${nowIso}`),
-  ]);
-
-  console.info("[BloodHero:matching:diag]", {
-    requestId,
-    bloodGroup,
-    district,
-    requestHasCoordinates: hasRequestCoords,
-    totalDonors: allDonorsRes.count ?? null,
-    eligible: eligibleRes.count ?? null,
-    selected,
-    excluded: {
-      wrongBloodGroup: wrongBloodRes.count ?? null,
-      blocked: blockedRes.count ?? null,
-      alreadyNotified: alreadyRes.count ?? null,
-    },
-  });
-}
 
 export async function runBloodHeroMatchingForRequest(
   requestId: string
@@ -156,7 +79,7 @@ export async function runBloodHeroMatchingForRequest(
   const nowIso = new Date().toISOString();
   const { data: donorData, error: donorError } = await supabase
     .from("bloodhero_donors")
-    .select("id,district,center_point_lat,center_point_lng,created_at")
+    .select("id,district,block_until,center_point_lat,center_point_lng,created_at")
     .in("status", ["active", "approved"])
     .eq("blood_group", req.blood_group)
     .or(`block_until.is.null,block_until.lte.${nowIso}`);
@@ -194,7 +117,16 @@ export async function runBloodHeroMatchingForRequest(
       return { donor, distanceKm, districtMatch };
     })
     .filter((x) => !alreadyNotified.has(x.donor.id))
+    .filter((x) => x.distanceKm === null || x.distanceKm <= BLOODHERO_MAX_MATCH_RADIUS_KM)
     .sort((a, b) => {
+      // Same order as SQL 025/027: never-blocked donors first, then distance, district fallback, signup.
+      const aBlocked = a.donor.block_until !== null;
+      const bBlocked = b.donor.block_until !== null;
+      if (aBlocked !== bBlocked) return aBlocked ? 1 : -1;
+      if (aBlocked && bBlocked) {
+        const diff = Date.parse(a.donor.block_until as string) - Date.parse(b.donor.block_until as string);
+        if (diff !== 0) return diff;
+      }
       if (a.distanceKm !== null && b.distanceKm !== null) return a.distanceKm - b.distanceKm;
       if (a.distanceKm !== null) return -1;
       if (b.distanceKm !== null) return 1;
@@ -262,8 +194,6 @@ export async function runBloodHeroMatchingForRequest(
       },
     },
   ]);
-
-  await logMatchingDiagnostics(supabase, requestId, inserted);
 
   return {
     ok: true,

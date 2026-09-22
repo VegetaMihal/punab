@@ -24,24 +24,24 @@ import { BloodHeroLocationPicker } from "./BloodHeroLocationPicker";
 const initial: BloodHeroRequestActionState = {};
 
 const sectionKickerClass =
-  "text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400";
+  "text-[11px] font-semibold uppercase tracking-[0.14em] text-(--bh-ink-soft) ";
 
-const sectionSubtitleClass = "mt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400";
+const sectionSubtitleClass = "mt-1 text-xs leading-relaxed text-(--bh-ink-soft) ";
 
-const labelClass = "block text-sm font-semibold text-zinc-800 dark:text-zinc-100";
+const labelClass = "block text-sm font-semibold text-(--bh-ink) ";
 
 const req = (
-  <span className="text-red-600 dark:text-red-400" aria-hidden>
+  <span className="text-(--bh-blood-deep) " aria-hidden>
     *
   </span>
 );
 
 const controlClass =
-  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-base text-zinc-900 shadow-sm placeholder:text-zinc-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 sm:min-h-0 sm:text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500";
+  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3.5 py-2.5 text-base text-(--bh-ink) placeholder:text-(--bh-ink-soft) focus:border-(--bh-blood) focus:outline-none focus:ring-2 focus:ring-(--bh-blood) sm:min-h-0 sm:text-sm ";
 
-const hintClass = "mt-1.5 text-xs leading-snug text-zinc-500 dark:text-zinc-400";
+const hintClass = "mt-1.5 text-xs leading-snug text-(--bh-ink-soft) ";
 
-const errClass = "mt-1.5 text-sm font-medium text-red-600 dark:text-red-400";
+const errClass = "mt-1.5 text-sm font-medium text-(--bh-blood-deep) ";
 
 /** Groups fields on small screens; flat on `sm+` to match desktop calm. */
 function SectionCard({
@@ -58,10 +58,10 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white/95 p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/35 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+    <div className="rounded-2xl border border-(--bh-line) bg-(--bh-panel) p-5 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 ">
       <div className="mb-5 sm:mb-4">
         <p className={sectionKickerClass}>{step}</p>
-        <h2 id={titleId} className="mt-1 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 id={titleId} className="mt-1 text-base font-semibold text-(--bh-ink) ">
           {title}
         </h2>
         <p className={sectionSubtitleClass}>{subtitle}</p>
@@ -111,7 +111,7 @@ function CopyTrackingButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={copy}
-      className="mt-4 inline-flex min-h-[2.75rem] w-full max-w-xs items-center justify-center rounded-xl border border-emerald-700/25 bg-white px-4 text-sm font-semibold text-emerald-900 shadow-sm transition hover:bg-emerald-100/80 dark:border-emerald-400/30 dark:bg-emerald-950/40 dark:text-emerald-50 dark:hover:bg-emerald-900/50 sm:w-auto"
+      className="mt-4 inline-flex min-h-[2.75rem] w-full max-w-xs items-center justify-center rounded-xl border border-emerald-700/25 bg-(--bh-panel) px-4 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100/80 dark:border-emerald-400/30 dark:bg-emerald-950/40 dark:text-emerald-50 dark:hover:bg-emerald-900/50 sm:w-auto"
     >
       {copied ? "Copied to clipboard" : "Copy tracking number"}
     </button>
@@ -174,7 +174,7 @@ export function BloodHeroRequestForm() {
         <p className="mt-6">
           <Link
             href="/bloodhero/track"
-            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+            className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500"
           >
             Track this request
           </Link>
@@ -203,9 +203,9 @@ export function BloodHeroRequestForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8" noValidate>
-      <div className="rounded-2xl border border-red-100/90 bg-gradient-to-b from-red-50/60 via-white to-white px-4 py-4 dark:border-red-950/35 dark:from-red-950/25 dark:via-zinc-950 dark:to-zinc-950 sm:px-5 sm:py-4">
-        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">When minutes matter</p>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+      <div className="rounded-2xl border border-(--bh-blood-tint) px-4 py-4 sm:px-5 sm:py-4">
+        <p className="text-sm font-semibold text-(--bh-ink) ">When minutes matter</p>
+        <p className="mt-2 text-sm leading-relaxed text-(--bh-ink-soft) ">
           A short form, no login. Clear, honest details help coordinators act fast. Inaccurate requests put
           lives at risk—please double-check before you send.
         </p>
@@ -213,7 +213,7 @@ export function BloodHeroRequestForm() {
 
       {state.error ? (
         <div
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm leading-snug text-red-900 dark:border-red-900/60 dark:bg-red-950/45 dark:text-red-100"
+          className="rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3.5 text-sm leading-snug text-(--bh-blood-deep) "
           role="alert"
           aria-live="assertive"
         >
@@ -333,12 +333,12 @@ export function BloodHeroRequestForm() {
             </div>
             <div>
               <label htmlFor="patient_condition" className={labelClass}>
-                Condition or notes <span className="font-normal text-zinc-500">(optional)</span>
+                Condition or notes <span className="font-normal text-(--bh-ink-soft)">(optional)</span>
               </label>
               <FieldHint id="hint-patient_condition_voice">
-                Choose <strong className="font-semibold text-zinc-700 dark:text-zinc-200">English</strong> or{" "}
-                <strong className="font-semibold text-zinc-700 dark:text-zinc-200">বাংলা</strong>, then tap{" "}
-                <strong className="font-semibold text-zinc-700 dark:text-zinc-200">Speak</strong> — we transcribe when
+                Choose <strong className="font-semibold text-(--bh-ink-soft) ">English</strong> or{" "}
+                <strong className="font-semibold text-(--bh-ink-soft) ">বাংলা</strong>, then tap{" "}
+                <strong className="font-semibold text-(--bh-ink-soft) ">Speak</strong> — we transcribe when
                 you press Stop. You can type or edit the text below as well.
               </FieldHint>
               <div className="mt-2 w-full min-w-0">
@@ -369,7 +369,7 @@ export function BloodHeroRequestForm() {
                 <input type="hidden" name="condition_voice_transcript" value={voiceTranscriptForServer} />
               ) : null}
               {voiceTranscriptForServer ? (
-                <p className={`${hintClass} font-medium text-zinc-600 dark:text-zinc-300`}>
+                <p className={`${hintClass} font-medium text-(--bh-ink-soft) `}>
                   Transcribed from voice
                 </p>
               ) : null}
@@ -454,15 +454,15 @@ export function BloodHeroRequestForm() {
             </div>
 
             <fieldset
-              className="space-y-4 rounded-xl border border-zinc-200/90 bg-zinc-50/70 p-4 sm:p-5 dark:border-zinc-700 dark:bg-zinc-900/40"
+              className="space-y-4 rounded-xl border border-(--bh-line) bg-(--bh-panel) p-4 sm:p-5 "
               aria-labelledby="req-timing-legend"
             >
               <legend id="req-timing-legend" className="sr-only">
                 Timing and quantity
               </legend>
               <div>
-                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Timing & amount</p>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm font-semibold text-(--bh-ink) ">Timing & amount</p>
+                <p className="mt-1 text-xs text-(--bh-ink-soft) ">
                   When help is needed (now or later) and how many units.
                 </p>
               </div>
@@ -524,15 +524,15 @@ export function BloodHeroRequestForm() {
         </SectionCard>
       </div>
 
-      <div className="space-y-3 border-t border-zinc-200/90 pt-6 dark:border-zinc-800">
+      <div className="space-y-3 border-t border-(--bh-line) pt-6 ">
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-red-600 px-6 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 active:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm dark:bg-red-500 dark:hover:bg-red-600 dark:focus-visible:ring-offset-zinc-950"
+          className="inline-flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-base font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 active:bg-(--bh-blood-deep) disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:text-sm "
         >
           {pending ? "Submitting…" : "Submit request"}
         </button>
-        <p className="text-center text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+        <p className="text-center text-xs leading-relaxed text-(--bh-ink-soft) ">
           By submitting, you confirm this need is real and accurate to the best of your knowledge.
         </p>
       </div>

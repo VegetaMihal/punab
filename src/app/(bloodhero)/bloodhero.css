@@ -1,0 +1,104 @@
+/* BloodHero "ward board" world. Red is reserved for blood need; everything else is saline + ink. */
+.bh {
+  --bh-bg: #eef3f5;
+  --bh-panel: #ffffff;
+  --bh-ink: #0f1c2e;
+  --bh-ink-soft: #3d4d63;
+  --bh-line: #c3d0d8;
+  --bh-blood: #d61f3a;
+  --bh-blood-deep: #a8132b;
+  --bh-blood-tint: #fde8eb;
+  --bh-on-blood: #ffffff;
+  font-family: var(--font-wall-text), var(--font-geist-sans), sans-serif;
+}
+:where(.dark) .bh {
+  --bh-bg: #0a1420;
+  --bh-panel: #111f30;
+  --bh-ink: #e8eff5;
+  --bh-ink-soft: #a9b8c8;
+  --bh-line: #27394d;
+  --bh-blood: #ff4a63;
+  --bh-blood-deep: #ff7a8c;
+  --bh-blood-tint: #3a1620;
+  --bh-on-blood: #0a1420;
+}
+
+.bh ::selection {
+  background: var(--bh-blood);
+  color: var(--bh-on-blood);
+}
+
+.bh-display {
+  font-family: var(--font-wall-brush), var(--font-wall-text), sans-serif;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.bh-focus:focus-visible {
+  outline: 3px solid var(--bh-ink);
+  outline-offset: 3px;
+}
+
+/* --- Figure: falls in, lands, lifts the drop once, then idles. Static under reduced motion. --- */
+.bh-fig-body,
+.bh-fig-arm,
+.bh-fig-drop,
+.bh-fig-shadow {
+  transform-box: fill-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bh-fig-body {
+    transform-origin: 50% 100%;
+    animation:
+      bh-fall 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards,
+      bh-land 0.35s ease-out 0.7s backwards,
+      bh-idle 3.2s ease-in-out 1.6s infinite;
+  }
+  .bh-fig-arm {
+    transform-origin: 0% 0%;
+    animation: bh-lift 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1s backwards;
+  }
+  .bh-fig-drop {
+    transform-origin: 50% 100%;
+    animation: bh-drop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.4s backwards;
+  }
+  .bh-fig-shadow {
+    transform-origin: 50% 50%;
+    animation: bh-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .bh-bubble {
+    animation: bh-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) 1.5s backwards;
+    transform-origin: 0% 100%;
+  }
+  .bh-pulse {
+    animation: bh-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes bh-fall {
+  from { transform: translateY(-220px); }
+}
+@keyframes bh-land {
+  0% { transform: scale(1.06, 0.88); }
+  100% { transform: scale(1, 1); }
+}
+@keyframes bh-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes bh-lift {
+  from { transform: rotate(-70deg); }
+}
+@keyframes bh-drop-in {
+  from { transform: scale(0); opacity: 0; }
+}
+@keyframes bh-shadow {
+  from { transform: scaleX(0.3); opacity: 0.1; }
+}
+@keyframes bh-pop {
+  from { transform: scale(0.6); opacity: 0; }
+}
+@keyframes bh-ping {
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}

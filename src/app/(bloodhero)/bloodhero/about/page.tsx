@@ -15,7 +15,7 @@ export default function BloodHeroAboutPage() {
         description="BloodHero is a dedicated coordination layer: it connects people who can give with people who need help, under the umbrella of PUNAB’s national student and alumni network."
       />
       <BloodHeroPageSection>
-        <div className="space-y-5 text-zinc-700 dark:text-zinc-300">
+        <div className="space-y-5 text-(--bh-ink-soft) ">
           <p className="leading-relaxed">
             This page will expand with mission, safety principles, partner hospitals, and how to get involved
             beyond donating blood. For now, the product shell focuses on clear navigation and trustworthy copy.

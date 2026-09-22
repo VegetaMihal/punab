@@ -55,12 +55,12 @@ export default async function BloodHeroRespondDonePage({
 
   return (
     <>
-      <div className="border-b border-zinc-200/80 bg-white py-10 dark:border-zinc-800 dark:bg-zinc-950 sm:py-12">
+      <div className="border-b border-(--bh-line) bg-(--bh-panel) py-10 sm:py-12">
         <div className="mx-auto max-w-lg px-4 text-center sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
             BloodHero
           </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
+          <h1 className="bh-display mt-2 text-2xl font-bold tracking-tight text-(--bh-ink) sm:text-3xl">
             {o.headline}
           </h1>
         </div>
@@ -68,19 +68,19 @@ export default async function BloodHeroRespondDonePage({
       <BloodHeroPageSection>
         <div className="mx-auto max-w-lg px-0 sm:px-0">
           <div
-            className={`rounded-2xl border px-4 py-5 shadow-sm sm:px-6 sm:py-6 ${accentRing}`}
+            className={`rounded-2xl border px-4 py-5 sm:px-6 sm:py-6 ${accentRing}`}
             role="status"
           >
             <p className="text-sm leading-relaxed sm:text-base">{o.body}</p>
           </div>
-          <p className="mt-6 text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <p className="mt-6 text-center text-sm leading-relaxed text-(--bh-ink-soft) ">
             You can close this tab. If you chose the wrong option by mistake, contact the team through the main
             PUNAB site and mention BloodHero.
           </p>
           <div className="mt-8 flex justify-center">
             <SmartBackLink
               fallbackHref="/bloodhero"
-              className="inline-flex min-h-11 w-full max-w-xs items-center justify-center rounded-xl border border-zinc-300 bg-white px-5 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
+              className="inline-flex min-h-11 w-full max-w-xs items-center justify-center rounded-xl border border-(--bh-line) bg-(--bh-panel) px-5 text-sm font-semibold text-(--bh-ink) transition hover:bg-(--bh-panel) sm:w-auto"
             >
               Back to BloodHero
             </SmartBackLink>

@@ -13,12 +13,12 @@ import { BloodHeroRequestTimeline } from "@/components/bloodhero/BloodHeroReques
 
 const initial: BloodHeroTrackerActionState = {};
 
-const labelClass = "block text-sm font-semibold text-zinc-800 dark:text-zinc-100";
+const labelClass = "block text-sm font-semibold text-(--bh-ink) ";
 
 const controlClass =
-  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 font-mono text-base uppercase tracking-wide text-zinc-900 shadow-sm placeholder:normal-case placeholder:tracking-normal placeholder:text-zinc-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 sm:min-h-0 sm:text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100";
+  "mt-2 w-full min-h-[2.75rem] rounded-xl border border-(--bh-line) bg-(--bh-panel) px-3.5 py-2.5 font-mono text-base uppercase tracking-wide text-(--bh-ink) placeholder:normal-case placeholder:tracking-normal placeholder:text-(--bh-ink-soft) focus:border-(--bh-blood) focus:outline-none focus:ring-2 focus:ring-(--bh-blood) sm:min-h-0 sm:text-sm ";
 
-const errClass = "mt-1.5 text-sm font-medium text-red-600 dark:text-red-400";
+const errClass = "mt-1.5 text-sm font-medium text-(--bh-blood-deep) ";
 
 function statusBadgeClass(status: string) {
   switch (status) {
@@ -27,22 +27,22 @@ function statusBadgeClass(status: string) {
     case "matching":
       return "border border-amber-200/80 bg-amber-100 text-amber-950 dark:border-amber-800/50 dark:bg-amber-950/45 dark:text-amber-50";
     case "cancelled":
-      return "border border-zinc-300/80 bg-zinc-100 text-zinc-800 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100";
+      return "border border-(--bh-line) bg-(--bh-panel) text-(--bh-ink) ";
     default:
-      return "border border-red-200/80 bg-red-100 text-red-950 dark:border-red-900/50 dark:bg-red-950/45 dark:text-red-50";
+      return "border border-(--bh-blood-tint) bg-(--bh-blood-tint) text-(--bh-blood-deep) ";
   }
 }
 
 function statusAccentClass(status: string) {
   switch (status) {
     case "fulfilled":
-      return "border-l-emerald-500";
+      return "border-emerald-600";
     case "matching":
-      return "border-l-amber-500";
+      return "border-amber-500";
     case "cancelled":
-      return "border-l-zinc-400 dark:border-l-zinc-500";
+      return "border-(--bh-line)";
     default:
-      return "border-l-red-500";
+      return "border-(--bh-blood)";
   }
 }
 
@@ -90,11 +90,11 @@ export function BloodHeroTrackerPanel() {
 
   return (
     <div className="space-y-8 sm:space-y-10">
-      <div className="rounded-2xl border border-zinc-200/90 bg-zinc-50/60 px-4 py-4 dark:border-zinc-800 dark:bg-zinc-900/30 sm:px-5">
-        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Look up by tracking number</p>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+      <div className="rounded-2xl border border-(--bh-line) bg-(--bh-panel) px-4 py-4 sm:px-5">
+        <p className="text-sm font-semibold text-(--bh-ink) ">Look up by tracking number</p>
+        <p className="mt-2 text-sm leading-relaxed text-(--bh-ink-soft) ">
           Enter the tracking number shown after you submitted your blood request (for example{" "}
-          <span className="font-mono text-zinc-800 dark:text-zinc-200">BH-2026-000001</span>). One number
+          <span className="font-mono text-(--bh-ink) ">BH-2026-000001</span>). One number
           matches one request—we never show unrelated cases.
         </p>
       </div>
@@ -102,7 +102,7 @@ export function BloodHeroTrackerPanel() {
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {state.error ? (
           <div
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-900 dark:border-red-900/60 dark:bg-red-950/45 dark:text-red-100"
+            className="rounded-xl border border-(--bh-blood-tint) bg-(--bh-blood-tint) px-4 py-3.5 text-sm text-(--bh-blood-deep) "
             role="alert"
             aria-live="assertive"
           >
@@ -134,7 +134,7 @@ export function BloodHeroTrackerPanel() {
               {trackingError}
             </p>
           ) : (
-            <p id="hint-tracker-tracking-number" className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <p id="hint-tracker-tracking-number" className="mt-1.5 text-xs text-(--bh-ink-soft) ">
               Spaces are optional. Letters are not case-sensitive.
             </p>
           )}
@@ -143,14 +143,14 @@ export function BloodHeroTrackerPanel() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-xl bg-red-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus-visible:outline focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 disabled:opacity-60 dark:bg-red-500 dark:hover:bg-red-600 dark:focus-visible:ring-offset-zinc-950 sm:w-auto sm:min-h-11"
+          className="inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-xl bg-(--bh-blood) px-6 text-sm font-semibold text-(--bh-on-blood) transition hover:bg-(--bh-blood) focus-visible:outline focus-visible:ring-2 focus-visible:ring-(--bh-blood) focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto sm:min-h-11"
         >
           {pending ? "Looking up…" : "Show request status"}
         </button>
       </form>
 
       {data ? (
-        <div className="space-y-6 border-t border-zinc-200 pt-8 dark:border-zinc-800 sm:space-y-8">
+        <div className="space-y-6 border-t border-(--bh-line) pt-8 sm:space-y-8">
           {!data.request ? (
             <div
               className="rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3.5 text-sm leading-relaxed text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/25 dark:text-amber-100 sm:px-5 sm:py-4"
@@ -183,23 +183,23 @@ function TrackerRequestCard({
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border border-zinc-200/90 border-l-4 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40 ${statusAccentClass(r.status)}`}
+      className={`overflow-hidden rounded-2xl border-2 bg-(--bh-panel) ${statusAccentClass(r.status)}`}
     >
       <div className="p-4 sm:p-6">
-        <div className="flex flex-col gap-4 border-b border-zinc-100 pb-4 dark:border-zinc-800/80 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6">
+        <div className="flex flex-col gap-4 border-b border-(--bh-line) pb-4 sm:flex-row sm:items-stretch sm:justify-between sm:gap-6">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Tracking number
             </p>
-            <p className="mt-1.5 break-all font-mono text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-2xl">
+            <p className="mt-1.5 break-all font-mono text-xl font-bold tracking-tight text-(--bh-ink) sm:text-2xl">
               {r.tracking_number}
             </p>
-            <p className="mt-1 max-w-prose text-xs leading-snug text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 max-w-prose text-xs leading-snug text-(--bh-ink-soft) ">
               Use this code on this page anytime, or quote it if you contact BloodHero.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-1.5 rounded-xl bg-zinc-50/90 px-3.5 py-3 dark:bg-zinc-950/50 sm:max-w-[min(100%,14rem)] sm:shrink-0">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="flex w-full flex-col gap-1.5 rounded-xl bg-(--bh-panel) px-3.5 py-3 sm:max-w-[min(100%,14rem)] sm:shrink-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Current status
             </p>
             <span
@@ -208,83 +208,83 @@ function TrackerRequestCard({
             >
               {headline}
             </span>
-            <p className="text-xs leading-snug text-zinc-600 dark:text-zinc-400">{hint}</p>
+            <p className="text-xs leading-snug text-(--bh-ink-soft) ">{hint}</p>
           </div>
         </div>
 
         <dl className="mt-5 grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-1">
-          <div className="border-b border-zinc-100 py-3.5 first:pt-0 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 first:pt-0 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Patient
             </dt>
-            <dd className="mt-1 text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-50">
+            <dd className="mt-1 text-base font-semibold leading-snug text-(--bh-ink) ">
               {r.patient_name}
             </dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Blood group
             </dt>
-            <dd className="mt-1 text-base font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+            <dd className="mt-1 text-base font-semibold tabular-nums text-(--bh-ink) ">
               {r.blood_group}
             </dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               District
             </dt>
-            <dd className="mt-1 break-words text-base leading-snug text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-1 break-words text-base leading-snug text-(--bh-ink) ">
               {r.district}
             </dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Donation location
             </dt>
-            <dd className="mt-1 break-words text-base leading-snug text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-1 break-words text-base leading-snug text-(--bh-ink) ">
               {r.donation_location}
             </dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               When needed
             </dt>
-            <dd className="mt-1 text-base leading-snug tabular-nums text-zinc-800 dark:text-zinc-200">
+            <dd className="mt-1 text-base leading-snug tabular-nums text-(--bh-ink) ">
               {new Date(r.planned_donation_at).toLocaleString(undefined, {
                 dateStyle: "medium",
                 timeStyle: "short",
               })}
             </dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 dark:border-zinc-800/80 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Units requested
             </dt>
-            <dd className="mt-1 text-base tabular-nums text-zinc-800 dark:text-zinc-200">{r.request_quantity}</dd>
+            <dd className="mt-1 text-base tabular-nums text-(--bh-ink) ">{r.request_quantity}</dd>
           </div>
-          <div className="border-b border-zinc-100 py-3.5 last:border-b-0 dark:border-zinc-800/80 sm:col-span-2 sm:border-0 sm:py-3">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="border-b border-(--bh-line) py-3.5 last:border-b-0 sm:col-span-2 sm:border-0 sm:py-3">
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-(--bh-ink-soft) ">
               Submitted
             </dt>
-            <dd className="mt-1 flex flex-col gap-1 text-base leading-snug text-zinc-800 dark:text-zinc-200 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
+            <dd className="mt-1 flex flex-col gap-1 text-base leading-snug text-(--bh-ink) sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
               <time dateTime={r.created_at}>
                 {new Date(r.created_at).toLocaleString(undefined, {
                   dateStyle: "medium",
                   timeStyle: "short",
                 })}
               </time>
-              <span className="hidden text-zinc-400 sm:inline" aria-hidden>
+              <span className="hidden text-(--bh-ink-soft) sm:inline" aria-hidden>
                 ·
               </span>
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">Requester: {r.requester_name}</span>
+              <span className="text-sm text-(--bh-ink-soft) ">Requester: {r.requester_name}</span>
             </dd>
           </div>
         </dl>
       </div>
 
-      <div className="border-t border-zinc-100 bg-zinc-50/80 px-4 py-5 dark:border-zinc-800/80 dark:bg-zinc-950/35 sm:px-6 sm:py-6">
-        <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">What&apos;s happening</h3>
-        <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+      <div className="border-t border-(--bh-line) bg-(--bh-panel) px-4 py-5 sm:px-6 sm:py-6">
+        <h3 className="text-base font-bold text-(--bh-ink) ">What&apos;s happening</h3>
+        <p className="mt-1.5 max-w-prose text-sm leading-relaxed text-(--bh-ink-soft) ">
           Step-by-step updates. More detail will appear here as matching and notifications go live.
         </p>
         <div className="mt-5">

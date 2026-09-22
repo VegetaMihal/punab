@@ -5,14 +5,15 @@
 
 /** Primary flows — hero, footer quick row, bottom strip (compact). */
 export const bloodHeroMainActionLinks = [
-  { href: "/bloodhero/donor", label: "Become a Donor" },
-  { href: "/bloodhero/request", label: "Request Blood" },
-  { href: "/bloodhero/track", label: "Track Request" },
+  { href: "/bloodhero/donor", label: "Become a Donor", labelBn: "রক্তদাতা হন" },
+  { href: "/bloodhero/request", label: "Request Blood", labelBn: "রক্ত চান" },
+  { href: "/bloodhero/track", label: "Track Request", labelBn: "অনুরোধ ট্র্যাক করুন" },
 ] as const;
 
 /** Home + main actions — module wayfinding in footer (muted). */
 export const bloodHeroFooterQuickLinks = [
   { href: "/bloodhero", label: "Home" },
+  { href: "/bloodhero/requests", label: "Needed Now" },
   ...bloodHeroMainActionLinks,
 ] as const;
 

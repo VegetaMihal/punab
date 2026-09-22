@@ -4,10 +4,10 @@ import { bloodHeroMainActionLinks } from "@/components/bloodhero/bloodhero-nav";
 /** Closing reminder — compact chips so we do not repeat the full hero button row. */
 export function BloodHeroCtaStrip() {
   return (
-    <section className="bg-zinc-900 py-10 text-white dark:bg-black sm:py-12">
+    <section className="bg-(--bh-ink) py-10 text-(--bh-bg) sm:py-12">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <p className="text-center text-base font-medium text-zinc-200 sm:text-lg">
-          Ready when you are—same three steps, any time.
+        <p className="text-center text-base font-semibold sm:text-lg">
+          Ready when you are—same steps, any time.
         </p>
         <nav
           aria-label="BloodHero main actions"
@@ -17,7 +17,7 @@ export function BloodHeroCtaStrip() {
             <Link
               key={item.href}
               href={item.href}
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/25 bg-white/5 px-5 text-sm font-medium text-white transition hover:border-white/40 hover:bg-white/10"
+              className="inline-flex min-h-11 items-center justify-center bh-focus rounded-xl border-2 border-(--bh-bg) px-5 text-sm font-bold text-(--bh-bg) transition-colors duration-150 hover:bg-(--bh-bg) hover:text-(--bh-ink)"
             >
               {item.label}
             </Link>

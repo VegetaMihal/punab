@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./bloodhero.css";
 import {
   BloodHeroFooter,
   BloodHeroHeader,
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function BloodHeroLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#fafafa] text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50">
+    <div className="bh relative flex min-h-screen flex-col bg-(--bh-bg) text-(--bh-ink) antialiased">
       <BloodHeroSkipToMain />
       <BloodHeroHeader />
       <main id="bloodhero-main" className="flex-1 scroll-mt-0" tabIndex={-1}>
