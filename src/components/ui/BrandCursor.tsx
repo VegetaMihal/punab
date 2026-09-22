@@ -7,6 +7,7 @@ const JULY_AWARD_PREFIX = "/july-award-2026";
 const MONITORING_FORM_PREFIX = "/monitoring-form";
 const MUN_PREFIX = "/imun-2026";
 const BABBF_PREFIX = "/babbf-championship-2026";
+const BLOODHERO_PREFIX = "/bloodhero";
 const MAX_PARTICLES = 96;
 const SPAWN_MS_SPARKLE = 20;
 const SPAWN_MS_BLOOD = 34;
@@ -29,6 +30,11 @@ function isMunPath(pathname: string | null) {
 function isBabbfPath(pathname: string | null) {
   if (!pathname) return false;
   return pathname === BABBF_PREFIX || pathname.startsWith(`${BABBF_PREFIX}/`);
+}
+
+function isBloodHeroPath(pathname: string | null) {
+  if (!pathname) return false;
+  return pathname === BLOODHERO_PREFIX || pathname.startsWith(`${BLOODHERO_PREFIX}/`);
 }
 
 function trimParticles(root: HTMLDivElement) {
@@ -87,7 +93,7 @@ function spawnBloodDrop(root: HTMLDivElement, x: number, y: number) {
 
 export function BrandCursor() {
   const pathname = usePathname();
-  const disabled = isBabbfPath(pathname);
+  const disabled = isBabbfPath(pathname) || isBloodHeroPath(pathname);
   const mode: CursorMode = isJulyAwardPath(pathname) ? "blood" : isMunPath(pathname) ? "gold" : "sparkle";
 
   const rootRef = useRef<HTMLDivElement>(null);
