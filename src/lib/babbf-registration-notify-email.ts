@@ -48,6 +48,7 @@ export async function sendBabbfConfirmationEmail(
   <p>Hi ${input.fullName},</p>
   <p>Your registration for the <strong>${input.eventTypeLabel}</strong> event at the BABBF Inter-University
   Armwrestler &amp; Fitness Championship 2026 has been <strong>confirmed</strong>.</p>
+  <p>Event date: <strong>27 September 2026</strong> · KIB Convention Hall, Farmgate, Dhaka-1215</p>
   <p>Participant ID: <strong>${input.referenceNumber}</strong></p>
   <p><img src="cid:babbf-ticket-qr" alt="Ticket QR code" width="240" height="240" /></p>
   <p>Bring this QR (printed or on your phone) — it will be scanned for check-in and weight-in on event day.</p>

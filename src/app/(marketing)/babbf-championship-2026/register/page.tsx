@@ -56,25 +56,23 @@ export default async function BabbfRegisterPage({ searchParams }: Props) {
                   KIB Convention Hall, Farmgate, Dhaka-1215
                 </dd>
               </div>
+              <div>
+                <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                  Registration Deadline
+                </dt>
+                <dd className="mt-1 text-small text-[color:var(--color-text)]">26 September 2026</dd>
+              </div>
               {eventType === "armwrestling" && (
-                <>
-                  <div>
-                    <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-                      Registration Deadline
-                    </dt>
-                    <dd className="mt-1 text-small text-[color:var(--color-text)]">26 September 2026</dd>
-                  </div>
-                  <div>
-                    <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-                      Weight-in
-                    </dt>
-                    <dd className="mt-1 text-small text-[color:var(--color-text)]">
-                      26 September 2026
-                      <br />
-                      The Workout Club, Bashundhara
-                    </dd>
-                  </div>
-                </>
+                <div>
+                  <dt className="text-small font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                    Weight-in
+                  </dt>
+                  <dd className="mt-1 text-small text-[color:var(--color-text)]">
+                    26 September 2026
+                    <br />
+                    The Workout Club, Bashundhara
+                  </dd>
+                </div>
               )}
             </dl>
           </div>
