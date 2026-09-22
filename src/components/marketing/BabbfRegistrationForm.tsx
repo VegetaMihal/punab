@@ -10,6 +10,7 @@ import {
   babbfWeightCategoriesFor,
   BABBF_BODYBUILDING_WEIGHT_CLASSES,
   BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES,
+  BABBF_DENIM_JEANS_CLASSES,
   BABBF_GENDERS,
   BABBF_GENDER_LABEL,
   BABBF_PAYMENT_METHODS,
@@ -341,15 +342,19 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
               <FieldError id="physiqueClass-err" message={fe.physiqueClass} />
             </div>
 
-            <label className="flex items-center gap-2 text-small text-[color:var(--color-text)] sm:col-span-2">
-              <input
-                type="checkbox"
-                name="denimJeansOptIn"
-                value="true"
-                defaultChecked={fv.denimJeansOptIn === "true"}
-              />
-              Also enter Denim Jeans Model Fitness (optional)
-            </label>
+            <div>
+              <label htmlFor="denimClass" className="ds-label">
+                Denim Jeans Model Fitness
+              </label>
+              <select id="denimClass" name="denimClass" className="ds-input" defaultValue={fv.denimClass || BABBF_DENIM_JEANS_CLASSES[0]}>
+                {BABBF_DENIM_JEANS_CLASSES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="denimClass-err" message={fe.denimClass} />
+            </div>
           </div>
         )}
 
