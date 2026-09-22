@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { assertAdminScope } from "@/lib/auth/require-admin";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { BabbfStatusControls } from "@/components/admin/BabbfStatusControls";
+import { BabbfCheckInControls } from "@/components/admin/BabbfCheckInControls";
 import { findBabbfRegistrationByReference } from "@/lib/babbf-registration-sheet";
 import { BABBF_COL, BABBF_SHEET_HEADER_ROW } from "@/lib/babbf-registration-google";
 
@@ -56,6 +57,14 @@ export default async function AdminBabbfRegistrationDetailPage({ params }: { par
 
       <div className="mt-6 rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
         <BabbfStatusControls referenceNumber={r.referenceNumber} currentStatus={r.status || "New"} currentNote={r.reviewerNote} />
+      </div>
+
+      <div className="mt-6 rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <BabbfCheckInControls
+          referenceNumber={r.referenceNumber}
+          checkedInAt={c("checkedInAt")}
+          checkedInVia={c("checkedInVia")}
+        />
       </div>
 
       <div className="mt-6 rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">

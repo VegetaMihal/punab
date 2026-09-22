@@ -6,10 +6,13 @@ import { assertAdminScope } from "@/lib/auth/require-admin";
 import { uploadBabbfDocumentFile } from "@/lib/babbf-registration-storage";
 import { isBabbfGoogleConfigured } from "@/lib/babbf-registration-google";
 import { sendBabbfConfirmationEmail, sendBabbfRegistrationNotifyEmail } from "@/lib/babbf-registration-notify-email";
+import { buildBabbfTicketUrl, generateBabbfTicketQrCodePngBuffer } from "@/lib/babbf-registration-ticket";
 import {
   appendBabbfRegistrationRow,
   findBabbfRegistrationByEmail,
   findBabbfRegistrationByReference,
+  markBabbfCheckedIn,
+  markBabbfCheckedOut,
   updateBabbfRegistrationStatus,
 } from "@/lib/babbf-registration-sheet";
 import {
@@ -245,14 +248,46 @@ export async function updateBabbfRegistrationStatusAction(
     return { success: true };
   }
 
+  const ticketUrl = buildBabbfTicketUrl(res.row.referenceNumber);
+  const qrCodePngBuffer = await generateBabbfTicketQrCodePngBuffer(ticketUrl);
+
   const mail = await sendBabbfConfirmationEmail({
     referenceNumber: res.row.referenceNumber,
     fullName: res.row.fullName,
     email: res.row.email,
     eventTypeLabel: BABBF_EVENT_TYPE_LABEL[res.sheetEventType],
+    ticketUrl,
+    qrCodePngBuffer,
   });
   if (!mail.ok) {
     return { success: true, emailSent: false, emailError: mail.reason };
   }
   return { success: true, emailSent: true };
+}
+
+export type BabbfCheckInState = {
+  success?: boolean;
+  error?: string;
+  checkedInAt?: string;
+  alreadyCheckedIn?: boolean;
+};
+
+/** Admin-side manual check-in (separate from the volunteer QR-scan flow, for corrections/no-QR cases). */
+export async function adminCheckInBabbfRegistrationAction(referenceNumber: string): Promise<BabbfCheckInState> {
+  await assertAdminScope("babbf_registrations");
+  const res = await markBabbfCheckedIn(referenceNumber, "Admin manual check-in");
+  if (!res.ok) {
+    return { error: res.message };
+  }
+  return { success: true, checkedInAt: res.checkedInAt, alreadyCheckedIn: res.alreadyCheckedIn };
+}
+
+/** Clears a check-in — for corrections (e.g. scanned/marked by mistake). */
+export async function adminCheckOutBabbfRegistrationAction(referenceNumber: string): Promise<BabbfCheckInState> {
+  await assertAdminScope("babbf_registrations");
+  const res = await markBabbfCheckedOut(referenceNumber);
+  if (!res.ok) {
+    return { error: res.message };
+  }
+  return { success: true };
 }

@@ -27,9 +27,11 @@ export type BabbfConfirmationInput = {
   fullName: string;
   email: string;
   eventTypeLabel: string;
+  ticketUrl: string;
+  qrCodePngBuffer: Buffer;
 };
 
-/** Notify the participant their registration is confirmed. Does not throw. */
+/** Notify the participant their registration is confirmed, with a scannable check-in QR. Does not throw. */
 export async function sendBabbfConfirmationEmail(
   input: BabbfConfirmationInput
 ): Promise<{ ok: true } | { ok: false; reason: string }> {
@@ -47,7 +49,9 @@ export async function sendBabbfConfirmationEmail(
   <p>Your registration for the <strong>${input.eventTypeLabel}</strong> event at the BABBF Inter-University
   Armwrestler &amp; Fitness Championship 2026 has been <strong>confirmed</strong>.</p>
   <p>Participant ID: <strong>${input.referenceNumber}</strong></p>
-  <p>Please keep this ID — bring it (or a screenshot) on the day of the event for check-in and weight-in.</p>
+  <p><img src="cid:babbf-ticket-qr" alt="Ticket QR code" width="240" height="240" /></p>
+  <p>Bring this QR (printed or on your phone) — it will be scanned for check-in and weight-in on event day.</p>
+  <p>Regards,<br/><strong>Kazi Rohanuzzaman Mehal</strong><br/>PUNAB Technology &amp; Innovation Forum</p>
   </body></html>`;
 
   try {
@@ -57,6 +61,13 @@ export async function sendBabbfConfirmationEmail(
       to: [input.email],
       subject,
       html,
+      attachments: [
+        {
+          filename: "babbf-ticket-qr.png",
+          content: input.qrCodePngBuffer,
+          contentId: "babbf-ticket-qr",
+        },
+      ],
     });
     if (error) {
       return { ok: false, reason: error.message || "Resend send failed." };

@@ -1,0 +1,52 @@
+"use client";
+
+import { useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { submitBabbfVolunteerPasscode, type VolunteerPasscodeState } from "@/actions/babbf-ticket-verify";
+import { Button } from "@/components/ui/Button";
+
+const initial: VolunteerPasscodeState = {};
+
+export function BabbfVolunteerPasscodeForm() {
+  const router = useRouter();
+  const [state, formAction, pending] = useActionState(submitBabbfVolunteerPasscode, initial);
+  const [showPasscode, setShowPasscode] = useState(false);
+
+  useEffect(() => {
+    if (!state || state.error) return;
+    router.refresh();
+  }, [state, router]);
+
+  return (
+    <form action={formAction} className="space-y-3">
+      <p className="text-small text-[color:var(--color-text-muted)]">
+        Volunteer access only. Enter the event passcode to verify tickets.
+      </p>
+      <div className="relative">
+        <input
+          type={showPasscode ? "text" : "password"}
+          name="passcode"
+          required
+          autoFocus
+          className="ds-input pr-16"
+          placeholder="Passcode"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPasscode((v) => !v)}
+          className="absolute inset-y-0 right-3 text-small font-medium text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)]"
+        >
+          {showPasscode ? "Hide" : "Show"}
+        </button>
+      </div>
+      {state?.error && (
+        <p className="text-small font-medium text-[color:var(--color-error)]" role="alert">
+          {state.error}
+        </p>
+      )}
+      <Button type="submit" variant="primary" loading={pending}>
+        {pending ? "Checking…" : "Unlock"}
+      </Button>
+    </form>
+  );
+}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { assertAdminScope } from "@/lib/auth/require-admin";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { listBabbfRegistrations, type BabbfRegistrationRow } from "@/lib/babbf-registration-sheet";
+import { batchListBabbfRegistrations, type BabbfRegistrationRow } from "@/lib/babbf-registration-sheet";
 import { BABBF_EVENT_TYPE_LABEL, BABBF_EVENT_TYPES } from "@/lib/validations/babbf-registration";
 
 export const metadata = { title: "BABBF Championship 2026 registrations" };
@@ -19,16 +19,15 @@ export default async function AdminBabbfRegistrationsPage() {
   await assertAdminScope("babbf_registrations");
 
   let rows: (BabbfRegistrationRow & { tabEventType: string })[] = [];
-  const errors: string[] = [];
-  for (const eventType of BABBF_EVENT_TYPES) {
-    const result = await listBabbfRegistrations(eventType);
-    if (!result.ok) {
-      errors.push(`${BABBF_EVENT_TYPE_LABEL[eventType]}: ${result.message}`);
-      continue;
+  let error: string | null = null;
+  const result = await batchListBabbfRegistrations();
+  if (!result.ok) {
+    error = result.message;
+  } else {
+    for (const eventType of BABBF_EVENT_TYPES) {
+      rows = rows.concat(result.rowsByEventType[eventType].map((r) => ({ ...r, tabEventType: eventType })));
     }
-    rows = rows.concat(result.rows.map((r) => ({ ...r, tabEventType: eventType })));
   }
-  const error = errors.length > 0 ? errors.join(" · ") : null;
 
   const sorted = [...rows].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
 
@@ -66,8 +65,15 @@ export default async function AdminBabbfRegistrationsPage() {
                 {r.universityName} · {new Date(r.submittedAt).toLocaleDateString("en-GB")}
               </p>
             </div>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[r.status] ?? STATUS_BADGE.New}`}>
-              {r.status || "New"}
+            <span className="flex items-center gap-2">
+              {r.checkedInAt && (
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                  ✓ Checked in
+                </span>
+              )}
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[r.status] ?? STATUS_BADGE.New}`}>
+                {r.status || "New"}
+              </span>
             </span>
           </Link>
         ))}
