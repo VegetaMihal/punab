@@ -203,6 +203,8 @@ export async function submitBabbfRegistration(
     d.rightHandConfirmed,
     d.declarationAccepted,
     d.paymentSenderNumber,
+    "",
+    "",
   ];
 
   const sheet = await appendBabbfRegistrationRow(d.eventType as BabbfSheetEventType, row);
