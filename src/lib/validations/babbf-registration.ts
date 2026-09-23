@@ -38,6 +38,7 @@ export function babbfWeightCategoriesFor(studentCategory: string): readonly stri
 
 export const BABBF_BODYBUILDING_WEIGHT_CLASSES = ["60kg", "65kg", "70kg", "70kg+"] as const;
 export const BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES = ["166cm", "166cm+"] as const;
+export const BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES = ["Open"] as const;
 export const BABBF_DENIM_JEANS_CLASSES = ["Open"] as const;
 
 export const BABBF_STATUSES = [
@@ -83,6 +84,7 @@ export const babbfRegistrationSchema = z.object({
   category: optionalTrimmed,
   bodybuildingClass: optionalTrimmed,
   physiqueClass: optionalTrimmed,
+  juniorPhysiqueClass: optionalTrimmed,
   denimClass: optionalTrimmed,
   rightHandConfirmed: z.enum(["true", "false"]).default("false"),
   declarationAccepted: z.enum(["true", "false"]).default("false"),
@@ -119,7 +121,7 @@ export const babbfRegistrationSchema = z.object({
       ctx.addIssue({ code: "custom", path: ["declarationAccepted"], message: "You must accept the declaration." });
     }
   } else {
-    if (!d.bodybuildingClass && !d.physiqueClass) {
+    if (!d.bodybuildingClass && !d.physiqueClass && !d.juniorPhysiqueClass) {
       ctx.addIssue({ code: "custom", path: ["bodybuildingClass"], message: "Select at least one category to enter." });
     }
     if (d.bodybuildingClass && !(BABBF_BODYBUILDING_WEIGHT_CLASSES as readonly string[]).includes(d.bodybuildingClass)) {
@@ -127,6 +129,12 @@ export const babbfRegistrationSchema = z.object({
     }
     if (d.physiqueClass && !(BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES as readonly string[]).includes(d.physiqueClass)) {
       ctx.addIssue({ code: "custom", path: ["physiqueClass"], message: "Select a valid height class." });
+    }
+    if (
+      d.juniorPhysiqueClass &&
+      !(BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES as readonly string[]).includes(d.juniorPhysiqueClass)
+    ) {
+      ctx.addIssue({ code: "custom", path: ["juniorPhysiqueClass"], message: "Select a valid option." });
     }
     if (d.denimClass && !(BABBF_DENIM_JEANS_CLASSES as readonly string[]).includes(d.denimClass)) {
       ctx.addIssue({ code: "custom", path: ["denimClass"], message: "Select a valid option." });

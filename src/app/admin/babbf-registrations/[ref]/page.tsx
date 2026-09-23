@@ -81,6 +81,7 @@ export default async function AdminBabbfRegistrationDetailPage({ params }: { par
           <Field label={labelFor("category")} value={c("category")} />
           <Field label={labelFor("bodybuildingClass")} value={c("bodybuildingClass")} />
           <Field label={labelFor("physiqueClass")} value={c("physiqueClass")} />
+          <Field label={labelFor("juniorPhysiqueClass")} value={c("juniorPhysiqueClass")} />
           <Field label={labelFor("denimJeansOptIn")} value={c("denimJeansOptIn")} />
           <Field label={labelFor("bloodGroup")} value={c("bloodGroup")} />
           <Field label={labelFor("rightHandConfirmed")} value={c("rightHandConfirmed")} />
