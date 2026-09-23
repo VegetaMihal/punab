@@ -21,7 +21,8 @@
     "july-award:setup-sheets": "dotenv -e .env.local -- tsx scripts/setup-july-award-sheets.ts",
     "july-teacher-honor:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-teacher-honor-sheet.ts",
     "july-injured-student:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-injured-student-sheet.ts",
-    "july-participant:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-participant-sheet.ts"
+    "july-participant:setup-sheet": "dotenv -e .env.local -- tsx scripts/setup-july-participant-sheet.ts",
+    "bloodhero:import-july-donors": "dotenv -e .env.local -- tsx scripts/import-july-blood-donors.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
