@@ -53,6 +53,7 @@ export const BABBF_SHEET_HEADER_ROW: string[] = [
   "Bodybuilding Class",
   "Denim Jeans Model Fitness",
   "Physique Class",
+  "Junior Men's Physique Class",
 ];
 
 export const BABBF_COL = {
@@ -84,6 +85,7 @@ export const BABBF_COL = {
   bodybuildingClass: 25,
   denimJeansOptIn: 26,
   physiqueClass: 27,
+  juniorPhysiqueClass: 28,
 } as const;
 
 export function sheetColumnLetter(zeroBasedIndex: number): string {

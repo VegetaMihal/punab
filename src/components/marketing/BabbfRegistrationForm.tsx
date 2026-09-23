@@ -10,6 +10,7 @@ import {
   babbfWeightCategoriesFor,
   BABBF_BODYBUILDING_WEIGHT_CLASSES,
   BABBF_MENS_PHYSIQUE_HEIGHT_CLASSES,
+  BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES,
   BABBF_DENIM_JEANS_CLASSES,
   BABBF_GENDERS,
   BABBF_GENDER_LABEL,
@@ -340,6 +341,26 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
                 ))}
               </select>
               <FieldError id="physiqueClass-err" message={fe.physiqueClass} />
+            </div>
+
+            <div>
+              <label htmlFor="juniorPhysiqueClass" className="ds-label">
+                Junior Men&apos;s Physique
+              </label>
+              <select
+                id="juniorPhysiqueClass"
+                name="juniorPhysiqueClass"
+                className="ds-input"
+                defaultValue={fv.juniorPhysiqueClass ?? ""}
+              >
+                <option value="">Not entering</option>
+                {BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <FieldError id="juniorPhysiqueClass-err" message={fe.juniorPhysiqueClass} />
             </div>
 
             <div>

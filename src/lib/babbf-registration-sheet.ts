@@ -41,6 +41,7 @@ export type BabbfRegistrationRow = {
   bodybuildingClass: string;
   denimJeansOptIn: string;
   physiqueClass: string;
+  juniorPhysiqueClass: string;
   cells: string[];
 };
 
@@ -171,6 +172,7 @@ function toBabbfRow(rowIndex: number, cells: string[]): BabbfRegistrationRow {
     bodybuildingClass: c(BABBF_COL.bodybuildingClass),
     denimJeansOptIn: c(BABBF_COL.denimJeansOptIn),
     physiqueClass: c(BABBF_COL.physiqueClass),
+    juniorPhysiqueClass: c(BABBF_COL.juniorPhysiqueClass),
     cells,
   };
 }
