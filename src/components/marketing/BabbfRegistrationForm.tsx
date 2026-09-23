@@ -351,9 +351,8 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
                 id="juniorPhysiqueClass"
                 name="juniorPhysiqueClass"
                 className="ds-input"
-                defaultValue={fv.juniorPhysiqueClass ?? ""}
+                defaultValue={fv.juniorPhysiqueClass || BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES[0]}
               >
-                <option value="">Not entering</option>
                 {BABBF_JUNIOR_MENS_PHYSIQUE_CLASSES.map((c) => (
                   <option key={c} value={c}>
                     {c}

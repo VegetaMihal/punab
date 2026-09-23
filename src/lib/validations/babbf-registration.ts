@@ -121,7 +121,7 @@ export const babbfRegistrationSchema = z.object({
       ctx.addIssue({ code: "custom", path: ["declarationAccepted"], message: "You must accept the declaration." });
     }
   } else {
-    if (!d.bodybuildingClass && !d.physiqueClass && !d.juniorPhysiqueClass) {
+    if (!d.bodybuildingClass && !d.physiqueClass) {
       ctx.addIssue({ code: "custom", path: ["bodybuildingClass"], message: "Select at least one category to enter." });
     }
     if (d.bodybuildingClass && !(BABBF_BODYBUILDING_WEIGHT_CLASSES as readonly string[]).includes(d.bodybuildingClass)) {
