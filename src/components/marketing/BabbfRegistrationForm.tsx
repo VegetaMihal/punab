@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { submitBabbfRegistration, type SubmitBabbfRegistrationState } from "@/actions/babbf-registration";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +24,44 @@ import {
 } from "@/lib/validations/babbf-registration";
 
 const initial: SubmitBabbfRegistrationState = {};
+
+// Kept in sync with TEXT_FIELD_KEYS in src/actions/babbf-registration.ts — file inputs are
+// excluded since browsers won't let us re-populate a <input type="file"> programmatically.
+const DRAFT_FIELD_KEYS = [
+  "fullName",
+  "phone",
+  "email",
+  "universityName",
+  "department",
+  "gender",
+  "studentCategory",
+  "studentIdOrNid",
+  "category",
+  "bodybuildingClass",
+  "physiqueClass",
+  "juniorPhysiqueClass",
+  "denimClass",
+  "rightHandConfirmed",
+  "declarationAccepted",
+  "bloodGroup",
+  "paymentMethod",
+  "paymentSenderNumber",
+  "transactionId",
+] as const;
+
+function draftKey(eventType: string) {
+  return `babbf-2026-draft-${eventType}`;
+}
+
+function readDraft(eventType: string): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(draftKey(eventType));
+    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
 
 const req = (
   <span className="text-[color:var(--color-error)]" aria-hidden>
@@ -154,10 +192,15 @@ function DocumentField({
 export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType }) {
   const [state, formAction, pending] = useActionState(submitBabbfRegistration, initial);
   const isArmwrestling = eventType === "armwrestling";
-  const fv = state?.fieldValues ?? {};
+  const [draft] = useState(() => readDraft(eventType));
+  // Field echo from a failed server-action attempt wins over the localStorage draft (it's
+  // fresher — includes whatever was just typed in this same attempt); the draft only fills
+  // in on first load, e.g. after a refresh where React state (and the error echo) is gone.
+  const fv = { ...draft, ...(state?.fieldValues ?? {}) };
   const fe = state?.fieldErrors ?? {};
 
   const staged = state?.stagedDocumentUrls ?? {};
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [studentCategory, setStudentCategory] = useState<string>(fv.studentCategory ?? "university");
   const categoryOptions = babbfWeightCategoriesFor(studentCategory);
@@ -168,6 +211,11 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
   useEffect(() => {
     if (state?.success) {
       toast.success("Registration submitted");
+      try {
+        window.localStorage.removeItem(draftKey(eventType));
+      } catch {
+        // ignore
+      }
       return;
     }
     if (state?.error) {
@@ -181,6 +229,45 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+
+  // Restores a saved draft after mount. Doing this via defaultValue alone wouldn't work: the
+  // server-rendered HTML has no draft (localStorage isn't available server-side), and React
+  // never re-applies defaultValue once a DOM node exists, so hydration would leave the fields
+  // blank. Setting .value imperatively here works regardless of that timing. Skipped when a real
+  // server-action error just came back — those fieldValues (already merged into fv) are newer.
+  useEffect(() => {
+    if (!formRef.current || state?.fieldValues) return;
+    const form = formRef.current;
+    for (const key of DRAFT_FIELD_KEYS) {
+      const val = draft[key];
+      if (!val) continue;
+      const field = form.elements.namedItem(key);
+      if (field instanceof HTMLInputElement && field.type === "checkbox") {
+        field.checked = val === "true";
+      } else if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+        field.value = val;
+      }
+    }
+    if (draft.studentCategory) setStudentCategory(draft.studentCategory);
+    if (draft.paymentMethod) setPaymentMethod(draft.paymentMethod);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Saves everything typed so far to localStorage on every keystroke/selection — so a refresh,
+  // a closed tab, or a confusing error never wipes out what the person already filled in.
+  const saveDraft = () => {
+    if (!formRef.current) return;
+    try {
+      const fd = new FormData(formRef.current);
+      const out: Record<string, string> = {};
+      for (const key of DRAFT_FIELD_KEYS) {
+        out[key] = fd.get(key)?.toString() ?? "";
+      }
+      window.localStorage.setItem(draftKey(eventType), JSON.stringify(out));
+    } catch {
+      // ignore — localStorage unavailable (private mode, etc.); draft is a convenience, not critical
+    }
+  };
 
   if (state?.success) {
     return (
@@ -200,7 +287,7 @@ export function BabbfRegistrationForm({ eventType }: { eventType: BabbfEventType
   }
 
   return (
-    <form action={formAction} className="mx-auto max-w-3xl space-y-6">
+    <form ref={formRef} action={formAction} onChange={saveDraft} className="mx-auto max-w-3xl space-y-6">
       {state?.error && (
         <div
           className="rounded-[var(--radius-md)] border border-[color:color-mix(in_srgb,var(--color-error)_35%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-error)_8%,var(--color-surface))] px-3 py-2 text-small text-[color:var(--color-error)]"
