@@ -47,6 +47,21 @@ export default async function AdminBabbfRegistrationsPage() {
           Export .xlsx
         </a>
       </div>
+      {!error && (
+        <div className="mt-4 flex gap-4">
+          <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
+            <p className="text-xs uppercase tracking-wide text-muted">Total registered</p>
+            <p className="mt-0.5 text-2xl font-bold text-stone-900 dark:text-stone-50">{sorted.length}</p>
+          </div>
+          <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
+            <p className="text-xs uppercase tracking-wide text-muted">Checked in</p>
+            <p className="mt-0.5 text-2xl font-bold text-green-700 dark:text-green-400">
+              {sorted.filter((r) => r.checkedInAt).length}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="mt-8 space-y-3">
         {error && <EmptyState title="Error" description={error} />}
         {sorted.length === 0 && !error && (
