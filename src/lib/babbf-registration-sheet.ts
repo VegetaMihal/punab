@@ -121,6 +121,7 @@ export async function appendBabbfRegistrationRow(
         insertDataOption: "INSERT_ROWS",
         requestBody: { values: [row] },
       });
+      invalidateBabbfRegistrationCache();
       return { ok: true };
     } catch {
       // First-ever write for this tab (or header missing) — set it up, then retry once.
@@ -132,6 +133,7 @@ export async function appendBabbfRegistrationRow(
         insertDataOption: "INSERT_ROWS",
         requestBody: { values: [row] },
       });
+      invalidateBabbfRegistrationCache();
       return { ok: true };
     }
   } catch (e) {
@@ -189,32 +191,40 @@ function rowsFromValues(values: string[][] | undefined | null): BabbfRegistratio
   return rows;
 }
 
-/** Single read call (no header/tab existence check — that only matters on first-ever write) so repeated
- * page loads don't burn the Sheets API "read requests per minute" quota. */
+/** Delegates to the cached batchListBabbfRegistrations (which reads both tabs anyway) instead of
+ * issuing its own single-tab read — one shared cache instead of two independent read paths. */
 export async function listBabbfRegistrations(
   eventType: BabbfSheetEventType
 ): Promise<{ ok: true; rows: BabbfRegistrationRow[] } | { ok: false; message: string }> {
-  try {
-    const { sheets, spreadsheetId } = await getSheetsClient();
-    const q = quoteBabbfSheetTab(eventType);
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${q}!A2:${BABBF_LAST_COL}`,
-    });
-    return { ok: true, rows: rowsFromValues(res.data.values as string[][] | undefined) };
-  } catch (e) {
-    const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
-    return { ok: false, message: `${raw}${rowErrorHint(raw, eventType)}` };
-  }
+  const batch = await batchListBabbfRegistrations();
+  if (!batch.ok) return batch;
+  return { ok: true, rows: batch.rowsByEventType[eventType] };
 }
 
 const ALL_EVENT_TYPES = Object.keys(BABBF_SHEET_TABS) as BabbfSheetEventType[];
 
+// Short-lived cache for the sheet read that backs nearly every BABBF page/action (admin list,
+// ticket lookups, check-in scans, duplicate-email checks). A registration-day burst of scans
+// and page loads would otherwise re-read the whole sheet on every request and blow through
+// Google's per-minute read quota (this happened during the July Award event). A warm serverless
+// instance reuses this module-level cache across requests, collapsing a burst into ~1 read per
+// TTL window. It's cleared immediately after any write so nobody acts on stale check-in state.
+const BATCH_CACHE_TTL_MS = 10_000;
+let batchCache: { data: Record<BabbfSheetEventType, BabbfRegistrationRow[]>; expiresAt: number } | null = null;
+
+export function invalidateBabbfRegistrationCache(): void {
+  batchCache = null;
+}
+
 /** Fetches both event tabs in a single Sheets API call (values.batchGet counts as one read request
- * regardless of range count) — use this instead of looping listBabbfRegistrations per event type. */
+ * regardless of range count) — use this instead of looping listBabbfRegistrations per event type.
+ * Served from a short TTL cache when possible; see comment on batchCache above. */
 export async function batchListBabbfRegistrations(): Promise<
   { ok: true; rowsByEventType: Record<BabbfSheetEventType, BabbfRegistrationRow[]> } | { ok: false; message: string }
 > {
+  if (batchCache && batchCache.expiresAt > Date.now()) {
+    return { ok: true, rowsByEventType: batchCache.data };
+  }
   try {
     const { sheets, spreadsheetId } = await getSheetsClient();
     const ranges = ALL_EVENT_TYPES.map((eventType) => `${quoteBabbfSheetTab(eventType)}!A2:${BABBF_LAST_COL}`);
@@ -224,6 +234,7 @@ export async function batchListBabbfRegistrations(): Promise<
     ALL_EVENT_TYPES.forEach((eventType, i) => {
       rowsByEventType[eventType] = rowsFromValues(valueRanges[i]?.values as string[][] | undefined);
     });
+    batchCache = { data: rowsByEventType, expiresAt: Date.now() + BATCH_CACHE_TTL_MS };
     return { ok: true, rowsByEventType };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
@@ -287,6 +298,7 @@ export async function updateBabbfRegistrationStatus(
       });
     }
 
+    invalidateBabbfRegistrationCache();
     return { ok: true, row: found.row, sheetEventType: found.sheetEventType };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
@@ -335,6 +347,7 @@ export async function markBabbfCheckedIn(
       });
     }
 
+    invalidateBabbfRegistrationCache();
     return { ok: true, row: found.row, sheetEventType: found.sheetEventType, alreadyCheckedIn: false, checkedInAt };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
@@ -369,6 +382,7 @@ export async function markBabbfCheckedOut(
       });
     }
 
+    invalidateBabbfRegistrationCache();
     return { ok: true, row: found.row, sheetEventType: found.sheetEventType };
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Google Sheets request failed.";
