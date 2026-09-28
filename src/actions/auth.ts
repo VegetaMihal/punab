@@ -76,13 +76,7 @@ export async function signIn(
     try {
       const row = authRow;
       if (row?.role?.toLowerCase() === "admin") {
-        const access = resolveAdminAccess({
-          role: "admin",
-          admin_scopes: (row.admin_scopes ?? []).filter(
-            (s): s is "invitations" | "certificates" | "july_award_cards" =>
-              s === "invitations" || s === "certificates" || s === "july_award_cards",
-          ),
-        });
+        const access = resolveAdminAccess({ role: "admin", admin_scopes: row.admin_scopes ?? [] });
         destination = access.isFullAdmin ? "/admin" : defaultAdminHome(access);
       }
     } catch {

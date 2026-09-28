@@ -1,3 +1,4 @@
+import { parseAdminScopes } from "@/lib/auth/admin-access";
 import type {
   Certificate,
   CertificateEmailLog,
@@ -121,16 +122,7 @@ export function toProfile(p: PrismaProfile): Profile {
     full_name: p.full_name,
     email: p.email,
     role: p.role as Profile["role"],
-    admin_scopes: (p.admin_scopes ?? []).filter(
-      (s): s is Profile["admin_scopes"][number] =>
-        s === "invitations" ||
-        s === "certificates" ||
-        s === "july_award_cards" ||
-        s === "july_award_participants" ||
-        s === "monitoring_form" ||
-        s === "mun_form" ||
-        s === "org_portal",
-    ),
+    admin_scopes: parseAdminScopes(p.admin_scopes),
     admin_title: (p.admin_title === "central_forum_secretary" || p.admin_title === "central_committee_officer")
       ? p.admin_title
       : null,
