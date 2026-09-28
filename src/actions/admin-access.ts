@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { ADMIN_ROLES } from "@/lib/auth/admin-access";
 import { assertFullAdmin } from "@/lib/auth/require-admin";
 import {
   getApprovedNonAdminProfile,
   getProfileByEmail,
+  getProfileById,
   searchApprovedMembersNotAdmin,
   setProfileAdminAccess,
   setProfileAdminAccessByEmail,
@@ -16,20 +18,11 @@ import {
 } from "@/lib/validations/admin-access";
 import type { AdminScope } from "@/types/database";
 
-const scopesFromForm = (
-  invitations: boolean,
-  certificates: boolean,
-  julyAwardCards: boolean,
-  julyAwardParticipants: boolean,
-  orgPortal: boolean
-): AdminScope[] => {
-  const scopes: AdminScope[] = [];
-  if (invitations) scopes.push("invitations");
-  if (certificates) scopes.push("certificates");
-  if (julyAwardCards) scopes.push("july_award_cards");
-  if (julyAwardParticipants) scopes.push("july_award_participants");
-  if (orgPortal) scopes.push("org_portal");
-  return scopes;
+const resolveScopes = (role: string, customScopes: AdminScope[], orgPortal: boolean): AdminScope[] => {
+  const preset = ADMIN_ROLES.find((r) => r.key === role);
+  const set = new Set(preset ? preset.scopes : customScopes);
+  if (orgPortal) set.add("org_portal");
+  return [...set];
 };
 
 export type AdminAccessActionState = { error?: string; success?: boolean };
@@ -49,10 +42,8 @@ export async function grantAdminAccessAction(
     await assertFullAdmin();
     const parsed = grantAdminAccessSchema.safeParse({
       memberId: formData.get("memberId"),
-      invitations: formData.get("invitations") === "on",
-      certificates: formData.get("certificates") === "on",
-      julyAwardCards: formData.get("julyAwardCards") === "on",
-      julyAwardParticipants: formData.get("julyAwardParticipants") === "on",
+      role: formData.get("role"),
+      scopes: formData.getAll("scopes"),
       orgPortal: formData.get("orgPortal") === "on",
       adminTitle: formData.get("adminTitle"),
     });
@@ -66,13 +57,7 @@ export async function grantAdminAccessAction(
     }
     await setProfileAdminAccess(candidate.id, {
       role: "admin",
-      admin_scopes: scopesFromForm(
-        parsed.data.invitations,
-        parsed.data.certificates,
-        parsed.data.julyAwardCards,
-        parsed.data.julyAwardParticipants,
-        parsed.data.orgPortal
-      ),
+      admin_scopes: resolveScopes(parsed.data.role, parsed.data.scopes, parsed.data.orgPortal),
       admin_title: parsed.data.adminTitle ?? null,
     });
     revalidatePath("/admin/access");
@@ -102,50 +87,49 @@ export async function revokeAdminAccessByEmailAction(
     }
     await setProfileAdminAccessByEmail(email, { role: "member", admin_scopes: [] });
     revalidatePath("/admin/access");
+    revalidatePath(`/admin/access/${profile.id}`);
     return { success: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
 }
 
-export async function updateAdminAccessByEmailAction(
+/** Detail-page editor for one admin — own action, own state, isolated from every other admin's form. */
+export async function updateAdminAccessByIdAction(
   _prev: AdminAccessActionState,
   formData: FormData,
 ): Promise<AdminAccessActionState> {
   try {
     const { user } = await assertFullAdmin();
-    const parsed = updateAdminAccessSchema.safeParse({
-      email: formData.get("email"),
-      invitations: formData.get("invitations") === "on",
-      certificates: formData.get("certificates") === "on",
-      julyAwardCards: formData.get("julyAwardCards") === "on",
-      julyAwardParticipants: formData.get("julyAwardParticipants") === "on",
-      orgPortal: formData.get("orgPortal") === "on",
-      adminTitle: formData.get("adminTitle"),
-    });
+    const profileId = formData.get("profileId")?.toString();
+    if (!profileId) {
+      return { error: "Missing account" };
+    }
+    const parsed = updateAdminAccessSchema
+      .omit({ email: true })
+      .safeParse({
+        role: formData.get("role"),
+        scopes: formData.getAll("scopes"),
+        orgPortal: formData.get("orgPortal") === "on",
+        adminTitle: formData.get("adminTitle"),
+      });
     if (!parsed.success) {
       return { error: "Invalid input" };
     }
-    const email = parsed.data.email.toLowerCase();
-    const profile = await getProfileByEmail(email);
+    const profile = await getProfileById(profileId);
     if (!profile) {
       return { error: "Account not found" };
     }
     if (profile.id === user.id) {
       return { error: "Your primary admin account cannot be changed here" };
     }
-    await setProfileAdminAccessByEmail(email, {
+    await setProfileAdminAccess(profileId, {
       role: "admin",
-      admin_scopes: scopesFromForm(
-        parsed.data.invitations,
-        parsed.data.certificates,
-        parsed.data.julyAwardCards,
-        parsed.data.julyAwardParticipants,
-        parsed.data.orgPortal
-      ),
+      admin_scopes: resolveScopes(parsed.data.role, parsed.data.scopes, parsed.data.orgPortal),
       admin_title: parsed.data.adminTitle ?? null,
     });
     revalidatePath("/admin/access");
+    revalidatePath(`/admin/access/${profileId}`);
     return { success: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };

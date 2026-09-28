@@ -1,6 +1,6 @@
 "use server";
 
-import { assertFullAdmin } from "@/lib/auth/require-admin";
+import { assertAdminScope } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
 import {
   getGalleryAlbumAdmin as repoGetGalleryAlbumAdmin,
@@ -37,7 +37,7 @@ export type CmsResult = { success?: boolean; error?: string; id?: string };
 
 export async function saveSiteSettings(entries: Record<string, string>): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("site_content");
     await upsertSiteSettings(entries);
     revalidatePath("/", "layout");
     revalidatePath("/about");
@@ -51,7 +51,7 @@ export async function saveSiteSettings(entries: Record<string, string>): Promise
 
 export async function uploadSiteAsset(formData: FormData): Promise<{ url?: string; error?: string }> {
   try {
-    const { user } = await assertFullAdmin();
+    const { user } = await assertAdminScope("site_content");
     const storage = createServiceRoleSupabase();
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) {
@@ -77,7 +77,7 @@ export async function uploadLeadershipPhoto(
   formData: FormData
 ): Promise<{ url?: string; error?: string; storagePath?: string }> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("leadership");
     const storage = createServiceRoleSupabase();
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) {
@@ -120,7 +120,7 @@ export async function uploadForumMemberPhoto(
   formData: FormData
 ): Promise<{ url?: string; error?: string; storagePath?: string }> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
     const storage = createServiceRoleSupabase();
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) {
@@ -164,7 +164,7 @@ export async function uploadForumLogo(
   formData: FormData
 ): Promise<{ url?: string; error?: string; storagePath?: string }> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
     const storage = createServiceRoleSupabase();
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) {
@@ -204,7 +204,7 @@ export async function uploadEventBanner(
   formData: FormData
 ): Promise<{ url?: string; error?: string; storagePath?: string }> {
   try {
-    const { user } = await assertFullAdmin();
+    const { user } = await assertAdminScope("events");
     const storage = createServiceRoleSupabase();
     const file = formData.get("file") as File | null;
     if (!file || file.size === 0) {
@@ -244,12 +244,12 @@ export async function uploadEventBanner(
 }
 
 export async function listGalleryAlbumsAdmin(): Promise<GalleryAlbum[]> {
-  await assertFullAdmin();
+  await assertAdminScope("archive");
   return repoListGalleryAlbumsAdmin();
 }
 
 export async function getGalleryAlbumAdmin(id: string): Promise<GalleryAlbum | null> {
-  await assertFullAdmin();
+  await assertAdminScope("archive");
   return repoGetGalleryAlbumAdmin(id);
 }
 
@@ -258,7 +258,7 @@ export async function upsertGalleryAlbum(
   formData: FormData
 ): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     const id = formData.get("id")?.toString();
     const title = formData.get("title")?.toString()?.trim();
     if (!title) {
@@ -299,7 +299,7 @@ export async function upsertGalleryAlbum(
 
 export async function deleteGalleryAlbum(id: string): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     const storage = createServiceRoleSupabase();
     const bucket = getGalleryBucket();
     const imgs = await prisma.galleryImage.findMany({
@@ -327,7 +327,7 @@ export async function uploadGalleryImages(formData: FormData): Promise<CmsResult
     if (!albumId) {
       return { error: "Missing album" };
     }
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     const storage = createServiceRoleSupabase();
     const bucket = getGalleryBucket();
     const files = formData.getAll("files") as File[];
@@ -387,7 +387,7 @@ export async function createGalleryImageRecord(input: {
   isFeatured?: boolean;
 }): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     if (!input.albumId || !input.storagePath || !input.publicUrl) {
       return { error: "Missing image metadata" };
     }
@@ -430,7 +430,7 @@ export async function updateGalleryImage(
   }
 ): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     const img = await prisma.galleryImage.findUnique({
       where: { id },
       select: { album_id: true },
@@ -472,7 +472,7 @@ export async function updateGalleryImage(
 
 export async function deleteGalleryImage(id: string): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("archive");
     const storage = createServiceRoleSupabase();
     const bucket = getGalleryBucket();
     const img = await prisma.galleryImage.findUnique({
@@ -496,7 +496,7 @@ export async function savePage(
   formData: FormData
 ): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("pages");
     const id = formData.get("id")?.toString();
     const title = formData.get("title")?.toString()?.trim();
     const slug = slugify(formData.get("slug")?.toString() || title || "page");
@@ -530,7 +530,7 @@ export async function savePage(
 
 export async function deletePage(id: string): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("pages");
     const row = await prisma.page.findUnique({ where: { id }, select: { slug: true } });
     await prisma.page.delete({ where: { id } });
     revalidatePath("/admin/pages");
@@ -544,23 +544,23 @@ export async function deletePage(id: string): Promise<CmsResult> {
 }
 
 export async function listPagesAdmin(): Promise<PageRow[]> {
-  await assertFullAdmin();
+  await assertAdminScope("pages");
   return repoListPagesAdmin();
 }
 
 export async function getPageAdmin(id: string): Promise<PageRow | null> {
-  await assertFullAdmin();
+  await assertAdminScope("pages");
   return repoGetPageAdmin(id);
 }
 
 export async function listGalleryImagesAdmin(albumId: string) {
-  await assertFullAdmin();
+  await assertAdminScope("archive");
   return repoListGalleryImagesAdmin(albumId);
 }
 
 export async function setJulyAwardRegistrationOpen(open: boolean): Promise<CmsResult> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("site_content");
     await upsertSiteSettings({ "july_award.registration_open": open ? "true" : "false" });
     revalidatePath("/july-award-2026/participants/register");
     return { success: true };

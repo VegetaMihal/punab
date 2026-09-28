@@ -1,6 +1,6 @@
 "use server";
 
-import { assertFullAdmin } from "@/lib/auth/require-admin";
+import { assertAdminScope } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
 import { HONORARY_LEADERSHIP_LAYER_SLUG } from "@/lib/leadership-constants";
 import {
@@ -40,7 +40,7 @@ export type AdminActionState = { error?: string; success?: boolean };
 
 export async function setMembershipStatus(profileId: string, status: MembershipStatus) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("members");
     await persistMembershipStatus(profileId, status);
     revalidatePath("/admin/members");
     revalidatePath("/admin");
@@ -56,7 +56,7 @@ export async function setMembershipStatus(profileId: string, status: MembershipS
  */
 export async function approveMemberAccount(profileId: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("members");
 
     const profile = await prisma.profile.findUnique({
       where: { id: profileId },
@@ -112,7 +112,7 @@ export async function upsertNotice(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("notices");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -160,7 +160,7 @@ export async function upsertNotice(
 
 export async function deleteNotice(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("notices");
     await prisma.notice.delete({ where: { id } });
     revalidatePath("/admin/notices");
     revalidatePath("/notices");
@@ -175,7 +175,7 @@ export async function upsertEvent(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("events");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -232,7 +232,7 @@ export async function upsertEvent(
 
 export async function deleteEvent(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("events");
     await prisma.event.delete({ where: { id } });
     revalidatePath("/admin/events");
     revalidatePath("/events");
@@ -247,7 +247,7 @@ export async function upsertLeadership(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("leadership");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -291,7 +291,7 @@ export async function upsertLeadership(
 
 export async function deleteLeadership(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("leadership");
     await prisma.leadershipMember.delete({ where: { id } });
     revalidatePath("/admin/leadership");
     revalidatePath("/admin/leadership/layers");
@@ -309,7 +309,7 @@ export async function upsertLeadershipLayer(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("leadership_layers");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -357,7 +357,7 @@ export async function upsertLeadershipLayer(
 
 export async function deleteLeadershipLayer(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("leadership_layers");
     const row = await prisma.leadershipLayer.findUnique({ where: { id }, select: { slug: true } });
     if (row?.slug === HONORARY_LEADERSHIP_LAYER_SLUG) {
       return { error: "This reserved layer cannot be deleted. It powers the Honorary Position page." };
@@ -379,7 +379,7 @@ export async function upsertChapter(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("chapters");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -423,7 +423,7 @@ export async function upsertChapter(
 
 export async function deleteChapter(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("chapters");
     await prisma.chapter.delete({ where: { id } });
     revalidatePath("/admin/chapters");
     revalidatePath("/chapters");
@@ -438,7 +438,7 @@ export async function upsertUniversity(
   formData: FormData
 ): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("universities");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -476,7 +476,7 @@ export async function upsertUniversity(
 
 export async function deleteUniversity(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("universities");
     await prisma.university.delete({ where: { id } });
     revalidatePath("/admin/universities");
     return { success: true };
@@ -496,7 +496,7 @@ async function revalidateForumPublicPaths(forumId: string) {
 
 export async function upsertForum(_prev: AdminActionState, formData: FormData): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -542,7 +542,7 @@ export async function upsertForum(_prev: AdminActionState, formData: FormData): 
 
 export async function deleteForum(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
     const row = await prisma.forum.findUnique({ where: { id }, select: { slug: true } });
     await prisma.forum.delete({ where: { id } });
     if (row) {
@@ -559,7 +559,7 @@ export async function deleteForum(id: string) {
 
 export async function upsertForumLabel(_prev: AdminActionState, formData: FormData): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -594,7 +594,7 @@ export async function upsertForumLabel(_prev: AdminActionState, formData: FormDa
 
 export async function deleteForumLabel(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
     const row = await prisma.forumLabel.findUnique({ where: { id }, select: { forum_id: true } });
     if (!row) {
       return { error: "Not found" };
@@ -611,7 +611,7 @@ export async function deleteForumLabel(id: string) {
 
 export async function upsertForumMember(_prev: AdminActionState, formData: FormData): Promise<AdminActionState> {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Unauthorized" };
   }
@@ -652,7 +652,7 @@ export async function upsertForumMember(_prev: AdminActionState, formData: FormD
 
 export async function deleteForumMember(id: string) {
   try {
-    await assertFullAdmin();
+    await assertAdminScope("forums");
     const row = await prisma.forumMember.findUnique({ where: { id }, select: { forum_id: true } });
     if (!row) {
       return { error: "Not found" };

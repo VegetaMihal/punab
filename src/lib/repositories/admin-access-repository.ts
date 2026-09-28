@@ -1,17 +1,9 @@
 import { toProfile } from "@/lib/db/mappers";
 import { prisma } from "@/lib/db/prisma";
+import { GRANTABLE_ADMIN_SCOPES } from "@/lib/auth/admin-access";
 import type { AdminScope, AdminTitle, Profile } from "@/types/database";
 
-const ALLOWED = new Set<AdminScope>([
-  "invitations",
-  "certificates",
-  "july_award_cards",
-  "july_award_participants",
-  "monitoring_form",
-  "mun_form",
-  "babbf_registrations",
-  "org_portal",
-]);
+const ALLOWED = new Set<AdminScope>([...GRANTABLE_ADMIN_SCOPES, "org_portal"]);
 
 function normalizeScopes(scopes: AdminScope[]): AdminScope[] {
   return [...new Set(scopes.filter((s) => ALLOWED.has(s)))];
@@ -29,6 +21,11 @@ export async function getProfileByEmail(email: string): Promise<Profile | null> 
   const row = await prisma.profile.findFirst({
     where: { email: { equals: email, mode: "insensitive" } },
   });
+  return row ? toProfile(row) : null;
+}
+
+export async function getProfileById(id: string): Promise<Profile | null> {
+  const row = await prisma.profile.findUnique({ where: { id } });
   return row ? toProfile(row) : null;
 }
 
@@ -60,10 +57,9 @@ export async function setProfileAdminAccess(
   profileId: string,
   input: { role: "admin" | "member"; admin_scopes: AdminScope[]; admin_title?: AdminTitle | null },
 ): Promise<Profile | null> {
-  const wantsTitle = input.role === "admin" && Boolean(input.admin_title);
-  // Picking an Org Portal job title implies the org_portal scope — no need to also tick the checkbox.
-  const rawScopes = wantsTitle ? [...input.admin_scopes, "org_portal" as AdminScope] : input.admin_scopes;
-  const scopes = input.role === "admin" ? normalizeScopes(rawScopes) : [];
+  // What the caller passed is what gets stored — no implicit scope injection, so a re-save can never
+  // silently turn a full admin (empty scopes) into a scoped one.
+  const scopes = input.role === "admin" ? normalizeScopes(input.admin_scopes) : [];
   const title = input.role === "admin" && scopes.includes("org_portal") ? (input.admin_title ?? null) : null;
   const row = await prisma.profile.update({
     where: { id: profileId },

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { approveMemberAccount, setMembershipStatus } from "@/actions/admin";
-import { resolveAdminAccess } from "@/lib/auth/admin-access";
+import { ADMIN_NAV_ITEMS, resolveAdminAccess } from "@/lib/auth/admin-access";
 import { accountStatusLabel } from "@/lib/org/labels";
 import type { AdminTitle, MembershipStatus, Profile } from "@/types/database";
 
@@ -23,14 +23,10 @@ function roleLabel(profile: Profile, orgRoles: Record<string, string>): string {
   if (profile.role === "admin") {
     const access = resolveAdminAccess(profile);
     if (access.isFullAdmin) return "Full admin";
-    const parts: string[] = [];
-    if (access.canInvitations) parts.push("Invitations");
-    if (access.canCertificates) parts.push("Certificates");
-    if (access.canJulyAwardCards) parts.push("July Award cards");
-    if (access.canJulyAwardParticipants) parts.push("July Award participants");
-    if (access.canMonitoringForm) parts.push("Monitoring form");
-    if (access.canMunForm) parts.push("MUN form");
-    if (access.canOrgPortal) {
+    const parts: string[] = ADMIN_NAV_ITEMS.filter((i) => i.scope && access.hasScope(i.scope)).map(
+      (i) => i.label
+    );
+    if (access.hasScope("org_portal")) {
       parts.push(profile.admin_title ? ADMIN_TITLE_LABELS[profile.admin_title] : "Org Portal");
     }
     return parts.length > 0 ? parts.join(", ") : "Admin (no scopes)";

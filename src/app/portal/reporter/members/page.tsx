@@ -11,7 +11,7 @@ export default async function ReporterMembersHubPage() {
   const { user, adminAccess } = await getSessionProfile();
   if (!user) redirect("/login");
 
-  const forums = adminAccess?.canOrgPortal
+  const forums = adminAccess?.hasScope("org_portal")
     ? (await listForums()).map((f) => ({ forumId: f.id, forumName: f.name, forumSlug: f.slug, forumStatus: f.status }))
     : (await listMyReporterForums(user.id))
         .filter((f) => f.reporterType === "primary")

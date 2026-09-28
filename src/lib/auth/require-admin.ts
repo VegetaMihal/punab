@@ -68,20 +68,19 @@ export async function assertFullAdmin(): Promise<AdminAuthContext> {
   return ctx;
 }
 
-/** Scoped area: invitations, certificates, July Award cards, or July Award participants (full admin also allowed). */
+/** Scoped area (full admin also allowed) — scope keys mirror ADMIN_NAV_ITEMS in admin-access.ts. */
 export async function assertAdminScope(scope: AdminScope): Promise<AdminAuthContext> {
   const ctx = await loadAdminContext();
-  const allowed = {
-    invitations: ctx.access.canInvitations,
-    certificates: ctx.access.canCertificates,
-    july_award_cards: ctx.access.canJulyAwardCards,
-    july_award_participants: ctx.access.canJulyAwardParticipants,
-    monitoring_form: ctx.access.canMonitoringForm,
-    mun_form: ctx.access.canMunForm,
-    babbf_registrations: ctx.access.canBabbfRegistrations,
-    org_portal: ctx.access.canOrgPortal,
-  }[scope];
-  if (!allowed) {
+  if (!ctx.access.hasScope(scope)) {
+    throw new Error("Forbidden");
+  }
+  return ctx;
+}
+
+/** Like assertAdminScope but passes if any of the given scopes is held (e.g. shared actions). */
+export async function assertAdminAnyScope(scopes: AdminScope[]): Promise<AdminAuthContext> {
+  const ctx = await loadAdminContext();
+  if (!scopes.some((s) => ctx.access.hasScope(s))) {
     throw new Error("Forbidden");
   }
   return ctx;

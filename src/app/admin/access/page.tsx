@@ -8,8 +8,10 @@ export const metadata = {
   title: "Admin access",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminAccessPage() {
-  const { user, profile, isFullAdmin } = await getSessionProfile();
+  const { user, isFullAdmin } = await getSessionProfile();
   if (!isFullAdmin) {
     redirect("/dashboard?notice=admin-access");
   }
@@ -26,13 +28,12 @@ export default async function AdminAccessPage() {
     <div>
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50">Admin access</h1>
       <p className="mt-1 text-sm text-muted">
-        Grant admin access to an already-approved member. Leave all scopes unchecked for full admin.
+        Grant admin access to an already-approved member, then manage each admin&apos;s role from their
+        own page.
       </p>
       <div className="mt-8 rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
         {error && <EmptyState title="Could not load admins" description={error} />}
-        {!error && user && (
-          <AdminAccessManager admins={admins} currentUserEmail={profile?.email ?? user.email ?? ""} />
-        )}
+        {!error && user && <AdminAccessManager admins={admins} />}
       </div>
     </div>
   );

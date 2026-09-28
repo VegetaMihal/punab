@@ -68,15 +68,9 @@ export type BloodHeroRequestRow = {
 export type MembershipStatus = "pending" | "approved" | "rejected";
 export type AccountStatus = "pending_activation" | "active" | "suspended" | "cancelled" | "alumni";
 export type ProfileRole = "admin" | "member";
-export type AdminScope =
-  | "invitations"
-  | "certificates"
-  | "july_award_cards"
-  | "july_award_participants"
-  | "monitoring_form"
-  | "mun_form"
-  | "babbf_registrations"
-  | "org_portal";
+// Derived from ADMIN_NAV_ITEMS — add a sidebar row there and it becomes grantable everywhere.
+import type { AdminScope } from "@/lib/auth/admin-access";
+export type { AdminScope };
 /** Job title for an org_portal-scoped admin — picks between two SRD titles carrying the same permission scope. */
 export type AdminTitle = "central_forum_secretary" | "central_committee_officer";
 

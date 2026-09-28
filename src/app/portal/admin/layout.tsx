@@ -11,7 +11,7 @@ export default async function OrgPortalAdminLayout({ children }: { children: Rea
   if (profile?.first_login_required) {
     redirect("/auth/change-password");
   }
-  if (!adminAccess?.canOrgPortal) {
+  if (!adminAccess?.hasScope("org_portal")) {
     redirect("/dashboard?notice=org-portal-access");
   }
 

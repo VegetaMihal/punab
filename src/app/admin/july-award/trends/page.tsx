@@ -16,7 +16,7 @@ export const metadata = {
 };
 
 export default async function AdminJulyAwardTrendsPage() {
-  await assertAdminScope("july_award_participants");
+  await assertAdminScope("july_award_trends");
   const result = await listJulyParticipantRegistrationRows();
 
   if (!result.ok) {
