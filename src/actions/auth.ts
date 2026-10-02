@@ -10,7 +10,13 @@ import {
   completeFirstLoginPasswordChange as repoCompleteFirstLoginPasswordChange,
   markWelcomeSeen,
 } from "@/lib/repositories/profiles-repository";
-import { firstLoginPasswordSchema, loginSchema, signupSchema } from "@/lib/validations/auth";
+import {
+  firstLoginPasswordSchema,
+  loginSchema,
+  requestPasswordResetSchema,
+  resetPasswordSchema,
+  signupSchema,
+} from "@/lib/validations/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -220,4 +226,57 @@ export async function completeFirstLoginPasswordChange(
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
+}
+
+/** Forgot-password: send Supabase recovery email. Always returns success to avoid email enumeration. */
+export async function requestPasswordReset(
+  _prev: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = requestPasswordResetSchema.safeParse({
+    email: formData.get("email"),
+  });
+  if (!parsed.success) {
+    const f = parsed.error.flatten().fieldErrors;
+    return { error: f.email?.[0] ?? parsed.error.message };
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://punab.com";
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${appUrl}/auth/callback?next=/auth/reset-password`,
+  });
+
+  return { success: true };
+}
+
+/** Completes password reset from the recovery session created by the emailed link. */
+export async function completePasswordReset(
+  _prev: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+  if (!parsed.success) {
+    const f = parsed.error.flatten().fieldErrors;
+    return { error: f.password?.[0] ?? f.confirmPassword?.[0] ?? parsed.error.message };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Reset link expired or already used. Please request a new one." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/login");
 }
