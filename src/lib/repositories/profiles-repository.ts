@@ -113,6 +113,18 @@ export async function completeFirstLoginPasswordChange(profileId: string): Promi
   });
 }
 
+/** Password reset proves inbox ownership, so it also satisfies a pending AUTH-003 first-login change. */
+export async function completeFirstLoginAfterReset(profileId: string): Promise<void> {
+  await prisma.profile.updateMany({
+    where: { id: profileId, first_login_required: true },
+    data: {
+      account_status: "active",
+      first_login_required: false,
+      temp_password_expires_at: null,
+    },
+  });
+}
+
 export async function markWelcomeSeen(profileId: string): Promise<void> {
   await prisma.profile.update({
     where: { id: profileId },

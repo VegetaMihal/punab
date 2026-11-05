@@ -8,6 +8,7 @@ import { createServiceRoleSupabase } from "@/lib/supabase/service-role";
 import {
   upsertProfileAfterSignup,
   completeFirstLoginPasswordChange as repoCompleteFirstLoginPasswordChange,
+  completeFirstLoginAfterReset,
   markWelcomeSeen,
 } from "@/lib/repositories/profiles-repository";
 import {
@@ -18,6 +19,7 @@ import {
   signupSchema,
 } from "@/lib/validations/auth";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export type AuthActionState = {
@@ -59,7 +61,12 @@ export async function signIn(
   revalidatePath("/", "layout");
 
   const rawRedirect = formData.get("redirect")?.toString().trim() || "/dashboard";
-  const requested = rawRedirect.replace(/\/+$/, "") || "/dashboard";
+  // Same-site paths only — an absolute or protocol-relative value would bounce users off-site after login.
+  const safeRedirect =
+    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") && !rawRedirect.startsWith("/\\")
+      ? rawRedirect
+      : "/dashboard";
+  const requested = safeRedirect.replace(/\/+$/, "") || "/dashboard";
   let destination = requested;
 
   // AUTH-003: temporary password is single-use and time-boxed; force the change screen before anything else.
@@ -241,7 +248,16 @@ export async function requestPasswordReset(
     return { error: f.email?.[0] ?? parsed.error.message };
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://punab.com";
+  // Prefer the host the user is actually on, so a localhost env value never leaks into prod emails.
+  const h = await headers();
+  const forwardedHost = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const appUrl = (
+    h.get("origin") ||
+    (forwardedHost ? `${proto}://${forwardedHost}` : "") ||
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    "https://punab.com"
+  ).replace(/\/$/, "");
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${appUrl}/auth/callback?next=/auth/reset-password`,
@@ -276,6 +292,9 @@ export async function completePasswordReset(
   if (error) {
     return { error: error.message };
   }
+
+  // Otherwise an expired temp password keeps locking the user out even after a successful reset.
+  await completeFirstLoginAfterReset(user.id);
 
   revalidatePath("/", "layout");
   redirect("/login");
