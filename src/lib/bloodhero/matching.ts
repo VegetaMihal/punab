@@ -99,7 +99,7 @@ export async function runBloodHeroMatchingForRequest(
   const district = String(req.district ?? "").trim().toLowerCase();
   const hasRequestCoords =
     typeof req.donation_location_lat === "number" && typeof req.donation_location_lng === "number";
-  const ranked = (donorData ?? [])
+  const candidates = (donorData ?? [])
     .map((d) => {
       const donor = d as DonorRow;
       const hasDonorCoords =
@@ -116,25 +116,37 @@ export async function runBloodHeroMatchingForRequest(
         : false;
       return { donor, distanceKm, districtMatch };
     })
-    .filter((x) => !alreadyNotified.has(x.donor.id))
+    .filter((x) => !alreadyNotified.has(x.donor.id));
+
+  const rankFn = (a: (typeof candidates)[number], b: (typeof candidates)[number]) => {
+    // Same order as SQL 025/027: never-blocked donors first, then distance, district fallback, signup.
+    const aBlocked = a.donor.block_until !== null;
+    const bBlocked = b.donor.block_until !== null;
+    if (aBlocked !== bBlocked) return aBlocked ? 1 : -1;
+    if (aBlocked && bBlocked) {
+      const diff = Date.parse(a.donor.block_until as string) - Date.parse(b.donor.block_until as string);
+      if (diff !== 0) return diff;
+    }
+    if (a.distanceKm !== null && b.distanceKm !== null) return a.distanceKm - b.distanceKm;
+    if (a.distanceKm !== null) return -1;
+    if (b.distanceKm !== null) return 1;
+    if (a.districtMatch && !b.districtMatch) return -1;
+    if (!a.districtMatch && b.districtMatch) return 1;
+    return Date.parse(a.donor.created_at) - Date.parse(b.donor.created_at);
+  };
+
+  let ranked = candidates
     .filter((x) => x.distanceKm === null || x.distanceKm <= BLOODHERO_MAX_MATCH_RADIUS_KM)
-    .sort((a, b) => {
-      // Same order as SQL 025/027: never-blocked donors first, then distance, district fallback, signup.
-      const aBlocked = a.donor.block_until !== null;
-      const bBlocked = b.donor.block_until !== null;
-      if (aBlocked !== bBlocked) return aBlocked ? 1 : -1;
-      if (aBlocked && bBlocked) {
-        const diff = Date.parse(a.donor.block_until as string) - Date.parse(b.donor.block_until as string);
-        if (diff !== 0) return diff;
-      }
-      if (a.distanceKm !== null && b.distanceKm !== null) return a.distanceKm - b.distanceKm;
-      if (a.distanceKm !== null) return -1;
-      if (b.distanceKm !== null) return 1;
-      if (a.districtMatch && !b.districtMatch) return -1;
-      if (!a.districtMatch && b.districtMatch) return 1;
-      return Date.parse(a.donor.created_at) - Date.parse(b.donor.created_at);
-    })
+    .sort(rankFn)
     .slice(0, 15);
+
+  // Low-density district (e.g. rural pool below 25km): fall back to closest donors nationwide
+  // regardless of radius, rather than notifying nobody.
+  let expandedRadius = false;
+  if (ranked.length === 0 && hasRequestCoords) {
+    ranked = candidates.sort(rankFn).slice(0, 15);
+    expandedRadius = ranked.length > 0;
+  }
   const selectedPreview = ranked.slice(0, 5).map((x, idx) => ({
     donor_id: x.donor.id,
     rank: idx + 1,
@@ -184,13 +196,16 @@ export async function runBloodHeroMatchingForRequest(
     {
       request_id: requestId,
       event_type: "donors_selected_for_notification",
-      event_message: `${inserted} donors selected for notification.`,
+      event_message: expandedRadius
+        ? `${inserted} donors selected for notification (expanded beyond ${BLOODHERO_MAX_MATCH_RADIUS_KM}km — none in range).`
+        : `${inserted} donors selected for notification.`,
       metadata: {
         selected_count: inserted,
         request_has_coordinates: hasRequestCoords,
         donor_pool_total: (donorData ?? []).length,
         donor_pool_with_coordinates: donorsWithCoordinates,
         selected_preview: selectedPreview,
+        expanded_radius: expandedRadius,
       },
     },
   ]);
