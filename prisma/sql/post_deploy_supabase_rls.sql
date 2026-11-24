@@ -77,7 +77,11 @@ ALTER TABLE IF EXISTS public.org_activity_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.org_activity_member_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.org_monthly_recommendations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.org_monthly_performance_scores ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.org_audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.org_audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.org_planned_activity_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.org_forum_status_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.org_designation_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.org_promotion_applications ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS org_hierarchy_schemes_no_public_access ON public.org_hierarchy_schemes;
 CREATE POLICY org_hierarchy_schemes_no_public_access ON public.org_hierarchy_schemes FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
@@ -121,5 +125,17 @@ CREATE POLICY org_monthly_recommendations_no_public_access ON public.org_monthly
 DROP POLICY IF EXISTS org_monthly_performance_scores_no_public_access ON public.org_monthly_performance_scores;
 CREATE POLICY org_monthly_performance_scores_no_public_access ON public.org_monthly_performance_scores FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
 
-DROP POLICY IF EXISTS org_audit_log_no_public_access ON public.org_audit_log;
-CREATE POLICY org_audit_log_no_public_access ON public.org_audit_log FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
+DROP POLICY IF EXISTS org_audit_logs_no_public_access ON public.org_audit_logs;
+CREATE POLICY org_audit_logs_no_public_access ON public.org_audit_logs FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
+
+DROP POLICY IF EXISTS org_planned_activity_assignments_no_public_access ON public.org_planned_activity_assignments;
+CREATE POLICY org_planned_activity_assignments_no_public_access ON public.org_planned_activity_assignments FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
+
+DROP POLICY IF EXISTS org_forum_status_history_no_public_access ON public.org_forum_status_history;
+CREATE POLICY org_forum_status_history_no_public_access ON public.org_forum_status_history FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
+
+DROP POLICY IF EXISTS org_designation_history_no_public_access ON public.org_designation_history;
+CREATE POLICY org_designation_history_no_public_access ON public.org_designation_history FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
+
+DROP POLICY IF EXISTS org_promotion_applications_no_public_access ON public.org_promotion_applications;
+CREATE POLICY org_promotion_applications_no_public_access ON public.org_promotion_applications FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
