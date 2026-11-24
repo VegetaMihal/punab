@@ -1,9 +1,10 @@
 /**
  * BloodHero donor matching (server-only).
  *
- * Calls Postgres `bloodhero_run_matching_for_request` (SECURITY DEFINER) which:
+ * Sole matching path for every caller (request insert, admin re-run, API route, escalation cron).
+ * The older Postgres `bloodhero_run_matching_for_request` is no longer called by anything.
  * - finds eligible donors (active, same blood group, block clear, not already queued)
- * - can use location fields when present (request donation lat/lng + donor center lat/lng)
+ * - ranks by distance within the 25 km radius; falls back to nearest nationwide if none in range
  * - replaces pending unsent notification rows and inserts up to 15 donors
  *
  * Requires `SUPABASE_SERVICE_ROLE_KEY` (server env only — never expose to the client).
